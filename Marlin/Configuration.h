@@ -1,3 +1,16 @@
+#pragma once
+
+#if SHUI_SAPPHIRE_PRO==1
+    #define SHUI_SUB_NAME   "Sapphire PRO"
+    #include "src/lcd/extui/lib/shui/cfg/shui_sapphire_pro_Configuration.h"
+#elif SHUI_TWO_TREES_BLUER==1
+    #define SHUI_SUB_NAME   "Two Trees Bluer"
+    #include "src/lcd/extui/lib/shui/cfg/shui_two_trees_bluer_Configuration.h"
+#elif SHUI_ANDRY_HM==1
+    #define SHUI_SUB_NAME   "Andry HM"
+    #include "src/lcd/extui/lib/shui/cfg/shui_andry_hm_Configuration.h"
+#else
+    #error UNSUPPORTED CONFIG
 /**
  * Marlin 3D Printer Firmware
  * Copyright (c) 2020 MarlinFirmware [https://github.com/MarlinFirmware/Marlin]
