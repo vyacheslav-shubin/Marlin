@@ -1,3 +1,10 @@
+#ifdef SHUI_SAPPHIRE_PRO
+#include "src/lcd/extui/lib/shui/cfg/shui_sapphire_pro_Configuration.h"
+    #define SHUI_SUB_NAME   "Sapphire PRO"
+#elif  SHUI_MACHINE1
+#define SHUI_SUB_NAME   "Two Trees Bluer"
+    #include "src/lcd/extui/lib/shui/cfg/shui_two_trees_bluer_Configuration.h"
+#else
 /**
  * Marlin 3D Printer Firmware
  * Copyright (c) 2020 MarlinFirmware [https://github.com/MarlinFirmware/Marlin]
@@ -2743,3 +2750,5 @@
 
 // Edit servo angles with M281 and save to EEPROM with M500
 //#define EDITABLE_SERVO_ANGLES
+
+#endif
