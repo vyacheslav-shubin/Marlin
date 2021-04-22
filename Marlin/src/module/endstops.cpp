@@ -323,7 +323,12 @@ void Endstops::not_homing() {
 #if ENABLED(VALIDATE_HOMING_ENDSTOPS)
   // If the last move failed to trigger an endstop, call kill
   void Endstops::validate_homing_move() {
-    if (trigger_state()) hit_on_purpose();
+
+#ifndef VALIDATE_HOMING_ENDSTOPS_OPT
+#define VALIDATE_HOMING_ENDSTOPS_OPT (1)
+#endif
+
+    if (trigger_state() ||(!(VALIDATE_HOMING_ENDSTOPS_OPT))) hit_on_purpose();
     else kill(GET_TEXT(MSG_KILL_HOMING_FAILED));
   }
 #endif
