@@ -50,3 +50,36 @@ tests-all-local-docker:
 setup-local-docker:
 	docker-compose build
 .PHONY: setup-local-docker
+
+
+pics: font
+	python3 ./make_res.py
+
+define make_firmware
+    mkdir -p .pio/build/work
+    ln -s -f work .pio/build/$1
+	pio run -e $1
+	mkdir -p .pio/firmware/$1
+	mv -f .pio/build/$1/Robin_nano35.bin .pio/firmware/$1/Robin_nano35.bin
+	rm .pio/build/$1/firmware.elf
+	rm .pio/build/$1/firmware.bin
+	cp Marlin/src/lcd/extui/lib/shui/cfg/shui_$1_Configuration.h .pio/firmware/$1/Coniguration.h
+endef
+
+bin:
+	$(call make_firmware,sapphire_pro)
+
+bin1:
+	$(call make_firmware,two_trees_bluer)
+
+skin:
+	rm -r -f .pio/build/skin
+	mkdir -p .pio/build/skin
+	cp make_res.py .pio/build/skin/make_res.py
+	cp -r Marlin/src/lcd/extui/lib/shui/res/img .pio/build/skin/
+	cd .pio/build/skin && zip -r skin.zip *
+	mv .pio/build/skin/skin.zip .pio/firmware/cd .
+
+font:
+	python3 ./font_builder.py
+	
