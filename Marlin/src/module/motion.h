@@ -127,11 +127,20 @@ inline int8_t pgm_read_any(const int8_t *p) { return TERN(__IMXRT1062__, *p, pgm
     static const XYZval<T> NAME##_P DEFS_PROGMEM = LINEAR_AXIS_ARRAY(X_##OPT, Y_##OPT, Z_##OPT, I_##OPT, J_##OPT, K_##OPT); \
     return pgm_read_any(&NAME##_P[axis]); \
   }
+
+#if ENABLED(OVERRIDE_MOTION_ARREA)
+extern float base_home_pos(const AxisEnum axis);
+extern int8_t home_dir(const AxisEnum axis);
+extern float base_min_pos(const AxisEnum axis);
+extern float base_max_pos(const AxisEnum axis);
+extern float max_length(const AxisEnum axis);
+#else
 XYZ_DEFS(float, base_min_pos,   MIN_POS);
 XYZ_DEFS(float, base_max_pos,   MAX_POS);
 XYZ_DEFS(float, base_home_pos,  HOME_POS);
 XYZ_DEFS(float, max_length,     MAX_LENGTH);
 XYZ_DEFS(int8_t, home_dir, HOME_DIR);
+#endif
 
 inline float home_bump_mm(const AxisEnum axis) {
   static const xyz_pos_t home_bump_mm_P DEFS_PROGMEM = HOMING_BUMP_MM;
