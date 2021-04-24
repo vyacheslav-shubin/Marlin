@@ -1,4 +1,5 @@
 import os
+import struct
 from sys import argv
 from PIL import Image
 from shutil import copyfile
@@ -24,6 +25,15 @@ res_file=project + '.pio/firmware/RESDUMP.BIN'
 
 files_list=[]
 
+def rgb_to_565(rgb):
+	b1=(rgb[2]>>3) | ((rgb[1]<<3) & 0xe0)
+	b2=(rgb[0] & 0xF8) | (rgb[1]>>5)
+	return bytearray([b1, b2])
+
+def rgb_to_565_(r, g, b):
+	b1=(b>>3) | ((g<<3) & 0xe0)
+	b2=(r & 0xF8) | (b>>5)
+	return bytearray([b1, b2])
 
 def png_to_565(infn, outfn):
 	image=Image.open(infn)
@@ -34,17 +44,52 @@ def png_to_565(infn, outfn):
 	data=image.getdata()
 
 	for d in data:
-		b1=(d[2]>>3) | ((d[1]<<3) & 0xe0)
-		b2=(d[0] & 0xF8) | (d[1]>>5)
-		out_file.write(bytearray([b1, b2]))
+		out_file.write(rgb_to_565(d))
 
 	out_file.close()
 
 def copy_proc(infn, outfn):
-  directory=os.path.dirname(outfn)
-  if not os.path.exists(directory):
-    os.makedirs(directory);
-  copyfile(infn, outfn)
+	directory=os.path.dirname(outfn)
+	if not os.path.exists(directory):
+		os.makedirs(directory)
+	copyfile(infn, outfn)
+
+def color_out(file, json_color):
+	fg_b = rgb_to_565(int(json_color["fg"], 16).to_bytes(3, "big"))
+	bg_b = rgb_to_565(int(json_color["bg"], 16).to_bytes(3, "big"))
+	file.write(bg_b)
+	file.write(fg_b)
+	pass
+
+def json_build_profile(infn, outfn):
+	print("JSON")
+	import json
+	version=1
+	data=None
+	with open(infn, "r") as json_file:
+		data = json.load(json_file)
+		json_file.close()
+
+	with open(outfn, "wb") as bin_out:
+		bin_out.write(struct.pack('<H', version))
+		palette=data["palette"]
+		color_out(bin_out, palette["system-display"])
+		color_out(bin_out, palette["main"])
+		color_out(bin_out, palette["progress"])
+		color_out(bin_out, palette["terminal"])
+		while bin_out.tell()<64:
+			bin_out.write(b'\x00')
+		bin_out.close()
+
+	pass
+
+
+def json_build(infn, outfn):
+	paths=os.path.split(infn)
+	if (paths[1]=="profile.json"):
+		json_build_profile(infn, os.path.join(os.path.split(outfn)[0],"profile.bin"))
+	pass
+
 
 def walk(directory):
 	for d, dirs, files in os.walk(directory):
@@ -70,7 +115,7 @@ def make_dump(out_file_name):
 		out_file.write(data)
 		
 	offset=0
-	out_write('SHUI'.encode('utf8'))											#4 - Сигнатура
+	out_write('SHUI'.encode('utf8'))						#4 - Сигнатура
 	out_file.write(offset.to_bytes(4, byteorder="little"))	#4 - Общий размер файла
 	out_file.write(offset.to_bytes(4, byteorder="little"))	#4 - Смещение образов файлов
 	out_write(len(files_list).to_bytes(1, byteorder="little"))	#1 - Число файлов
@@ -127,6 +172,9 @@ for d, dirs, files in os.walk(res_dir):
 		elif (fe==".fnt"):
 			out_rel_file=rel_file
 			proc=copy_proc
+		elif (fe==".json"):
+			out_rel_file=rel_file
+			proc=json_build
 		else:
 			proc=copy_proc
 			out_rel_file=rel_file
