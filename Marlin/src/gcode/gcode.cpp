@@ -264,6 +264,8 @@ void GcodeSuite::dwell(millis_t time) {
 
 #endif // HAS_LEVELING && G29_RETRY_AND_RECOVER
 
+extern uint8_t gcode_override(GCodeParser * parser);
+
 /**
  * Process the parsed command and dispatch it to its handler
  */
@@ -290,7 +292,7 @@ void GcodeSuite::process_parsed_command(const bool no_ok/*=false*/) {
   #endif
 
   // Handle a known command or reply "unknown command"
-
+  if (!gcode_override(&parser))
   switch (parser.command_letter) {
 
     case 'G': switch (parser.codenum) {
