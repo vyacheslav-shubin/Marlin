@@ -71,7 +71,7 @@ bin:
 bin1:
 	$(call make_firmware,two_trees_bluer)
 bin2:
-	$(call make_firmware,andry_hm)
+	$(call make_firmware,ultimaker)
 
 skin:
 	rm -r -f .pio/build/skin
