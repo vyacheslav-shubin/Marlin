@@ -56,14 +56,13 @@ pics: font
 	python3 ./make_res.py
 
 define make_firmware
-    mkdir -p .pio/build/work
-    ln -s -f work .pio/build/$1
-	pio run -e $1
-	mkdir -p .pio/firmware/$1
-	mv -f .pio/build/$1/Robin_nano35.bin .pio/firmware/$1/Robin_nano35.bin
-	rm .pio/build/$1/firmware.elf
-	rm .pio/build/$1/firmware.bin
-	cp Marlin/src/lcd/extui/lib/shui/cfg/shui_$1_Configuration.h .pio/firmware/$1/Coniguration.h
+    mkdir -p .pio/build/$1
+    pio run -e $1
+    mkdir -p .pio/firmware/$1
+    mv -f .pio/build/$1/Robin_nano35.bin .pio/firmware/$1/Robin_nano35.bin
+    rm .pio/build/$1/firmware.elf
+    rm .pio/build/$1/firmware.bin
+    cp Marlin/src/lcd/extui/lib/shui/cfg/shui_$1_Configuration.h .pio/firmware/$1/Coniguration.h
 endef
 
 bin:
