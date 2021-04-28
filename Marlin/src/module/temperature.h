@@ -343,6 +343,10 @@ typedef struct { int16_t raw_min, raw_max; celsius_t mintemp, maxtemp; } temp_ra
   } user_thermistor_t;
 
 #endif
+#if ENABLED(OVERRIDE_HOTEND_MAX_TEMP)
+extern celsius_t hotend_max_target_override(const uint8_t e);
+#endif
+
 
 class Temperature {
 
@@ -351,7 +355,11 @@ class Temperature {
     #if HAS_HOTEND
       static hotend_info_t temp_hotend[HOTENDS];
       static const celsius_t hotend_maxtemp[HOTENDS];
+    #if ENABLED(OVERRIDE_HOTEND_MAX_TEMP)
+      static inline celsius_t hotend_max_target(const uint8_t e) { return hotend_max_target_override(e) - (HOTEND_OVERSHOOT); }
+    #else
       static inline celsius_t hotend_max_target(const uint8_t e) { return hotend_maxtemp[e] - (HOTEND_OVERSHOOT); }
+    #endif
     #endif
     #if HAS_HEATED_BED
       static bed_info_t temp_bed;
