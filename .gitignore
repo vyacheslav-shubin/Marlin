@@ -171,3 +171,4 @@ __pycache__
 # Simulation / Native
 eeprom.dat
 imgui.ini
+/Marlin/src/lcd/extui/lib/shui/
