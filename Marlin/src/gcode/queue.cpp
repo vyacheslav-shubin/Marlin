@@ -619,6 +619,10 @@ void GCodeQueue::exhaust() {
   planner.synchronize();
 }
 
+#if ENABLED(CODE_INJECTION)
+extern uint8_t process_code_injection();
+#endif
+
 /**
  * Get the next command in the queue, optionally log it to SD, then dispatch it
  */
@@ -626,6 +630,10 @@ void GCodeQueue::advance() {
 
   // Process immediate commands
   if (process_injected_command_P() || process_injected_command()) return;
+
+  #if ENABLED(CODE_INJECTION)
+        if (process_code_injection()) return;
+  #endif
 
   // Return if the G-code buffer is empty
   if (ring_buffer.empty()) {
