@@ -1634,6 +1634,7 @@ static_assert(Y_MAX_LENGTH >= Y_BED_SIZE, "Movement bounds (Y_MIN_POS, Y_MAX_POS
   /**
    * Make sure Z raise values are set
    */
+#ifndef SH_UI
   #ifndef Z_CLEARANCE_DEPLOY_PROBE
     #error "You must define Z_CLEARANCE_DEPLOY_PROBE in your configuration."
   #elif !defined(Z_CLEARANCE_BETWEEN_PROBES)
@@ -1645,7 +1646,7 @@ static_assert(Y_MAX_LENGTH >= Y_BED_SIZE, "Movement bounds (Y_MIN_POS, Y_MAX_POS
   #elif Z_AFTER_PROBING < 0
     #error "Probes need Z_AFTER_PROBING >= 0."
   #endif
-
+#endif
   #if MULTIPLE_PROBING > 0 || EXTRA_PROBING > 0
     #if MULTIPLE_PROBING == 0
       #error "EXTRA_PROBING requires MULTIPLE_PROBING."
@@ -1656,10 +1657,11 @@ static_assert(Y_MAX_LENGTH >= Y_BED_SIZE, "Movement bounds (Y_MIN_POS, Y_MAX_POS
     #endif
   #endif
 
+#ifndef SH_UI
   #if Z_PROBE_LOW_POINT > 0
     #error "Z_PROBE_LOW_POINT must be less than or equal to 0."
   #endif
-
+#endif
   #if HOMING_Z_WITH_PROBE && IS_CARTESIAN && DISABLED(Z_SAFE_HOMING)
     #error "Z_SAFE_HOMING is recommended when homing with a probe. Enable it or comment out this line to continue."
   #endif
