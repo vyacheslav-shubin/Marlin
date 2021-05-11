@@ -69,6 +69,9 @@ extern xyz_pos_t cartes;
   constexpr feedRate_t z_probe_fast_mm_s = MMM_TO_MMS(Z_PROBE_FEEDRATE_FAST);
 #endif
 
+#if ENABLED(OVERRIDE_HOMING_FEEDRATE)
+  extern feedRate_t homing_feedrate(const AxisEnum a);
+#else
 /**
  * Feed rates are often configured with mm/m
  * but the planner and stepper like mm/s units.
@@ -88,6 +91,8 @@ FORCE_INLINE feedRate_t homing_feedrate(const AxisEnum a) {
   #endif
   return MMM_TO_MMS(v);
 }
+
+#endif
 
 feedRate_t get_homing_bump_feedrate(const AxisEnum axis);
 
@@ -471,6 +476,9 @@ FORCE_INLINE bool all_axes_trusted()                        { return xyz_bits ==
 
 #else // CARTESIAN
 
+#if ENABLED(OVERRIDE_MOTION_ARREA)
+extern bool position_is_reachable(const_float_t rx, const_float_t ry);
+#else
   // Return true if the given position is within the machine bounds.
   inline bool position_is_reachable(const_float_t rx, const_float_t ry) {
     if (!COORDINATE_OKAY(ry, Y_MIN_POS - fslop, Y_MAX_POS + fslop)) return false;
@@ -483,6 +491,7 @@ FORCE_INLINE bool all_axes_trusted()                        { return xyz_bits ==
       return COORDINATE_OKAY(rx, X_MIN_POS - fslop, X_MAX_POS + fslop);
     #endif
   }
+#endif
   inline bool position_is_reachable(const xy_pos_t &pos) { return position_is_reachable(pos.x, pos.y); }
 
 #endif // CARTESIAN
