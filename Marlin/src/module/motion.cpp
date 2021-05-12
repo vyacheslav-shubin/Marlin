@@ -1865,6 +1865,11 @@ void prepare_line_to_destination() {
       if (axis == Z_AXIS) fwretract.current_hop = 0.0;
     #endif
 
+    #ifdef Z_HOME_CLEARANCE
+      if ((axis == Z_AXIS) && (Z_HOME_CLEARANCE>0))
+        do_z_clearance(Z_HOME_CLEARANCE);
+    #endif
+
     if (DEBUGGING(LEVELING)) DEBUG_ECHOLNPAIR("<<< homeaxis(", AS_CHAR(axis_codes[axis]), ")");
 
   } // homeaxis()
