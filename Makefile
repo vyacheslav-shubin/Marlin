@@ -69,9 +69,11 @@ bin:
 	$(call make_firmware,sapphire_pro)
 bin1:
 	$(call make_firmware,two_trees_bluer)
+	mkdir -p ".pio/firmware/lotmaxx cr-10"
+	cp -f .pio/firmware/two_trees_bluer/Robin_nano35.bin ".pio/firmware/lotmaxx cr-10/lotmaxx.bin"
+	cp -f .pio/firmware/two_trees_bluer/Coniguration.h ".pio/firmware/lotmaxx cr-10/Coniguration.h"
 bin2:
 	$(call make_firmware,ultimaker)
-
 skin:
 	rm -r -f .pio/build/skin
 	mkdir -p .pio/build/skin
