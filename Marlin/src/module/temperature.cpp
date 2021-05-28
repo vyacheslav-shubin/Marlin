@@ -321,6 +321,12 @@ PGMSTR(str_t_heating_failed, STR_T_HEATING_FAILED);
 #define INIT_FAN_PIN(P) do{ _INIT_FAN_PIN(P); SET_FAST_PWM_FREQ(P); }while(0)
 
 // HAS_FAN does not include CONTROLLER_FAN
+#if ENABLED(HOTEND_FAN)
+extern uint8_t hotend_checked(uint8_t e);
+extern int override_softpwm(uint8_t e, int value);
+extern void check_e1_as_fan();
+#endif
+
 #if HAS_FAN
 
   uint8_t Temperature::fan_speed[FAN_COUNT]; // = { 0 }
@@ -657,6 +663,11 @@ volatile bool Temperature::raw_temps_ready = false;
             next_auto_fan_check_ms = ms + 2500UL;
           }
         #endif
+
+        #if ENABLED(HOTEND_FAN)
+          check_e1_as_fan();
+        #endif
+
 
         if (heating && current_temp > target && ELAPSED(ms, t2 + 5000UL)) {
           heating = false;
@@ -1337,7 +1348,15 @@ void Temperature::manage_heater() {
 
       temp_hotend[e].soft_pwm_amount = (temp_hotend[e].celsius > temp_range[e].mintemp || is_preheating(e)) && temp_hotend[e].celsius < temp_range[e].maxtemp ? (int)get_pid_output_hotend(e) >> 1 : 0;
 
+#if ENABLED(HOTEND_FAN)
+        temp_hotend[e].soft_pwm_amount = override_softpwm(e, temp_hotend[e].soft_pwm_amount);
+#endif
+
       #if WATCH_HOTENDS
+#if ENABLED(HOTEND_FAN)
+        if (hotend_checked(e))
+#endif
+
         // Make sure temperature is increasing
         if (watch_hotend[e].elapsed(ms)) {          // Enabled and time to check?
           if (watch_hotend[e].check(degHotend(e)))  // Increased enough?
@@ -1364,6 +1383,10 @@ void Temperature::manage_heater() {
       checkExtruderAutoFans();
       next_auto_fan_check_ms = ms + 2500UL;
     }
+  #endif
+
+  #if ENABLED(HOTEND_FAN)
+    check_e1_as_fan();
   #endif
 
   #if ENABLED(FILAMENT_WIDTH_SENSOR)
