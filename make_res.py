@@ -122,6 +122,7 @@ def make_dump(out_file_name):
 	offset+=13
 	for file_name in files_list:
 		relative=os.path.relpath(file_name,dest_dir)
+		relative=relative.replace("\\","/")
 		size=os.path.getsize(file_name)
 		name_bytes = relative.encode('cp1251')		
 		out_write(len(name_bytes).to_bytes(1, byteorder="little"))
