@@ -53,7 +53,7 @@ setup-local-docker:
 
 
 pics: font
-	python3 ./make_res.py
+	/usr/bin/python3 ./make_res.py
 
 define make_firmware
     mkdir -p .pio/build/$1
@@ -83,5 +83,5 @@ skin:
 	mv .pio/build/skin/skin.zip .pio/firmware/cd .
 
 font:
-	python3 ./font_builder.py
+	/usr/bin/python3 ./font_builder.py
 	
