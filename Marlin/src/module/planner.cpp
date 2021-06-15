@@ -1291,7 +1291,7 @@ void Planner::recalculate() {
       static millis_t fan_kick_end[FAN_COUNT] = { 0 };
       if (fan_speed[f]) {
         if (fan_kick_end[f] == 0) {
-          fan_kick_end[f] = ms + FAN_KICKSTART_TIME;
+          fan_kick_end[f] = ms + FAN_KICKSTART_TIME_VALUE;
           fan_speed[f] = 255;
         }
         else if (PENDING(ms, fan_kick_end[f]))
