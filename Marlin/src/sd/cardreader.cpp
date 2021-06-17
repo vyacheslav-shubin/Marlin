@@ -194,6 +194,16 @@ char *createFilename(char * const buffer, const dir_t &p) {
   return buffer;
 }
 
+extern uint8_t is_wanted_file(const dir_t &p);
+
+#if ENABLED(CUSTOM_GCODE_FILTER)
+bool CardReader::is_dir_or_gcode(const dir_t &p) {
+    uint8_t res=is_wanted_file(p);
+    flag.filenameIsDir = DIR_IS_SUBDIR(&p);
+    return res;
+}
+#else
+
 //
 // Return 'true' if the item is a folder or G-code file
 //
@@ -214,7 +224,7 @@ bool CardReader::is_dir_or_gcode(const dir_t &p) {
     || (p.name[8] == 'G' && p.name[9] != '~')           // Non-backup *.G* files are accepted
   );
 }
-
+#endif
 //
 // Get the number of (compliant) items in the folder
 //
