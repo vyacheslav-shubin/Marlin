@@ -292,7 +292,7 @@ void GcodeSuite::dwell(millis_t time) {
 #endif // G29_RETRY_AND_RECOVER
 
 extern uint8_t gcode_override(GCodeParser * parser);
-
+extern void gcode_finalize(GCodeParser * parser);
 /**
  * Process the parsed command and dispatch it to its handler
  */
@@ -1062,7 +1062,7 @@ void GcodeSuite::process_parsed_command(const bool no_ok/*=false*/) {
       #endif
       parser.unknown_command_warning();
   }
-
+  gcode_finalize(&parser);
   if (!no_ok) queue.ok_to_send();
 
   SERIAL_OUT(msgDone); // Call the msgDone serial hook to signal command processing done
