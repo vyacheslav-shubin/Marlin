@@ -1005,6 +1005,8 @@ inline void tmc_standby_setup() {
   #endif
 }
 
+extern void probe_init();
+
 /**
  * Marlin Firmware entry-point. Abandon Hope All Ye Who Enter Here.
  * Setup before the program loop:
@@ -1476,8 +1478,12 @@ void setup() {
     SETUP_RUN(mixer.init());
   #endif
 
+  #if SH_UI
+    probe_init();
+  #else
   #if ENABLED(BLTOUCH)
     SETUP_RUN(bltouch.init(/*set_voltage=*/true));
+  #endif
   #endif
 
   #if ENABLED(I2C_POSITION_ENCODERS)
