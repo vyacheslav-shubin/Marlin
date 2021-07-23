@@ -1079,6 +1079,7 @@ void CardReader::cdroot() {
     #endif
   #endif
 
+#if !SH_UI
   /**
    * Read all the files and produce a sort key
    *
@@ -1253,6 +1254,7 @@ void CardReader::cdroot() {
       sort_count = fileCnt;
     }
   }
+#endif
 
   void CardReader::flush_presort() {
     if (sort_count > 0) {
