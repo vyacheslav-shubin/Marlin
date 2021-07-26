@@ -790,18 +790,18 @@
     #error "BLTOUCH requires DEACTIVATE_SERVOS_AFTER_MOVE to be to disabled. Please update your Configuration.h file."
   #endif
 
-  // Always disable probe pin inverting for BLTouch
 #if !SH_UI
+  // Always disable probe pin inverting for BLTouch
   #if Z_MIN_PROBE_ENDSTOP_INVERTING
     #error "BLTOUCH requires Z_MIN_PROBE_ENDSTOP_INVERTING set to false. Please update your Configuration.h file."
   #endif
-#endif
 
   #if ENABLED(Z_MIN_PROBE_USES_Z_MIN_ENDSTOP_PIN)
     #if Z_MIN_ENDSTOP_INVERTING
       #error "BLTOUCH requires Z_MIN_ENDSTOP_INVERTING set to false. Please update your Configuration.h file."
     #endif
   #endif
+#endif
 #endif
 
 /**
