@@ -41,12 +41,28 @@ void GcodeSuite::M281() {
 
   const int servo_index = parser.value_int();
   if (WITHIN(servo_index, 0, NUM_SERVOS - 1)) {
+#if !SH_UI
     #if ENABLED(BLTOUCH)
       if (servo_index == Z_PROBE_SERVO_NR) {
         SERIAL_ERROR_MSG("BLTouch angles can't be changed.");
         return;
       }
     #endif
+#endif
+    bool angle_change = false;
+    if (parser.seen('L')) {
+      servo_angles[servo_index][0] = parser.value_int();
+      angle_change = true;
+    }
+    if (parser.seen('U')) {
+      servo_angles[servo_index][1] = parser.value_int();
+      angle_change = true;
+    }
+    if (!angle_change) {
+      SERIAL_ECHO_MSG(" Servo ", servo_index,
+                      " L", servo_angles[servo_index][0],
+                      " U", servo_angles[servo_index][1]);
+    }
     if (parser.seen('L')) servo_angles[servo_index][0] = parser.value_int();
     if (parser.seen('U')) servo_angles[servo_index][1] = parser.value_int();
   }

@@ -98,6 +98,12 @@ xyz_pos_t Probe::offset; // Initialized by settings.load()
   Probe::sense_bool_t Probe::test_sensitivity;
 #endif
 
+#if SH_UI
+  extern uint8_t is_bltouch();
+#else
+  #define is_bltouch() (1)
+#endif
+
 #if ENABLED(Z_PROBE_SLED)
 
   #ifndef SLED_DOCKING_OFFSET
@@ -280,6 +286,9 @@ void Probe::do_z_raise(const float z_raise) {
   do_z_clearance(z_dest);
 }
 
+#if SH_UI
+extern void probe_specific_action(const bool deploy);
+#else
 FORCE_INLINE void probe_specific_action(const bool deploy) {
   #if ENABLED(PAUSE_BEFORE_DEPLOY_STOW)
     do {
@@ -337,6 +346,7 @@ FORCE_INLINE void probe_specific_action(const bool deploy) {
 
   #endif
 }
+#endif
 
 #if EITHER(PREHEAT_BEFORE_PROBING, PREHEAT_BEFORE_LEVELING)
 
@@ -488,6 +498,7 @@ bool Probe::probe_down_to_z(const_float_t z, const_feedRate_t fr_mm_s) {
     thermalManager.wait_for_hotend_heating(active_extruder);
   #endif
 
+  if (is_bltouch())
   if (TERN0(BLTOUCH_SLOW_MODE, bltouch.deploy())) return true; // Deploy in LOW SPEED MODE on every probe action
 
   // Disable stealthChop if used. Enable diag1 pin on driver.
@@ -529,6 +540,7 @@ bool Probe::probe_down_to_z(const_float_t z, const_feedRate_t fr_mm_s) {
     set_homing_current(false);
   #endif
 
+  if (is_bltouch())
   if (probe_triggered && TERN0(BLTOUCH_SLOW_MODE, bltouch.stow())) // Stow in LOW SPEED MODE on every trigger
     return true;
 
