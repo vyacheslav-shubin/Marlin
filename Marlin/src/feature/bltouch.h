@@ -68,6 +68,14 @@ typedef unsigned char BLTCommand;
   #define BLTOUCH_RESET_DELAY    500
 #endif
 
+#if SH_UI
+extern uint8_t is_bltouch();
+#else
+#define is_bltouch() (1)
+#endif
+
+
+
 class BLTouch {
 public:
   static void init(const bool set_voltage=false);

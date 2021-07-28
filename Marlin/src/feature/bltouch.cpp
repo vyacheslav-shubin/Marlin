@@ -39,6 +39,10 @@ void stop();
 #include "../core/debug_out.h"
 
 bool BLTouch::command(const BLTCommand cmd, const millis_t &ms) {
+  if (!is_bltouch()) {
+      SERIAL_ECHOLNPAIR("WARNING!!! BLTouch Command :", cmd);
+      return 0;
+  }
   if (DEBUGGING(LEVELING)) SERIAL_ECHOLNPGM("BLTouch Command :", cmd);
   MOVE_SERVO(Z_PROBE_SERVO_NR, cmd);
   safe_delay(_MAX(ms, (uint32_t)BLTOUCH_DELAY)); // BLTOUCH_DELAY is also the *minimum* delay

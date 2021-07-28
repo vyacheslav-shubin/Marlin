@@ -381,6 +381,7 @@ void GcodeSuite::G28() {
       // Raise Z before homing any other axes and z is not already high enough (never lower z)
       if (DEBUGGING(LEVELING)) DEBUG_ECHOLNPGM("Raise Z (before homing) by ", z_homing_height);
       do_z_clearance(z_homing_height);
+      if (is_bltouch())
       TERN_(BLTOUCH, bltouch.init());
     }
 

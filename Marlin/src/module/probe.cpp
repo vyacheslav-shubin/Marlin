@@ -98,12 +98,6 @@ xyz_pos_t Probe::offset; // Initialized by settings.load()
   Probe::sense_bool_t Probe::test_sensitivity;
 #endif
 
-#if SH_UI
-  extern uint8_t is_bltouch();
-#else
-  #define is_bltouch() (1)
-#endif
-
 #if ENABLED(Z_PROBE_SLED)
 
   #ifndef SLED_DOCKING_OFFSET
