@@ -376,7 +376,7 @@ namespace ExtUI {
       const char *shortFilename();
       const char *filename();
       bool isDir();
-
+      bool is83Name();
       void changeDir(const char * const dirname);
       void upDir();
       bool isAtRootDir();

@@ -1122,6 +1122,11 @@ namespace ExtUI {
     return TERN0(SDSUPPORT, card.flag.filenameIsDir);
   }
 
+  bool FileList::is83Name() {
+    const char* lfn = longFilename();
+    return (lfn == nullptr) || (lfn[0]==0);
+  }
+
   uint16_t FileList::count() {
     return TERN0(SDSUPPORT, (num_files = (num_files == 0xFFFF ? card.get_num_Files() : num_files)));
   }
