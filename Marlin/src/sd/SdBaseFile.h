@@ -279,6 +279,15 @@ class SdBaseFile {
   bool isSubDir() const { return type_ == FAT_FILE_TYPE_SUBDIR; }
 
   /**
+   * \return True if this is a hidden entry else false.
+   */
+  bool isHidden()  const { return (attrs_ & DIR_ATT_HIDDEN)!=0; }
+  /**
+   * \return True if this is a hidden entry else false.
+  */
+  bool isReadOnly()  const { return (attrs_ & DIR_ATT_READ_ONLY)!=0; }
+
+  /**
    * \return True if this is the root directory.
    */
   bool isRoot() const { return type_ == FAT_FILE_TYPE_ROOT_FIXED || type_ == FAT_FILE_TYPE_ROOT32; }
@@ -360,6 +369,7 @@ class SdBaseFile {
                        F_FILE_DIR_DIRTY = 0x80;                     // sync of directory entry required
 
   // private data
+  uint8_t   attrs_;         //file FAT attributes
   uint8_t   flags_;         // See above for definition of flags_ bits
   uint8_t   fstate_;        // error and eof indicator
   uint8_t   type_;          // type of file see above for values

@@ -735,6 +735,7 @@ bool SdBaseFile::openCachedEntry(uint8_t dirIndex, uint8_t oflag) {
   // remember location of directory entry on SD
   dirBlock_ = vol_->cacheBlockNumber();
   dirIndex_ = dirIndex;
+  attrs_ = p->attributes;
 
   // copy first cluster number for directory fields
   firstCluster_ = (uint32_t)p->firstClusterHigh << 16;
