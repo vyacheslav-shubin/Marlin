@@ -97,6 +97,7 @@ Endstops::endstop_mask_t Endstops::live_state = 0;
  * Class and Instance Methods
  */
 
+#ifndef SH_UI
 void Endstops::init() {
 
   #if HAS_X_MIN
@@ -351,7 +352,7 @@ void Endstops::init() {
   enable_globally(ENABLED(ENDSTOPS_ALWAYS_ON_DEFAULT));
 
 } // Endstops::init
-
+#endif
 // Called at ~1KHz from Temperature ISR: Poll endstop state if required
 void Endstops::poll() {
 
@@ -1353,3 +1354,4 @@ void Endstops::update() {
   }
 
 #endif // PINS_DEBUGGING
+
