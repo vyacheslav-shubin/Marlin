@@ -31,7 +31,7 @@
  */
 
 #include "../../inc/MarlinConfig.h"
-#include "../../lcd/extui/lib/shui/integration.h"
+#include "../../lcd/extui/lib/shui/StepperMap.h"
 
 #if HAS_L64XX
   #include "L64xx.h"

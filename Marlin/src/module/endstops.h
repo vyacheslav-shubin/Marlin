@@ -120,7 +120,9 @@ class Endstops {
       static endstop_mask_t validated_live_state;
       static uint8_t endstop_poll_count;    // Countdown from threshold for polling
     #endif
-
+#ifdef SH_UI
+    static void processEndstop(AxisEnum axis, AxisEnum head, EndstopEnum emin, EndstopEnum emax);
+#endif
   public:
     Endstops() {};
 

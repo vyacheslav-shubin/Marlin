@@ -2158,6 +2158,21 @@
 #if _HAS_STOP(Z,MAX)
   #define HAS_Z_MAX 1
 #endif
+#if SH_UI
+    #undef HAS_X_MIN
+    #undef HAS_X_MAX
+    #undef HAS_Y_MIN
+    #undef HAS_Y_MAX
+    #undef HAS_Z_MIN
+    #undef HAS_Z_MAX
+
+    #define HAS_X_MIN   1
+    #define HAS_X_MAX   1
+    #define HAS_Y_MIN   1
+    #define HAS_Y_MAX   1
+    #define HAS_Z_MIN   1
+    #define HAS_Z_MAX   1
+#endif
 #if _HAS_STOP(I,MIN)
   #define HAS_I_MIN 1
 #endif

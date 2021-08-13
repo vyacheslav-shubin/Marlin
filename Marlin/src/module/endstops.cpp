@@ -606,6 +606,7 @@ void _O2 Endstops::report_states() {
   #define _ENDSTOP_INVERTING(AXIS, MINMAX) AXIS ##_## MINMAX ##_ENDSTOP_INVERTING
 #endif
 
+#ifndef SH_UI
 // Check endstops - Could be called from Temperature ISR!
 void Endstops::update() {
 
@@ -1106,6 +1107,8 @@ void Endstops::update() {
     }
   #endif
 } // Endstops::update()
+
+#endif
 
 #if ENABLED(SPI_ENDSTOPS)
 
