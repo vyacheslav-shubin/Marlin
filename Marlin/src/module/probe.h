@@ -39,10 +39,14 @@
   };
 #endif
 
+#ifdef SH_UI
+  #define PROBE_TRIGGERED z_probe_triggered
+#else
 #if USES_Z_MIN_PROBE_PIN
   #define PROBE_TRIGGERED() (READ(Z_MIN_PROBE_PIN) != Z_MIN_PROBE_ENDSTOP_INVERTING)
 #else
   #define PROBE_TRIGGERED() (READ(Z_MIN_PIN) != Z_MIN_ENDSTOP_INVERTING)
+#endif
 #endif
 
 #if ENABLED(PREHEAT_BEFORE_LEVELING)
