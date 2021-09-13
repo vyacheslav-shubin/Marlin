@@ -255,6 +255,10 @@ struct HeaterWatch {
 
   inline bool check(const celsius_t curr) { return curr >= target; }
 
+  inline void reset_time() {
+      next_ms = millis() + SEC_TO_MS(PERIOD);
+  }
+
   inline void restart(const celsius_t curr, const celsius_t tgt) {
     if (tgt) {
       const celsius_t newtarget = curr + INCREASE;

@@ -1404,7 +1404,10 @@ void Temperature::manage_heater() {
     #endif
 
     #if WATCH_BED
-      // Make sure temperature is increasing
+   // Make sure temperature is increasing
+    #if SH_UI
+        if (is_temperature_flag(WATCH_BED_DT)) {
+    #endif
       if (watch_bed.elapsed(ms)) {              // Time to check the bed?
         if (watch_bed.check(degBed()))          // Increased enough?
           start_watching_bed();                 // If temp reached, turn off elapsed check
@@ -1413,6 +1416,9 @@ void Temperature::manage_heater() {
           _temp_error(H_BED, FPSTR(str_t_heating_failed), GET_TEXT_F(MSG_HEATING_FAILED_LCD));
         }
       }
+    #if SH_UI
+        }
+    #endif
     #endif // WATCH_BED
 
     #if BOTH(PROBING_HEATERS_OFF, BED_LIMIT_SWITCHING)
