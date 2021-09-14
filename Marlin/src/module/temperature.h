@@ -936,6 +936,15 @@ class Temperature {
       static void lcd_preheat(const uint8_t e, const int8_t indh, const int8_t indb);
     #endif
 
+    #if ENABLED(PIDTEMPBED)
+    static float get_pid_output_bed();
+    #endif
+    static float get_bang_bang_output_bed();
+
+    static float get_output_bed() {
+        return is_temperature_flag(BED_PID)?get_pid_output_bed():get_bang_bang_output_bed();
+    }
+
   private:
 
     // Reading raw temperatures and converting to Celsius when ready
@@ -965,9 +974,6 @@ class Temperature {
 
     #if HAS_HOTEND
       static float get_pid_output_hotend(const uint8_t e);
-    #endif
-    #if ENABLED(PIDTEMPBED)
-      static float get_pid_output_bed();
     #endif
     #if ENABLED(PIDTEMPCHAMBER)
       static float get_pid_output_chamber();

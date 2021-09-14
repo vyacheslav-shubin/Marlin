@@ -1405,9 +1405,8 @@ void Temperature::manage_heater() {
 
     #if WATCH_BED
    // Make sure temperature is increasing
-    #if SH_UI
-        if (is_temperature_flag(WATCH_BED_DT)) {
-    #endif
+
+    if (is_temperature_flag(WATCH_BED_DT)) {//SH_UI
       if (watch_bed.elapsed(ms)) {              // Time to check the bed?
         if (watch_bed.check(degBed()))          // Increased enough?
           start_watching_bed();                 // If temp reached, turn off elapsed check
@@ -1416,9 +1415,7 @@ void Temperature::manage_heater() {
           _temp_error(H_BED, FPSTR(str_t_heating_failed), GET_TEXT_F(MSG_HEATING_FAILED_LCD));
         }
       }
-    #if SH_UI
-        }
-    #endif
+    }//SH_UI
     #endif // WATCH_BED
 
     #if BOTH(PROBING_HEATERS_OFF, BED_LIMIT_SWITCHING)
@@ -1442,7 +1439,9 @@ void Temperature::manage_heater() {
       TERN_(HEATER_IDLE_HANDLER, heater_idle[IDLE_INDEX_BED].update(ms));
 
       #if HAS_THERMALLY_PROTECTED_BED
+        if (is_temperature_flag(BED_RUNAWAY)) {//SH_UI
         tr_state_machine[RUNAWAY_IND_BED].run(temp_bed.celsius, temp_bed.target, H_BED, THERMAL_PROTECTION_BED_PERIOD, THERMAL_PROTECTION_BED_HYSTERESIS);
+        }//SH_UI
       #endif
 
       #if HEATER_IDLE_HANDLER
@@ -1456,7 +1455,7 @@ void Temperature::manage_heater() {
       #endif
       {
         #if ENABLED(PIDTEMPBED)
-          temp_bed.soft_pwm_amount = WITHIN(temp_bed.celsius, BED_MINTEMP, BED_MAXTEMP) ? (int)get_pid_output_bed() >> 1 : 0;
+          temp_bed.soft_pwm_amount = WITHIN(temp_bed.celsius, BED_MINTEMP, BED_MAXTEMP) ? (int)get_output_bed() >> 1 : 0;
         #else
           // Check if temperature is within the correct band
           if (WITHIN(temp_bed.celsius, BED_MINTEMP, BED_MAXTEMP)) {
