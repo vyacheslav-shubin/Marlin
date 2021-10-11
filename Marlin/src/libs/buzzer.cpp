@@ -45,7 +45,11 @@ Buzzer buzzer;
  * @param frequency Frequency of the tone in hertz
  */
 void Buzzer::tone(const uint16_t duration, const uint16_t frequency/*=0*/) {
+#if SH_UI
+  if (!is_buzzer_enabled()) return;
+#else
   if (!ui.buzzer_enabled) return;
+#endif
   while (buffer.isFull()) {
     tick();
     thermalManager.manage_heater();
@@ -55,7 +59,11 @@ void Buzzer::tone(const uint16_t duration, const uint16_t frequency/*=0*/) {
 }
 
 void Buzzer::tick() {
+#if SH_UI
+  if (!is_buzzer_enabled()) return;
+#else
   if (!ui.buzzer_enabled) return;
+#endif
   const millis_t now = millis();
 
   if (!state.endtime) {

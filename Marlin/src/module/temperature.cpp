@@ -966,6 +966,9 @@ inline void loud_kill(FSTR_P const lcd_msg, const heater_id_t heater_id) {
   marlin_state = MF_KILLED;
   #if USE_BEEPER
     thermalManager.disable_all_heaters();
+  #if SH_UI
+    if (is_buzzer_enabled())
+  #endif
     for (uint8_t i = 20; i--;) {
       WRITE(BEEPER_PIN, HIGH);
       delay(25);
