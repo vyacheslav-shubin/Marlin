@@ -70,6 +70,14 @@ public:
     set_z(px, py, z);
   }
 
+#if SH_UI
+  static int8_t cell_index_x(const_float_t x) {
+    return (x>index_to_xpos[1])?1:0;
+  }
+  static int8_t cell_index_y(const_float_t y) {
+    return (y>index_to_ypos[1])?1:0;
+  }
+#else
   static int8_t cell_index_x(const_float_t x) {
     int8_t cx = (x - (MESH_MIN_X)) * RECIPROCAL(MESH_X_DIST);
     return constrain(cx, 0, GRID_MAX_CELLS_X - 1);
@@ -78,6 +86,7 @@ public:
     int8_t cy = (y - (MESH_MIN_Y)) * RECIPROCAL(MESH_Y_DIST);
     return constrain(cy, 0, GRID_MAX_CELLS_Y - 1);
   }
+#endif
   static inline xy_int8_t cell_indexes(const_float_t x, const_float_t y) {
     return { cell_index_x(x), cell_index_y(y) };
   }
