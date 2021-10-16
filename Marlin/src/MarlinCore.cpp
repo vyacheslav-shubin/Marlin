@@ -244,6 +244,11 @@
   #include "feature/power.h"
 #endif
 
+#if SH_UI
+#include "lcd/extui/lib/shui/integration.h"
+#include "lcd/extui/lib/shui/widgets/res.h"
+#endif
+
 PGMSTR(M112_KILL_STR, "M112 Shutdown");
 
 MarlinState marlin_state = MF_INITIALIZING;
@@ -360,10 +365,13 @@ void startOrResumeJob() {
 
     TERN_(POWER_LOSS_RECOVERY, recovery.purge());
 
+#if SH_UI
+    SHUI::execSnippetWithDefult(SNIPPET_ID_SD_TERMINATE);
+#else
     #ifdef EVENT_GCODE_SD_ABORT
       queue.inject(F(EVENT_GCODE_SD_ABORT));
     #endif
-
+#endif
     TERN_(PASSWORD_AFTER_SD_PRINT_ABORT, password.lock_machine());
   }
 

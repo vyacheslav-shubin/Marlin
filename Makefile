@@ -62,7 +62,6 @@ define make_firmware
     mv -f .pio/build/$1/Robin_nano35.bin .pio/firmware/$1/Robin_nano35.bin
     rm .pio/build/$1/firmware.elf
     rm .pio/build/$1/firmware.bin
-    cp Marlin/src/lcd/extui/lib/shui/cfg/shui_$1_Configuration.h .pio/firmware/$1/Coniguration.h
 endef
 
 bin:
@@ -83,3 +82,8 @@ bins: bin bin1
 font:
 	/usr/bin/python3 ./font_builder.py
 	
+pics: font
+	make -C ../shui-res pics
+	mv -f ../shui-res/RESDUMP.BIN .pio/firmware/
+font:
+	make -C ../shui-res font
