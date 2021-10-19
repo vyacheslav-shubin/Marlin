@@ -2,13 +2,12 @@
 
 #if SHUI_SAPPHIRE_PRO==1
     #define SHUI_SUB_NAME   "Sapphire PRO"
+    #define SHUI_KINEMATIC  "CARTESIAN COREXY"
     #include "src/lcd/extui/lib/shui/cfg/shui_sapphire_pro_Configuration.h"
 #elif SHUI_TWO_TREES_BLUER==1
+    #define SHUI_KINEMATIC  "CARTESIAN XYZ"
     #define SHUI_SUB_NAME   "Two Trees Bluer"
     #include "src/lcd/extui/lib/shui/cfg/shui_two_trees_bluer_Configuration.h"
-#elif SHUI_ULTIMAKER==1
-    #define SHUI_SUB_NAME   "Ultimaker"
-    #include "src/lcd/extui/lib/shui/cfg/shui_ultimaker_Configuration.h"
 #else
     #error UNSUPPORTED CONFIG
 /**
