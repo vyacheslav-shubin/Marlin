@@ -41,9 +41,9 @@
   #include "../../feature/ethernet.h"
 #endif
 
-//#define ST7920_DELAY_1 DELAY_NS(600)
-//#define ST7920_DELAY_2 DELAY_NS(750)
-//#define ST7920_DELAY_3 DELAY_NS(750)
+#define CPU_ST7920_DELAY_1 600
+#define CPU_ST7920_DELAY_2 750
+#define CPU_ST7920_DELAY_3 750
 
 // ------------------------
 // Defines
@@ -125,16 +125,14 @@ void HAL_reboot();
 
 FORCE_INLINE void _delay_ms(const int delay_ms) { delay(delay_ms); }
 
+#pragma GCC diagnostic push
 #if GCC_VERSION <= 50000
-  #pragma GCC diagnostic push
   #pragma GCC diagnostic ignored "-Wunused-function"
 #endif
 
 extern "C" uint32_t freeMemory();
 
-#if GCC_VERSION <= 50000
-  #pragma GCC diagnostic pop
-#endif
+#pragma GCC diagnostic pop
 
 // ADC
 
