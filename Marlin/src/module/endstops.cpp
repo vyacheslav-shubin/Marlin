@@ -384,7 +384,12 @@ void Endstops::not_homing() {
 #if ENABLED(VALIDATE_HOMING_ENDSTOPS)
   // If the last move failed to trigger an endstop, call kill
   void Endstops::validate_homing_move() {
-    if (trigger_state()) hit_on_purpose();
+
+#ifndef VALIDATE_HOMING_ENDSTOPS_OPT
+#define VALIDATE_HOMING_ENDSTOPS_OPT (1)
+#endif
+
+    if (trigger_state() ||(!(VALIDATE_HOMING_ENDSTOPS_OPT))) hit_on_purpose();
     else kill(GET_TEXT_F(MSG_KILL_HOMING_FAILED));
   }
 #endif
@@ -430,7 +435,7 @@ void Endstops::event_handler() {
     #endif
 
     #define _ENDSTOP_HIT_ECHO(A,C) do{ \
-      SERIAL_ECHOPAIR(" " STRINGIFY(A) ":", planner.triggered_position_mm(_AXIS(A))); _SET_STOP_CHAR(A,C); }while(0)
+      SERIAL_ECHOPGM(" " STRINGIFY(A) ":", planner.triggered_position_mm(_AXIS(A))); _SET_STOP_CHAR(A,C); }while(0)
 
     #define _ENDSTOP_HIT_TEST(A,C) \
       if (TERN0(HAS_##A##_MIN, TEST(hit_state, A##_MIN)) || TERN0(HAS_##A##_MAX, TEST(hit_state, A##_MAX))) \
@@ -460,14 +465,21 @@ void Endstops::event_handler() {
     #endif
     SERIAL_EOL();
 
+#if !SH_UI
     TERN_(HAS_STATUS_MESSAGE,
-      ui.status_printf_P(0,
+      ui.status_printf(0,
         PSTR(S_FMT GANG_N_1(LINEAR_AXES, " %c") " %c"),
         GET_TEXT(MSG_LCD_ENDSTOPS),
         LINEAR_AXIS_LIST(chrX, chrY, chrZ, chrI, chrJ, chrK), chrP
       )
     );
+#else
+    UNUSED(chrP);
+    UNUSED(chrX);
+    UNUSED(chrY);
+    UNUSED(chrZ);
 
+#endif
     #if BOTH(SD_ABORT_ON_ENDSTOP_HIT, SDSUPPORT)
       if (planner.abort_on_endstop_hit) {
         card.abortFilePrintNow();

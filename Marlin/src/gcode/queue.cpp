@@ -84,6 +84,9 @@ GCodeQueue::RingBuffer GCodeQueue::ring_buffer = { 0 };
   millis_t GCodeQueue::next_buffer_report_ms;
 #endif
 
+#if SH_UI
+#include "../lcd/extui/lib/shui/integration.h"
+#endif
 /**
  * Serial command injection
  */
@@ -566,7 +569,7 @@ void GCodeQueue::get_serial_commands() {
       const char sd_char = (char)n;
       const bool is_eol = ISEOL(sd_char);
       if (is_eol || card_eof) {
-
+        SHUI::sd_comment.onEol();
         // Reset stream state, terminate the buffer, and commit a non-empty command
         if (!is_eol && sd_count) ++sd_count;          // End of file with no newline
         if (!process_line_done(sd_input_state, command.buffer, sd_count)) {
@@ -590,8 +593,12 @@ void GCodeQueue::get_serial_commands() {
 
         if (card.eof()) card.fileHasFinished();         // Handle end of file reached
       }
-      else
+      else {
         process_stream_char(sd_char, sd_input_state, command.buffer, sd_count);
+        if (sd_input_state==PS_EOL) {
+            SHUI::sd_comment.onChar(sd_char);
+        }
+      }
     }
   }
 
@@ -619,8 +626,8 @@ void GCodeQueue::exhaust() {
   planner.synchronize();
 }
 
-#if ENABLED(CODE_INJECTION)
-extern uint8_t process_code_injection();
+#ifdef SH_UI
+extern bool is_gcode_processing_blocked();
 #endif
 
 /**
@@ -631,8 +638,8 @@ void GCodeQueue::advance() {
   // Process immediate commands
   if (process_injected_command_P() || process_injected_command()) return;
 
-  #if ENABLED(CODE_INJECTION)
-        if (process_code_injection()) return;
+  #ifdef SH_UI
+  if (is_gcode_processing_blocked()) return;
   #endif
 
   // Return if the G-code buffer is empty

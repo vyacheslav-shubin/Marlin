@@ -40,7 +40,7 @@ void stop();
 
 bool BLTouch::command(const BLTCommand cmd, const millis_t &ms) {
   if (!is_bltouch()) {
-      SERIAL_ECHOLNPAIR("WARNING!!! BLTouch Command :", cmd);
+      SERIAL_ECHOLNPGM("WARNING!!! BLTouch Command :", cmd);
       return 0;
   }
   if (DEBUGGING(LEVELING)) SERIAL_ECHOLNPGM("BLTouch Command :", cmd);

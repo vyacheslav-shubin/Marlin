@@ -165,6 +165,7 @@ public:
    */
   static bool has_commands_queued() { return ring_buffer.length || injected_commands_P || injected_commands[0]; }
 
+  static bool has_injection() {return injected_commands_P || injected_commands[0]; }
   /**
    * Get the next command in the queue, optionally log it to SD, then dispatch it
    */

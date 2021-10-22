@@ -60,8 +60,8 @@ define make_firmware
     pio run -e $1
     mkdir -p .pio/firmware/$1
     mv -f .pio/build/$1/Robin_nano35.bin .pio/firmware/$1/Robin_nano35.bin
-    rm .pio/build/$1/firmware.elf
-    rm .pio/build/$1/firmware.bin
+    rm -f .pio/build/$1/firmware.elf
+    rm -f .pio/build/$1/firmware.bin
 endef
 
 bin:
@@ -87,3 +87,7 @@ pics: font
 	mv -f ../shui-res/RESDUMP.BIN .pio/firmware/
 font:
 	make -C ../shui-res font
+
+shui_wifi:
+	make -C ../wifi-module-esp32 build
+	mv -f ../wifi-module-esp32/SHUIWIFI.BIN .pio/firmware/
