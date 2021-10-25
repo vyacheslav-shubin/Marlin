@@ -569,7 +569,6 @@ void GCodeQueue::get_serial_commands() {
       const char sd_char = (char)n;
       const bool is_eol = ISEOL(sd_char);
       if (is_eol || card_eof) {
-        SHUI::sd_comment.onEol();
         // Reset stream state, terminate the buffer, and commit a non-empty command
         if (!is_eol && sd_count) ++sd_count;          // End of file with no newline
         if (!process_line_done(sd_input_state, command.buffer, sd_count)) {
@@ -590,6 +589,9 @@ void GCodeQueue::get_serial_commands() {
           // Prime Power-Loss Recovery for the NEXT commit_command
           TERN_(POWER_LOSS_RECOVERY, recovery.cmd_sdpos = card.getIndex());
         }
+
+        if (is_eol)
+            SHUI::sd_comment.onEol();
 
         if (card.eof()) card.fileHasFinished();         // Handle end of file reached
       }
