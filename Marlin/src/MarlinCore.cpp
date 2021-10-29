@@ -357,6 +357,9 @@ void startOrResumeJob() {
 
     print_job_timer.abort();
 
+#if SH_UI
+    SHUI::onTerminatePrintEvent();
+#else
     IF_DISABLED(SD_ABORT_NO_COOLDOWN, thermalManager.disable_all_heaters());
 
     TERN(HAS_CUTTER, cutter.kill(), thermalManager.zero_fan_speeds()); // Full cutter shutdown including ISR control
@@ -365,9 +368,6 @@ void startOrResumeJob() {
 
     TERN_(POWER_LOSS_RECOVERY, recovery.purge());
 
-#if SH_UI
-    SHUI::execSnippetWithDefult(SNIPPET_ID_SD_TERMINATE);
-#else
     #ifdef EVENT_GCODE_SD_ABORT
       queue.inject(F(EVENT_GCODE_SD_ABORT));
     #endif
