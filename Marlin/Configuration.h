@@ -8,6 +8,10 @@
     #define SHUI_KINEMATIC  "CARTESIAN XYZ"
     #define SHUI_SUB_NAME   "Two Trees Bluer"
     #include "src/lcd/extui/lib/shui/cfg/shui_two_trees_bluer_Configuration.h"
+#elif SHUI_SAPPHIRE_PRO_F4==1
+    #define SHUI_SUB_NAME   "Sapphire PRO F4"
+    #define SHUI_KINEMATIC  "CARTESIAN COREXY"
+    #include "src/lcd/extui/lib/shui/cfg/shui_sapphire_pro_f4_Configuration.h"
 #else
     #error UNSUPPORTED CONFIG
 /**

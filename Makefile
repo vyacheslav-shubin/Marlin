@@ -68,6 +68,8 @@ bin:
 	$(call make_firmware,sapphire_pro)
 bin1:
 	$(call make_firmware,two_trees_bluer)
+bin2:
+	$(call make_firmware,sapphire_pro_f4)
 
 skin:
 	rm -r -f .pio/build/skin
