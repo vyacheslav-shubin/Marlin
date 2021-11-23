@@ -114,7 +114,11 @@ bool BLTouch::deploy_proc() {
       if (DEBUGGING(LEVELING)) DEBUG_ECHOLNPGM("BLTouch Recovery Failed");
 
       SERIAL_ERROR_MSG(STR_STOP_BLTOUCH);  // Tell the user something is wrong, needs action
+#if SH_UI
+      on_bltouch_error();
+#else
       stop();                              // but it's not too bad, no need to kill, allow restart
+#endif
 
       return true;                         // Tell our caller we goofed in case he cares to know
     }
@@ -157,8 +161,11 @@ bool BLTouch::stow_proc() {
       if (DEBUGGING(LEVELING)) DEBUG_ECHOLNPGM("BLTouch Recovery Failed");
 
       SERIAL_ERROR_MSG(STR_STOP_BLTOUCH);  // Tell the user something is wrong, needs action
+#if SH_UI
+      on_bltouch_error();
+#else
       stop();                              // but it's not too bad, no need to kill, allow restart
-
+#endif
       return true;                         // Tell our caller we goofed in case he cares to know
     }
   }

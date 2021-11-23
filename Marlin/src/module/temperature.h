@@ -478,10 +478,6 @@ class Temperature {
       static lpq_ptr_t lpq_ptr;
     #endif
 
-    #if HAS_HOTEND
-      static temp_range_t temp_range[HOTENDS];
-    #endif
-
     #if HAS_HEATED_BED
       #if ENABLED(WATCH_BED)
         static bed_watch_t watch_bed;
@@ -530,6 +526,10 @@ class Temperature {
     /**
      * Instance Methods
      */
+    #if HAS_HOTEND
+      static temp_range_t temp_range[HOTENDS];
+    #endif
+
 
     void init();
 

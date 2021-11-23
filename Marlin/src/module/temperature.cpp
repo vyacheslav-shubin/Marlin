@@ -36,6 +36,11 @@
 #include "planner.h"
 #include "printcounter.h"
 
+#if SH_UI
+#include "../lcd/extui/lib/shui/Config.h"
+#include "../lcd/extui/lib/shui/integration.h"
+#endif
+
 #if EITHER(HAS_COOLER, LASER_COOLANT_FLOW_METER)
   #include "../feature/cooler.h"
   #include "../feature/spindle_laser.h"
@@ -181,8 +186,10 @@
 #if HAS_HOTEND_THERMISTOR
   #define NEXT_TEMPTABLE(N) ,TEMPTABLE_##N
   #define NEXT_TEMPTABLE_LEN(N) ,TEMPTABLE_##N##_LEN
+#if !SH_UI
   static const temp_entry_t* heater_ttbl_map[HOTENDS] = ARRAY_BY_HOTENDS(TEMPTABLE_0 REPEAT_S(1, HOTENDS, NEXT_TEMPTABLE));
   static constexpr uint8_t heater_ttbllen_map[HOTENDS] = ARRAY_BY_HOTENDS(TEMPTABLE_0_LEN REPEAT_S(1, HOTENDS, NEXT_TEMPTABLE_LEN));
+#endif
 #endif
 
 Temperature thermalManager;
@@ -1832,6 +1839,9 @@ void Temperature::manage_heater() {
       kill();
       return 0;
     }
+#if SH_UI
+      return SHUI::analog_to_celsius_hotend(raw, e);
+#else
 
     switch (e) {
       case 0:
@@ -1940,6 +1950,7 @@ void Temperature::manage_heater() {
       const temp_entry_t(*tt)[] = (temp_entry_t(*)[])(heater_ttbl_map[e]);
       SCAN_THERMISTOR_TABLE((*tt), heater_ttbllen_map[e]);
     #endif
+#endif
 
     return 0;
   }
@@ -2092,6 +2103,7 @@ void Temperature::updateTemperaturesFromRawValues() {
   TERN_(HAS_POWER_MONITOR,     power_monitor.capture_values());
 
   #if HAS_HOTEND
+  #if !SH_UI
     static constexpr int8_t temp_dir[] = {
       #if TEMP_SENSOR_IS_ANY_MAX_TC(0)
         0
@@ -2110,9 +2122,15 @@ void Temperature::updateTemperaturesFromRawValues() {
         #endif
       #endif
     };
+  #endif
 
+  #if SH_UI
+    LOOP_L_N(e, HOTENDS) {
+      const int8_t tdir = temp_range[e].raw_min<temp_range[e].raw_max?1:-1;
+  #else
     LOOP_L_N(e, COUNT(temp_dir)) {
       const int8_t tdir = temp_dir[e];
+  #endif
       if (tdir) {
         const int16_t rawtemp = temp_hotend[e].raw * tdir; // normal direction, +rawtemp, else -rawtemp
         if (rawtemp > temp_range[e].raw_max * tdir) max_temp_error((heater_id_t)e);
@@ -2439,14 +2457,6 @@ void Temperature::init() {
         temp_range[NR].raw_min += TEMPDIR(NR) * (OVERSAMPLENR); \
     }while(0)
 
-#if ENABLED(OVERRIDE_HOTEND_MAX_TEMP)
-    #define _TEMP_MAX_E(NR) do{ \
-      const celsius_t tmax = _MIN(hotend_max_target_override(NR), TERN(TEMP_SENSOR_##NR##_IS_CUSTOM, 2000, (int)pgm_read_word(&TEMPTABLE_##NR [TEMP_SENSOR_##NR##_MAXTEMP_IND].celsius) - 1)); \
-      temp_range[NR].maxtemp = tmax; \
-      while (analog_to_celsius_hotend(temp_range[NR].raw_max, NR) > tmax) \
-        temp_range[NR].raw_max -= TEMPDIR(NR) * (OVERSAMPLENR); \
-    }while(0)
-#else
     #define _TEMP_MAX_E(NR) do{ \
       const celsius_t tmax = _MIN(HEATER_##NR##_MAXTEMP, TERN(TEMP_SENSOR_##NR##_IS_CUSTOM, 2000, (int)pgm_read_word(&TEMPTABLE_##NR [TEMP_SENSOR_##NR##_MAXTEMP_IND].celsius) - 1)); \
       temp_range[NR].maxtemp = tmax; \
@@ -2454,8 +2464,7 @@ void Temperature::init() {
         temp_range[NR].raw_max -= TEMPDIR(NR) * (OVERSAMPLENR); \
     }while(0)
 
-#endif
-#define _MINMAX_TEST(N,M) (HOTENDS > N && TEMP_SENSOR_##N > 0 && TEMP_SENSOR_##N != 998 && TEMP_SENSOR_##N != 999 && defined(HEATER_##N##_##M##TEMP))
+    #define _MINMAX_TEST(N,M) (HOTENDS > N && TEMP_SENSOR_##N > 0 && TEMP_SENSOR_##N != 998 && TEMP_SENSOR_##N != 999 && defined(HEATER_##N##_##M##TEMP))
 
     #if _MINMAX_TEST(0, MIN)
       _TEMP_MIN_E(0);
@@ -2545,6 +2554,7 @@ void Temperature::init() {
       #endif
     );
   #endif
+    SHUI::make_temp_range();
 }
 
 #if HAS_THERMAL_PROTECTION

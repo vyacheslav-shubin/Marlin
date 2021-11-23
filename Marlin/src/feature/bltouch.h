@@ -70,6 +70,7 @@ typedef unsigned char BLTCommand;
 
 #if SH_UI
 extern uint8_t is_bltouch();
+extern void on_bltouch_error();
 #else
 #define is_bltouch() (1)
 #endif
