@@ -40,7 +40,6 @@
 #endif
 
 #ifdef SH_UI
-  #define PROBE_TRIGGERED z_probe_triggered
 #else
 #if USES_Z_MIN_PROBE_PIN
   #define PROBE_TRIGGERED() (READ(Z_MIN_PROBE_PIN) != Z_MIN_PROBE_ENDSTOP_INVERTING)
@@ -74,7 +73,7 @@ public:
       static void preheat_for_probing(const celsius_t hotend_temp, const celsius_t bed_temp);
     #endif
 
-    static bool set_deployed(const bool deploy);
+    static bool set_deployed(const bool deploy, bool with_raise=true);
 
     #if IS_KINEMATIC
 
@@ -122,7 +121,7 @@ public:
 
     static constexpr xyz_pos_t offset = xyz_pos_t(LINEAR_AXIS_ARRAY(0, 0, 0, 0, 0, 0)); // See #16767
 
-    static bool set_deployed(const bool) { return false; }
+    static bool set_deployed(const bool, bool with_raise=true) { return false; }
 
     static bool can_reach(const_float_t rx, const_float_t ry) { return position_is_reachable(rx, ry); }
 
@@ -157,7 +156,7 @@ public:
   #endif
 
   static bool deploy() { return set_deployed(true); }
-  static bool stow()   { return set_deployed(false); }
+  static bool stow(bool with_raise=true)   { return set_deployed(false, with_raise); }
 
   #if HAS_BED_PROBE || HAS_LEVELING
     #if IS_KINEMATIC

@@ -400,7 +400,7 @@ FORCE_INLINE void probe_specific_action(const bool deploy) {
  *
  * Return TRUE if the probe could not be deployed/stowed
  */
-bool Probe::set_deployed(const bool deploy) {
+bool Probe::set_deployed(const bool deploy, bool with_raise) {
 
   if (DEBUGGING(LEVELING)) {
     DEBUG_POS("Probe::set_deployed", current_position);
@@ -418,7 +418,7 @@ bool Probe::set_deployed(const bool deploy) {
     constexpr bool z_raise_wanted = true;
   #endif
 
-  if (z_raise_wanted)
+  if (z_raise_wanted && with_raise)
     do_z_raise(_MAX(Z_CLEARANCE_BETWEEN_PROBES, Z_CLEARANCE_DEPLOY_PROBE));
 
   #if EITHER(Z_PROBE_SLED, Z_PROBE_ALLEN_KEY)

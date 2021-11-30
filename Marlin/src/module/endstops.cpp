@@ -496,17 +496,20 @@ void Endstops::event_handler() {
   #pragma GCC diagnostic ignored "-Wunused-function"
 #endif
 
+#if !SH_UI
 static void print_es_state(const bool is_hit, PGM_P const label=nullptr) {
   if (label) SERIAL_ECHOPGM_P(label);
   SERIAL_ECHOPGM(": ");
   SERIAL_ECHOLNPGM_P(is_hit ? PSTR(STR_ENDSTOP_HIT) : PSTR(STR_ENDSTOP_OPEN));
 }
+#endif
 
 #if GCC_VERSION <= 50000
   #pragma GCC diagnostic pop
 #endif
 
 void _O2 Endstops::report_states() {
+#if !SH_UI
   TERN_(BLTOUCH, bltouch._set_SW_mode());
   SERIAL_ECHOLNPGM(STR_M119_REPORT);
   #define ES_REPORT(S) print_es_state(READ(S##_PIN) != S##_ENDSTOP_INVERTING, PSTR(STR_##S))
@@ -602,7 +605,7 @@ void _O2 Endstops::report_states() {
 
   TERN_(BLTOUCH, bltouch._reset_SW_mode());
   TERN_(JOYSTICK_DEBUG, joystick.report());
-
+#endif
 } // Endstops::report_states
 
 // The following routines are called from an ISR context. It could be the temperature ISR, the

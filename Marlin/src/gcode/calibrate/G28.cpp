@@ -22,6 +22,9 @@
 
 #include "../../inc/MarlinConfig.h"
 
+#ifndef SH_UI
+
+
 #include "../gcode.h"
 
 #include "../../module/stepper.h"
@@ -559,3 +562,4 @@ void GcodeSuite::G28() {
     }
   #endif
 }
+#endif
