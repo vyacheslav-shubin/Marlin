@@ -1416,7 +1416,7 @@ void Temperature::manage_heater() {
     #if WATCH_BED
    // Make sure temperature is increasing
 
-    if (is_temperature_flag(WATCH_BED_DT)) {//SH_UI
+    if (SHUI::config.temperature.flags.watch_bed_dt) {//SH_UI
       if (watch_bed.elapsed(ms)) {              // Time to check the bed?
         if (watch_bed.check(degBed()))          // Increased enough?
           start_watching_bed();                 // If temp reached, turn off elapsed check
@@ -1449,7 +1449,7 @@ void Temperature::manage_heater() {
       TERN_(HEATER_IDLE_HANDLER, heater_idle[IDLE_INDEX_BED].update(ms));
 
       #if HAS_THERMALLY_PROTECTED_BED
-        if (is_temperature_flag(BED_RUNAWAY)) {//SH_UI
+        if (SHUI::config.temperature.flags.bed_runaway) {//SH_UI
         tr_state_machine[RUNAWAY_IND_BED].run(temp_bed.celsius, temp_bed.target, H_BED, THERMAL_PROTECTION_BED_PERIOD, THERMAL_PROTECTION_BED_HYSTERESIS);
         }//SH_UI
       #endif

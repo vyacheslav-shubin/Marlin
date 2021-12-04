@@ -942,7 +942,7 @@ class Temperature {
     static float get_bang_bang_output_bed();
 
     static float get_output_bed() {
-        return is_temperature_flag(BED_PID)?get_pid_output_bed():get_bang_bang_output_bed();
+        return SHUI::config.temperature.flags.bed_pid?get_pid_output_bed():get_bang_bang_output_bed();
     }
 
   private:
