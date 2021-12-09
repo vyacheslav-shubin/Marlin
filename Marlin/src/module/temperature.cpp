@@ -1068,6 +1068,11 @@ void Temperature::min_temp_error(const heater_id_t heater_id) {
 
 #if HAS_HOTEND
 
+#if SH_UI
+    float Temperature::get_pid_output_hotend(const uint8_t E_NAME) {
+        return SHUI::get_hotend_pid(E_NAME);
+    }
+#else
   float Temperature::get_pid_output_hotend(const uint8_t E_NAME) {
     const uint8_t ee = HOTEND_INDEX;
     #if ENABLED(PIDTEMP)
@@ -1169,11 +1174,16 @@ void Temperature::min_temp_error(const heater_id_t heater_id) {
 
     return pid_output;
   }
-
+#endif
 #endif // HAS_HOTEND
 
 #if ENABLED(PIDTEMPBED)
 
+#if SH_UI
+  float Temperature::get_pid_output_bed() {
+     return SHUI::get_bed_pid();
+  }
+#else
   float Temperature::get_pid_output_bed() {
 
     #if DISABLED(PID_OPENLOOP)
@@ -1232,6 +1242,7 @@ void Temperature::min_temp_error(const heater_id_t heater_id) {
 
     return pid_output;
   }
+#endif
 
 #endif // PIDTEMPBED
 
