@@ -12,6 +12,10 @@
     #define SHUI_SUB_NAME   "Sapphire PRO F4"
     #define SHUI_KINEMATIC  "CARTESIAN COREXY"
     #include "src/lcd/extui/lib/shui/cfg/shui_sapphire_pro_f4_Configuration.h"
+#elif SHUI_MKS_ROBIN_NANO_V2_COREXY==1
+    #define SHUI_SUB_NAME   "MKS Robin Nano V2"
+    #define SHUI_KINEMATIC  "CARTESIAN COREXY"
+    #include "src/lcd/extui/lib/shui/cfg/shui_mks_robin_nano_v2_Configuration.h"
 #else
     #error UNSUPPORTED CONFIG
 /**
