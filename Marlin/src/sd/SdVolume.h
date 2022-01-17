@@ -164,6 +164,7 @@ class SdVolume {
   uint16_t rootDirEntryCount_;  // number of entries in FAT16 root dir
   uint32_t rootDirStart_;       // root start block for FAT16, cluster for FAT32
 
+public:
   bool allocContiguous(uint32_t count, uint32_t *curCluster);
   uint8_t blockOfCluster(uint32_t position) const { return (position >> 9) & (blocksPerCluster_ - 1); }
   uint32_t clusterStartBlock(uint32_t cluster) const { return dataStartBlock_ + ((cluster - 2) << clusterSizeShift_); }

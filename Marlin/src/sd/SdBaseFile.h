@@ -387,6 +387,7 @@ class SdBaseFile {
   //bool openParent(SdBaseFile *dir);
 
   // private functions
+public:
   bool addCluster();
   bool addDirCluster();
   dir_t* cacheDirEntry(uint8_t action);

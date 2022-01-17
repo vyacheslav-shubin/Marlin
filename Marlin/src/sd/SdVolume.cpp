@@ -120,16 +120,29 @@ bool SdVolume::allocContiguous(uint32_t count, uint32_t *curCluster) {
   return true;
 }
 
+static bool _write_sd(DiskIODriver * driver, uint32_t block, const uint8_t* src) {
+    if (!driver->writeBlock(block, src)) {
+        for (uint8_t i=0;i<5;i++) {
+            SERIAL_ECHOLN("WRITE ERROR. TRY AGAIN");
+            if (driver->writeBlock(block, src)) {
+                SERIAL_ECHOLN("FIXED");
+                return true;
+            }
+
+        }
+        return false;
+    }
+    return true;
+}
+
 bool SdVolume::cacheFlush() {
   #if DISABLED(SDCARD_READONLY)
     if (cacheDirty_) {
-      if (!sdCard_->writeBlock(cacheBlockNumber_, cacheBuffer_.data))
-        return false;
+      if (!_write_sd(sdCard_,cacheBlockNumber_, cacheBuffer_.data)) return false;
 
       // mirror FAT tables
       if (cacheMirrorBlock_) {
-        if (!sdCard_->writeBlock(cacheMirrorBlock_, cacheBuffer_.data))
-          return false;
+        if (!_write_sd(sdCard_, cacheMirrorBlock_, cacheBuffer_.data)) return false;
         cacheMirrorBlock_ = 0;
       }
       cacheDirty_ = 0;

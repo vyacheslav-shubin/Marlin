@@ -313,7 +313,9 @@ private:
   #endif // SDCARD_SORT_ALPHA
 
   static DiskIODriver *driver;
+public:
   static SdVolume volume;
+private:
   static SdFile file;
 
   static uint32_t filesize, // Total size of the current file, in bytes
