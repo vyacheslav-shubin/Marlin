@@ -80,9 +80,9 @@ bool SdVolume::allocContiguous(uint32_t count, uint32_t *curCluster) {
 
   // search the FAT for free clusters
   for (uint32_t n = 0;; n++, endCluster++) {
+    watchdog_refresh();
     // can't find space checked all clusters
     if (n >= clusterCount_) return false;
-
     // past end - start from beginning of FAT
     if (endCluster > fatEnd) {
       bgnCluster = endCluster = 2;
@@ -123,6 +123,7 @@ bool SdVolume::allocContiguous(uint32_t count, uint32_t *curCluster) {
 static bool _write_sd(DiskIODriver * driver, uint32_t block, const uint8_t* src) {
     if (!driver->writeBlock(block, src)) {
         for (uint8_t i=0;i<5;i++) {
+            watchdog_refresh();
             SERIAL_ECHOLN("WRITE ERROR. TRY AGAIN");
             if (driver->writeBlock(block, src)) {
                 SERIAL_ECHOLN("FIXED");
