@@ -71,7 +71,11 @@ extern bool wait_for_heatup;
 bool pin_is_protected(const pin_t pin);
 
 #if HAS_SUICIDE
+#if SH_UI
+  extern void suicide();
+#else
   inline void suicide() { OUT_WRITE(SUICIDE_PIN, SUICIDE_PIN_STATE); }
+#endif
 #endif
 
 #if HAS_KILL
