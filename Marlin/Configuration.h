@@ -1,23 +1,9 @@
 #pragma once
 
-#if SHUI_SAPPHIRE_PRO==1
-    #define SHUI_SUB_NAME   "Sapphire PRO"
-    #define SHUI_KINEMATIC  "CARTESIAN COREXY"
-    #include "src/lcd/extui/lib/shui/cfg/shui_sapphire_pro_Configuration.h"
-#elif SHUI_TWO_TREES_BLUER==1
-    #define SHUI_KINEMATIC  "CARTESIAN XYZ"
-    #define SHUI_SUB_NAME   "Two Trees Bluer"
-    #include "src/lcd/extui/lib/shui/cfg/shui_two_trees_bluer_Configuration.h"
-#elif SHUI_SAPPHIRE_PRO_F4==1
-    #define SHUI_SUB_NAME   "Sapphire PRO F4"
-    #define SHUI_KINEMATIC  "CARTESIAN COREXY"
-    #include "src/lcd/extui/lib/shui/cfg/shui_sapphire_pro_f4_Configuration.h"
-#elif SHUI_MKS_ROBIN_NANO_V2_COREXY==1
-    #define SHUI_SUB_NAME   "MKS Robin Nano V2"
-    #define SHUI_KINEMATIC  "CARTESIAN COREXY"
-    #include "src/lcd/extui/lib/shui/cfg/shui_mks_robin_nano_v2_Configuration.h"
-#else
-    #error UNSUPPORTED CONFIG
+#include "src/lcd/extui/lib/shui/cfg/switcher.h"
+
+#if 0
+
 /**
  * Marlin 3D Printer Firmware
  * Copyright (c) 2020 MarlinFirmware [https://github.com/MarlinFirmware/Marlin]
@@ -2972,5 +2958,4 @@
 
 // Disable servo with M282 to reduce power consumption, noise, and heat when not in use
 //#define SERVO_DETACH_GCODE
-
 #endif

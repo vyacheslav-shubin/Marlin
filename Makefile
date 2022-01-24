@@ -65,12 +65,14 @@ define make_firmware
 endef
 
 bin:
-	$(call make_firmware,sapphire_pro)
+	$(call make_firmware,rn12_core)
 bin1:
-	$(call make_firmware,two_trees_bluer)
+	$(call make_firmware,rn12_xyz)
 bin2:
-	$(call make_firmware,sapphire_pro_f4)
+	$(call make_firmware,rn12_mfg)
 bin3:
+	$(call make_firmware,sapphire_pro_f4)
+bin4:
 	$(call make_firmware,shui_robin_nano_v2)
 
 skin:
