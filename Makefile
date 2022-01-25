@@ -70,10 +70,12 @@ bin1:
 	$(call make_firmware,rn12_xyz)
 bin2:
 	$(call make_firmware,rn12_mfg)
-bin3:
-	$(call make_firmware,sapphire_pro_f4)
-bin4:
-	$(call make_firmware,shui_robin_nano_v2)
+
+f4_bin:
+	$(call make_firmware,f4_rn13_core)
+
+f4_bin1:
+	$(call make_firmware,f4_rn13_xyz)
 
 skin:
 	rm -r -f .pio/build/skin
