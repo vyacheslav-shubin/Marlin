@@ -32,6 +32,8 @@
 
 SDIO_CardInfoTypeDef SdCard;
 
+extern uint32_t SDIO_GetFreq();
+
 bool SDIO_Init() {
   uint32_t count = 0U;
   SdCard.CardType = SdCard.CardVersion = SdCard.Class = SdCard.RelCardAdd = SdCard.BlockNbr = SdCard.BlockSize = SdCard.LogBlockNbr = SdCard.LogBlockSize = 0;
@@ -77,7 +79,7 @@ bool SDIO_Init() {
   if (!SDIO_CmdAppSetBusWidth(SdCard.RelCardAdd << 16U, 2)) return false;
 
   sdio_set_dbus_width(SDIO_CLKCR_WIDBUS_4BIT);
-  sdio_set_clock(SDIO_CLOCK);
+  sdio_set_clock(SDIO_GetFreq());
   return true;
 }
 
@@ -167,6 +169,7 @@ bool SDIO_WriteBlock(uint32_t blockAddress, const uint8_t *data) {
   dma_disable(SDIO_DMA_DEV, SDIO_DMA_CHANNEL);
 
   if (SDIO_GET_FLAG(SDIO_STA_TRX_ERROR_FLAGS)) {
+    SERIAL_ECHOLN("TRX ERROR");
     SDIO_CLEAR_FLAG(SDIO_ICR_CMD_FLAGS | SDIO_ICR_DATA_FLAGS);
     return false;
   }
