@@ -73,7 +73,6 @@ bin2:
 
 f4_bin:
 	$(call make_firmware,f4_rn13_core)
-
 f4_bin1:
 	$(call make_firmware,f4_rn13_xyz)
 
@@ -85,7 +84,7 @@ skin:
 	cd .pio/build/skin && zip -r skin.zip *
 	mv .pio/build/skin/skin.zip .pio/firmware/cd .
 
-bins: bin bin1
+bins: bin bin1 bin2 f4_bin f4_bin1
 
 font:
 	/usr/bin/python3 ./font_builder.py
