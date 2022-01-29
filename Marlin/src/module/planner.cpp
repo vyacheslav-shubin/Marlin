@@ -1767,7 +1767,6 @@ float Planner::get_axis_position_mm(const AxisEnum axis) {
     axis_steps = stepper.position(axis);
 
   #endif
-
   return axis_steps * mm_per_step[axis];
 #endif
 }
@@ -2576,7 +2575,8 @@ bool Planner::_populate_block(block_t * const block, bool split_move,
      * => normalize the complete junction vector.
      * Elsewise, when needed JD will factor-in the E component
      */
-    if (ANY(IS_CORE, MARKFORGED_XY, SHUI_UNI_KINEMATIC) || esteps > 0)
+  #error SHUI_UNI_KINEMATIC Not defined
+    if (ANY(IS_CORE, MARKFORGED_XY) || esteps > 0)
       normalize_junction_vector(unit_vec);  // Normalize with XYZE components
     else
       unit_vec *= inverse_millimeters;      // Use pre-calculated (1 / SQRT(x^2 + y^2 + z^2))

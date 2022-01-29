@@ -41,24 +41,30 @@ public:
     virtual AxisEnum getXHead() = 0;
     virtual AxisEnum getYHead() = 0;
     virtual float get_axis_steps(const AxisEnum axis) = 0;
-    virtual void setToolheadDirection(uint32_t da, uint32_t db, uint32_t dc, axis_bits_t &dm) = 0;
-    virtual void setBlockSteps(uint32_t da, uint32_t db, uint32_t dc, block_t * const block) = 0;
-    virtual void calcDistance(uint32_t da, uint32_t db, uint32_t dc, DistanceMM &distance) = 0;
+    virtual void setToolheadDirection(int32_t da, int32_t db, int32_t dc, axis_bits_t &dm) = 0;
+    virtual void setBlockSteps(int32_t da, int32_t db, int32_t dc, block_t * const block) = 0;
+    virtual void calcDistance(int32_t da, int32_t db, int32_t dc, DistanceMM &distance) = 0;
     virtual float calcMillimeters(DistanceMM &distance) = 0;
     virtual void enableActiveAxes(block_t * const block) = 0;
     virtual void axisDidMove(block_t * const block, axis_bits_t &dm) = 0;
+    virtual void set_position(xyze_long_t &count_position, const abce_long_t &spos) = 0;
+    virtual int32_t endstop_triggered(xyze_long_t &count_position, const AxisEnum axis) = 0;
+    virtual void report_position(const xyz_long_t &pos) = 0;
 
 };
 
 class KinematicXYZ : public Kinematic {
 public:
     float get_axis_steps(const AxisEnum axis) override;
-    void setToolheadDirection(uint32_t da, uint32_t db, uint32_t dc, axis_bits_t &dm) override;
-    void setBlockSteps(uint32_t da, uint32_t db, uint32_t dc, block_t * const block) override;
-    void calcDistance(uint32_t da, uint32_t db, uint32_t dc, DistanceMM &distance) override;
+    void setToolheadDirection(int32_t da, int32_t db, int32_t dc, axis_bits_t &dm) override;
+    void setBlockSteps(int32_t da, int32_t db, int32_t dc, block_t * const block) override;
+    void calcDistance(int32_t da, int32_t db, int32_t dc, DistanceMM &distance) override;
     float calcMillimeters(DistanceMM &distance) override;
     void enableActiveAxes(block_t * const block) override;
     void axisDidMove(block_t * const block, axis_bits_t &dm) override;
+    void set_position(xyze_long_t &count_position, const abce_long_t &spos) override;
+    int32_t endstop_triggered(xyze_long_t &count_position, const AxisEnum axis) override;
+    void report_position(const xyz_long_t &pos) override;
 
     AxisEnum getXHead() override {
         return AxisEnum::X_AXIS;
@@ -71,12 +77,15 @@ public:
 class KinematicCore : public Kinematic {
 public:
     float get_axis_steps(const AxisEnum axis) override;
-    void setToolheadDirection(uint32_t da, uint32_t db, uint32_t dc, axis_bits_t &dm) override;
-    void setBlockSteps(uint32_t da, uint32_t db, uint32_t dc, block_t * const block) override;
-    void calcDistance(uint32_t da, uint32_t db, uint32_t dc, DistanceMM &distance) override;
+    void setToolheadDirection(int32_t da, int32_t db, int32_t dc, axis_bits_t &dm) override;
+    void setBlockSteps(int32_t da, int32_t db, int32_t dc, block_t * const block) override;
+    void calcDistance(int32_t da, int32_t db, int32_t dc, DistanceMM &distance) override;
     float calcMillimeters(DistanceMM &distance) override;
     void enableActiveAxes(block_t * const block) override;
     void axisDidMove(block_t * const block, axis_bits_t &dm) override;
+    void set_position(xyze_long_t &count_position, const abce_long_t &spos) override;
+    int32_t endstop_triggered(xyze_long_t &count_position, const AxisEnum axis) override;
+    void report_position(const xyz_long_t &pos) override;
 
     AxisEnum getXHead() override {
         return AxisEnum::X_HEAD;
@@ -89,12 +98,15 @@ public:
 class KinematicMarkforged : public Kinematic {
 public:
     float get_axis_steps(const AxisEnum axis) override;
-    void setToolheadDirection(uint32_t da, uint32_t db, uint32_t dc, axis_bits_t &dm) override;
-    void setBlockSteps(uint32_t da, uint32_t db, uint32_t dc, block_t * const block) override;
-    void calcDistance(uint32_t da, uint32_t db, uint32_t dc, DistanceMM &distance) override;
+    void setToolheadDirection(int32_t da, int32_t db, int32_t dc, axis_bits_t &dm) override;
+    void setBlockSteps(int32_t da, int32_t db, int32_t dc, block_t * const block) override;
+    void calcDistance(int32_t da, int32_t db, int32_t dc, DistanceMM &distance) override;
     float calcMillimeters(DistanceMM &distance) override;
     void enableActiveAxes(block_t * const block) override;
     void axisDidMove(block_t * const block, axis_bits_t &dm) override;
+    void set_position(xyze_long_t &count_position, const abce_long_t &spos) override;
+    int32_t endstop_triggered(xyze_long_t &count_position, const AxisEnum axis) override;
+    void report_position(const xyz_long_t &pos) override;
 
     AxisEnum getXHead() override {
         return AxisEnum::X_HEAD;

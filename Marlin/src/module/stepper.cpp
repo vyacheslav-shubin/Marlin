@@ -2816,6 +2816,9 @@ void Stepper::init() {
  * derive the current XYZE position later on.
  */
 void Stepper::_set_position(const abce_long_t &spos) {
+#ifdef SHUI_UNI_KINEMATIC
+    kinematic->set_position(count_position, spos);
+#else
   #if EITHER(IS_CORE, MARKFORGED_XY)
     #if CORE_IS_XY
       // corexy positioning
@@ -2835,6 +2838,7 @@ void Stepper::_set_position(const abce_long_t &spos) {
     // default non-h-bot planning
     count_position = spos;
   #endif
+#endif
 }
 
 /**
@@ -2890,6 +2894,9 @@ void Stepper::set_axis_position(const AxisEnum a, const int32_t &v) {
 void Stepper::endstop_triggered(const AxisEnum axis) {
 
   const bool was_enabled = suspend();
+#ifdef SHUI_UNI_KINEMATIC
+    endstops_trigsteps[axis] = kinematic->endstop_triggered(count_position, axis);
+#else
   endstops_trigsteps[axis] = (
     #if IS_CORE
       (axis == CORE_AXIS_2
@@ -2904,7 +2911,7 @@ void Stepper::endstop_triggered(const AxisEnum axis) {
       count_position[axis]
     #endif
   );
-
+#endif
   // Discard the rest of the move if there is a current block
   quick_stop();
 
@@ -2939,6 +2946,9 @@ int32_t Stepper::triggered_position(const AxisEnum axis) {
 #endif
 
 void Stepper::report_a_position(const xyz_long_t &pos) {
+#ifdef SHUI_UNI_KINEMATIC
+    kinematic->report_position(pos);
+#else
   SERIAL_ECHOLNPGM_P(
     LIST_N(DOUBLE(LINEAR_AXES),
       TERN(SAYS_A, PSTR(STR_COUNT_A), PSTR(STR_COUNT_X)), pos.x,
@@ -2949,6 +2959,7 @@ void Stepper::report_a_position(const xyz_long_t &pos) {
       SP_K_LBL, pos.k
     )
   );
+#endif
 }
 
 void Stepper::report_positions() {
