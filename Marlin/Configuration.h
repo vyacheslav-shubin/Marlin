@@ -1,5 +1,7 @@
 #pragma once
 
+#define _SHUI_UNI_KINEMATIC
+
 #include "src/lcd/extui/lib/shui/cfg/switcher.h"
 
 #if 0

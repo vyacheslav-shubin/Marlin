@@ -71,6 +71,10 @@
 
 #include "../MarlinCore.h"
 
+#ifdef SHUI_UNI_KINEMATIC
+#include "kinematic.h"
+#endif
+
 #if HAS_LEVELING
   #include "../feature/bedlevel/bedlevel.h"
 #endif
@@ -1717,6 +1721,9 @@ void Planner::finish_and_disable() {
  * For CORE machines apply translation from ABC to XYZ.
  */
 float Planner::get_axis_position_mm(const AxisEnum axis) {
+#ifdef SHUI_UNI_KINEMATIC
+    return kinematic->get_axis_steps(axis) * mm_per_step[axis];
+#else
   float axis_steps;
   #if IS_CORE
 
@@ -1762,6 +1769,7 @@ float Planner::get_axis_position_mm(const AxisEnum axis) {
   #endif
 
   return axis_steps * mm_per_step[axis];
+#endif
 }
 
 /**
@@ -1916,6 +1924,9 @@ bool Planner::_populate_block(block_t * const block, bool split_move,
 
   // Compute direction bit-mask for this block
   axis_bits_t dm = 0;
+#ifdef SHUI_UNI_KINEMATIC
+    kinematic->setToolheadDirection(da, db, dc, dm);
+#else
   #if CORE_IS_XY
     if (da < 0) SBI(dm, X_HEAD);                // Save the toolhead's true direction in X
     if (db < 0) SBI(dm, Y_HEAD);                // ...and Y
@@ -1950,6 +1961,7 @@ bool Planner::_populate_block(block_t * const block, bool split_move,
       if (dk < 0) SBI(dm, K_AXIS)
     );
   #endif
+#endif
 
   #if IS_CORE
     #if LINEAR_AXES >= 4
@@ -1985,6 +1997,9 @@ bool Planner::_populate_block(block_t * const block, bool split_move,
     block->laser.power = laser_inline.power;
   #endif
 
+#ifdef SHUI_UNI_KINEMATIC
+    kinematic->setBlockSteps(da, db, dc, block);
+#else
   // Number of steps for each axis
   // See https://www.corexy.com/theory.html
   #if CORE_IS_XY
@@ -2001,7 +2016,7 @@ bool Planner::_populate_block(block_t * const block, bool split_move,
     // default non-h-bot planning
     block->steps.set(LINEAR_AXIS_LIST(ABS(da), ABS(db), ABS(dc), ABS(di), ABS(dj), ABS(dk)));
   #endif
-
+#endif
   /**
    * This part of the code calculates the total length of the movement.
    * For cartesian bots, the X_AXIS is the real X movement and same for Y_AXIS.
@@ -2010,6 +2025,10 @@ bool Planner::_populate_block(block_t * const block, bool split_move,
    * So we need to create other 2 "AXIS", named X_HEAD and Y_HEAD, meaning the real displacement of the Head.
    * Having the real displacement of the head, we can calculate the total movement length and apply the desired speed.
    */
+#ifdef  SHUI_UNI_KINEMATIC
+    DistanceMM steps_dist_mm;
+    kinematic->calcDistance(da, db, dc, steps_dist_mm);
+#else
   struct DistanceMM : abce_float_t {
     #if EITHER(IS_CORE, MARKFORGED_XY)
       struct { float x, y, z; } head;
@@ -2060,6 +2079,7 @@ bool Planner::_populate_block(block_t * const block, bool split_move,
       steps_dist_mm.k = dk * mm_per_step[K_AXIS]
     );
   #endif
+#endif
 
   TERN_(HAS_EXTRUDERS, steps_dist_mm.e = esteps_float * mm_per_step[E_AXIS_N(extruder)]);
 
@@ -2080,6 +2100,9 @@ bool Planner::_populate_block(block_t * const block, bool split_move,
     if (millimeters)
       block->millimeters = millimeters;
     else {
+#ifdef SHUI_UNI_KINEMATIC
+    block->millimeters = kinematic->calcMillimeters(steps_dist_mm);
+#else
       block->millimeters = SQRT(
         #if EITHER(CORE_IS_XY, MARKFORGED_XY)
           LINEAR_AXIS_GANG(
@@ -2110,6 +2133,7 @@ bool Planner::_populate_block(block_t * const block, bool split_move,
           )
         #endif
       );
+#endif
     }
 
     /**
@@ -2159,6 +2183,9 @@ bool Planner::_populate_block(block_t * const block, bool split_move,
     )) powerManager.power_on();
   #endif
 
+#ifdef SHUI_UNI_KINEMATIC
+    kinematic->enableActiveAxes(block);
+#else
   // Enable active axes
   #if EITHER(CORE_IS_XY, MARKFORGED_XY)
     if (block->steps.a || block->steps.b) {
@@ -2201,6 +2228,7 @@ bool Planner::_populate_block(block_t * const block, bool split_move,
       if (block->steps.k) stepper.enable_axis(K_AXIS);
     #endif
   #endif
+#endif
 
   // Enable extruder(s)
   #if HAS_EXTRUDERS
@@ -2548,7 +2576,7 @@ bool Planner::_populate_block(block_t * const block, bool split_move,
      * => normalize the complete junction vector.
      * Elsewise, when needed JD will factor-in the E component
      */
-    if (EITHER(IS_CORE, MARKFORGED_XY) || esteps > 0)
+    if (ANY(IS_CORE, MARKFORGED_XY, SHUI_UNI_KINEMATIC) || esteps > 0)
       normalize_junction_vector(unit_vec);  // Normalize with XYZE components
     else
       unit_vec *= inverse_millimeters;      // Use pre-calculated (1 / SQRT(x^2 + y^2 + z^2))
