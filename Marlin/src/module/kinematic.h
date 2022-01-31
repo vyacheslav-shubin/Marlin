@@ -66,12 +66,8 @@ public:
     int32_t endstop_triggered(xyze_long_t &count_position, const AxisEnum axis) override;
     void report_position(const xyz_long_t &pos) override;
 
-    AxisEnum getXHead() override {
-        return AxisEnum::X_AXIS;
-    };
-    AxisEnum getYHead() override {
-        return AxisEnum::Y_AXIS;
-    };
+    AxisEnum getXHead() override { return AxisEnum::X_AXIS;};
+    AxisEnum getYHead() override { return AxisEnum::Y_AXIS;};
 };
 
 class KinematicCore : public Kinematic {
@@ -87,12 +83,8 @@ public:
     int32_t endstop_triggered(xyze_long_t &count_position, const AxisEnum axis) override;
     void report_position(const xyz_long_t &pos) override;
 
-    AxisEnum getXHead() override {
-        return AxisEnum::X_HEAD;
-    };
-    AxisEnum getYHead() override {
-        return AxisEnum::Y_HEAD;
-    };
+    AxisEnum getXHead() override { return AxisEnum::X_HEAD;};
+    AxisEnum getYHead() override { return AxisEnum::Y_HEAD;};
 };
 
 class KinematicMarkforged : public Kinematic {
@@ -108,12 +100,8 @@ public:
     int32_t endstop_triggered(xyze_long_t &count_position, const AxisEnum axis) override;
     void report_position(const xyz_long_t &pos) override;
 
-    AxisEnum getXHead() override {
-        return AxisEnum::X_HEAD;
-    };
-    AxisEnum getYHead() override {
-        return AxisEnum::Y_HEAD;
-    };
+    AxisEnum getXHead() override {return AxisEnum::X_HEAD;};
+    AxisEnum getYHead() override {return AxisEnum::Y_HEAD;};
 };
 
 extern Kinematic * kinematic;
