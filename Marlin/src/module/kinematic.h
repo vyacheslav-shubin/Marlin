@@ -88,6 +88,8 @@ public:
 };
 
 class KinematicMarkforged : public Kinematic {
+protected:
+    int8_t b_sign;
 public:
     float get_axis_steps(const AxisEnum axis) override;
     void setToolheadDirection(int32_t da, int32_t db, int32_t dc, axis_bits_t &dm) override;
@@ -102,6 +104,16 @@ public:
 
     AxisEnum getXHead() override {return AxisEnum::X_HEAD;};
     AxisEnum getYHead() override {return AxisEnum::Y_HEAD;};
+    KinematicMarkforged() {
+        this->b_sign=-1;
+    }
+};
+
+class KinematicMarkforgedM : public KinematicMarkforged {
+public:
+    KinematicMarkforgedM() {
+        this->b_sign=1;
+    }
 };
 
 extern Kinematic * kinematic;
