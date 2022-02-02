@@ -65,14 +65,18 @@ define make_firmware
 endef
 
 bin:
-	$(call make_firmware,rn12_core)
-bin1:
-	$(call make_firmware,rn12_xyz)
-bin2:
-	$(call make_firmware,rn12_mfg)
+	$(call make_firmware,RN12)
+
+bin_v2:
+	$(call make_firmware,RN20)
+
+#bin1:
+#	$(call make_firmware,rn12_xyz)
+#bin2:
+#	$(call make_firmware,rn12_mfg)
 
 f4_bin:
-	$(call make_firmware,f4_rn13_core)
+	$(call make_firmware,F4_RN13)
 f4_bin1:
 	$(call make_firmware,f4_rn13_xyz)
 
@@ -84,7 +88,7 @@ skin:
 	cd .pio/build/skin && zip -r skin.zip *
 	mv .pio/build/skin/skin.zip .pio/firmware/cd .
 
-bins: bin bin1 bin2 f4_bin f4_bin1
+bins: bin f4_bin
 
 font:
 	/usr/bin/python3 ./font_builder.py
