@@ -1261,6 +1261,7 @@ void Planner::recalculate() {
  */
 #if HAS_FAN
 
+#ifndef SH_UI
   void Planner::sync_fan_speeds(uint8_t (&fan_speed)[FAN_COUNT]) {
 
     #if FAN_MIN_PWM != 0 || FAN_MAX_PWM != 255
@@ -1306,7 +1307,7 @@ void Planner::recalculate() {
     }
 
   #endif
-
+#endif
 #endif // HAS_FAN
 
 /**

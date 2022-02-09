@@ -70,15 +70,8 @@ bin:
 bin_v2:
 	$(call make_firmware,RN20)
 
-#bin1:
-#	$(call make_firmware,rn12_xyz)
-#bin2:
-#	$(call make_firmware,rn12_mfg)
-
 f4_bin:
 	$(call make_firmware,F4_RN13)
-f4_bin1:
-	$(call make_firmware,f4_rn13_xyz)
 
 skin:
 	rm -r -f .pio/build/skin

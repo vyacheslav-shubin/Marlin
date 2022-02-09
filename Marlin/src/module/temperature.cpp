@@ -2330,6 +2330,7 @@ void Temperature::init() {
     OUT_WRITE(COOLER_PIN, COOLER_INVERTING);
   #endif
 
+#ifndef SH_UI
   #if HAS_FAN0
     INIT_FAN_PIN(FAN_PIN);
   #endif
@@ -2354,6 +2355,10 @@ void Temperature::init() {
   #if HAS_FAN7
     INIT_FAN_PIN(FAN7_PIN);
   #endif
+#else
+    init_fans();
+#endif
+
   #if ENABLED(USE_CONTROLLER_FAN)
     INIT_FAN_PIN(CONTROLLER_FAN_PIN);
   #endif
@@ -3098,6 +3103,9 @@ void Temperature::isr() {
     /**
      * Standard heater PWM modulation
      */
+  #ifdef SH_UI
+    set_fans_soft_pwm(pwm_count_tmp);
+  #endif
     if (pwm_count_tmp >= 127) {
       pwm_count_tmp -= 127;
 
@@ -3117,7 +3125,7 @@ void Temperature::isr() {
       #if HAS_COOLER
         _PWM_MOD(COOLER, soft_pwm_cooler, temp_cooler);
       #endif
-
+  #ifndef SHUI
       #if ENABLED(FAN_SOFT_PWM)
         #define _FAN_PWM(N) do{                                     \
           uint8_t &spcf = soft_pwm_count_fan[N];                    \
@@ -3149,6 +3157,7 @@ void Temperature::isr() {
           _FAN_PWM(7);
         #endif
       #endif
+  #endif
     }
     else {
       #define _PWM_LOW(N,S) do{ if (S.count <= pwm_count_tmp) WRITE_HEATER_##N(LOW); }while(0)
@@ -3169,7 +3178,8 @@ void Temperature::isr() {
         _PWM_LOW(COOLER, soft_pwm_cooler);
       #endif
 
-      #if ENABLED(FAN_SOFT_PWM)
+#ifndef SHUI
+    #if ENABLED(FAN_SOFT_PWM)
         #if HAS_FAN0
           if (soft_pwm_count_fan[0] <= pwm_count_tmp) WRITE_FAN(0, LOW);
         #endif
@@ -3194,7 +3204,9 @@ void Temperature::isr() {
         #if HAS_FAN7
           if (soft_pwm_count_fan[7] <= pwm_count_tmp) WRITE_FAN(7, LOW);
         #endif
-      #endif
+    #endif
+#endif
+
     }
 
     // SOFT_PWM_SCALE to frequency:
