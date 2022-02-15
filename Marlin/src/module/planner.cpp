@@ -2507,9 +2507,10 @@ bool Planner::_populate_block(block_t * const block, bool split_move,
   }
   block->acceleration_steps_per_s2 = accel;
   block->acceleration = accel / steps_per_mm;
-  #if DISABLED(S_CURVE_ACCELERATION)
+  //#if DISABLED(S_CURVE_ACCELERATION)
+  if (!SHUI::config.motors.flags.s_curve)
     block->acceleration_rate = (uint32_t)(accel * (sq(4096.0f) / (STEPPER_TIMER_RATE)));
-  #endif
+  //#endif
   #if ENABLED(LIN_ADVANCE)
     if (block->use_advance_lead) {
       block->advance_speed = (STEPPER_TIMER_RATE) / (extruder_advance_K[active_extruder] * block->e_D_ratio * block->acceleration * settings.axis_steps_per_mm[E_AXIS_N(extruder)]);

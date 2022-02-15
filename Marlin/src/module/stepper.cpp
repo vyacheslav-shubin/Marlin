@@ -83,8 +83,12 @@ Stepper stepper; // Singleton
 
 #define BABYSTEPPING_EXTRA_DIR_WAIT
 
+
+#if SH_UI
+#include "../lcd/extui/lib/shui/Config.h"
 #ifdef SHUI_UNI_KINEMATIC
 #include "kinematic.h"
+#endif
 #endif
 
 #ifdef __AVR__
@@ -249,9 +253,9 @@ uint32_t Stepper::advance_divisor = 0,
 #endif
 
 int32_t Stepper::ticks_nominal = -1;
-#if DISABLED(S_CURVE_ACCELERATION)
+//#if DISABLED(S_CURVE_ACCELERATION)
   uint32_t Stepper::acc_step_rate; // needed for deceleration start point
-#endif
+//#endif
 
 xyz_long_t Stepper::endstops_trigsteps;
 xyze_long_t Stepper::count_position{0};
@@ -1958,15 +1962,19 @@ uint32_t Stepper::block_phase_isr() {
       // Are we in acceleration phase ?
       if (step_events_completed <= accelerate_until) { // Calculate new timer value
 
-        #if ENABLED(S_CURVE_ACCELERATION)
-          // Get the next speed to use (Jerk limited!)
-          uint32_t acc_step_rate = acceleration_time < current_block->acceleration_time
-                                   ? _eval_bezier_curve(acceleration_time)
-                                   : current_block->cruise_rate;
-        #else
-          acc_step_rate = STEP_MULTIPLY(acceleration_time, current_block->acceleration_rate) + current_block->initial_rate;
-          NOMORE(acc_step_rate, current_block->nominal_rate);
-        #endif
+        if (SHUI::config.motors.flags.s_curve) {
+            //#if ENABLED(S_CURVE_ACCELERATION)
+            // Get the next speed to use (Jerk limited!)
+            acc_step_rate = acceleration_time < current_block->acceleration_time
+                            ? _eval_bezier_curve(acceleration_time)
+                            : current_block->cruise_rate;
+        } else {
+            //#else
+            acc_step_rate =
+                    STEP_MULTIPLY(acceleration_time, current_block->acceleration_rate) + current_block->initial_rate;
+            NOMORE(acc_step_rate, current_block->nominal_rate);
+            //#endif
+        }
 
         // acc_step_rate is in steps/second
 
@@ -2015,32 +2023,34 @@ uint32_t Stepper::block_phase_isr() {
       else if (step_events_completed > decelerate_after) {
         uint32_t step_rate;
 
-        #if ENABLED(S_CURVE_ACCELERATION)
-          // If this is the 1st time we process the 2nd half of the trapezoid...
-          if (!bezier_2nd_half) {
-            // Initialize the Bézier speed curve
-            _calc_bezier_curve_coeffs(current_block->cruise_rate, current_block->final_rate, current_block->deceleration_time_inverse);
-            bezier_2nd_half = true;
-            // The first point starts at cruise rate. Just save evaluation of the Bézier curve
-            step_rate = current_block->cruise_rate;
-          }
-          else {
-            // Calculate the next speed to use
-            step_rate = deceleration_time < current_block->deceleration_time
-              ? _eval_bezier_curve(deceleration_time)
-              : current_block->final_rate;
-          }
-        #else
+        if (SHUI::config.motors.flags.s_curve) {
+            //#if ENABLED(S_CURVE_ACCELERATION)
+            // If this is the 1st time we process the 2nd half of the trapezoid...
+            if (!bezier_2nd_half) {
+                // Initialize the Bézier speed curve
+                _calc_bezier_curve_coeffs(current_block->cruise_rate, current_block->final_rate,
+                                          current_block->deceleration_time_inverse);
+                bezier_2nd_half = true;
+                // The first point starts at cruise rate. Just save evaluation of the Bézier curve
+                step_rate = current_block->cruise_rate;
+            } else {
+                // Calculate the next speed to use
+                step_rate = deceleration_time < current_block->deceleration_time
+                            ? _eval_bezier_curve(deceleration_time)
+                            : current_block->final_rate;
+            }
+            //#else
+        } else {
 
-          // Using the old trapezoidal control
-          step_rate = STEP_MULTIPLY(deceleration_time, current_block->acceleration_rate);
-          if (step_rate < acc_step_rate) { // Still decelerating?
-            step_rate = acc_step_rate - step_rate;
-            NOLESS(step_rate, current_block->final_rate);
-          }
-          else
-            step_rate = current_block->final_rate;
-        #endif
+            // Using the old trapezoidal control
+            step_rate = STEP_MULTIPLY(deceleration_time, current_block->acceleration_rate);
+            if (step_rate < acc_step_rate) { // Still decelerating?
+                step_rate = acc_step_rate - step_rate;
+                NOLESS(step_rate, current_block->final_rate);
+            } else
+                step_rate = current_block->final_rate;
+            //#endif
+        }
 
         // step_rate is in steps/second
 
@@ -2371,15 +2381,19 @@ uint32_t Stepper::block_phase_isr() {
       // Mark the time_nominal as not calculated yet
       ticks_nominal = -1;
 
-      #if ENABLED(S_CURVE_ACCELERATION)
-        // Initialize the Bézier speed curve
-        _calc_bezier_curve_coeffs(current_block->initial_rate, current_block->cruise_rate, current_block->acceleration_time_inverse);
-        // We haven't started the 2nd half of the trapezoid
-        bezier_2nd_half = false;
-      #else
-        // Set as deceleration point the initial rate of the block
-        acc_step_rate = current_block->initial_rate;
-      #endif
+      if (SHUI::config.motors.flags.s_curve) {
+          //#if ENABLED(S_CURVE_ACCELERATION)
+          // Initialize the Bézier speed curve
+          _calc_bezier_curve_coeffs(current_block->initial_rate, current_block->cruise_rate,
+                                    current_block->acceleration_time_inverse);
+          // We haven't started the 2nd half of the trapezoid
+          bezier_2nd_half = false;
+      } else {
+          //#else
+          // Set as deceleration point the initial rate of the block
+          acc_step_rate = current_block->initial_rate;
+          //#endif
+      }
 
       // Calculate the initial timer interval
       interval = calc_timer_interval(current_block->initial_rate, &steps_per_isr);

@@ -417,9 +417,9 @@ class Stepper {
     #endif
 
     static int32_t ticks_nominal;
-    #if DISABLED(S_CURVE_ACCELERATION)
+    //#if DISABLED(S_CURVE_ACCELERATION)
       static uint32_t acc_step_rate; // needed for deceleration start point
-    #endif
+    //#endif
 
     // Exact steps at which an endstop was triggered
     static xyz_long_t endstops_trigsteps;
