@@ -2444,6 +2444,9 @@ uint32_t Stepper::block_phase_isr() {
 
     if (!LA_steps) return interval; // Leave pins alone if there are no steps!
 
+    #if MINIMUM_STEPPER_LA_DIR_DELAY>0
+        DELAY_NS(MINIMUM_STEPPER_LA_DIR_DELAY);
+    #endif
     DIR_WAIT_BEFORE();
 
     #if ENABLED(MIXING_EXTRUDER)
@@ -2469,6 +2472,9 @@ uint32_t Stepper::block_phase_isr() {
     #endif
 
     DIR_WAIT_AFTER();
+    #if MINIMUM_STEPPER_LA_DIR_DELAY>0
+        DELAY_NS(MINIMUM_STEPPER_LA_DIR_DELAY);
+    #endif
 
     //const hal_timer_t added_step_ticks = hal_timer_t(ADDED_STEP_TICKS);
 
