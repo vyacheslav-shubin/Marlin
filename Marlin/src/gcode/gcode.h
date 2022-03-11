@@ -307,6 +307,10 @@
 #include "../inc/MarlinConfig.h"
 #include "parser.h"
 
+#if SH_UI
+#include "../lcd/extui/lib/shui/AutoPowerDown.h"
+#endif
+
 #if ENABLED(I2C_POSITION_ENCODERS)
   #include "../feature/encoder_i2c.h"
 #endif
@@ -373,7 +377,14 @@ public:
   #endif
 
   static millis_t previous_move_ms, max_inactive_time, stepper_inactive_time;
+#if SH_UI
+    static void reset_stepper_timeout(const millis_t ms=millis()) {
+        SHUI::AutoPowerDown::onMove();
+        previous_move_ms = ms;
+    }
+#else
   FORCE_INLINE static void reset_stepper_timeout(const millis_t ms=millis()) { previous_move_ms = ms; }
+#endif
   FORCE_INLINE static bool stepper_max_timed_out(const millis_t ms=millis()) {
     return max_inactive_time && ELAPSED(ms, previous_move_ms + max_inactive_time);
   }

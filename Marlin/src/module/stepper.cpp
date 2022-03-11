@@ -1922,6 +1922,10 @@ void Stepper::pulse_phase_isr() {
   } while (--events_to_do);
 }
 
+#if SH_UI
+extern void block_completed(const block_t * const b);
+#endif
+
 // This is the last half of the stepper interrupt: This one processes and
 // properly schedules blocks from the planner. This is executed after creating
 // the step pulses, so it is not time critical, as pulses are already done.
@@ -1954,7 +1958,10 @@ uint32_t Stepper::block_phase_isr() {
         }
       #endif
       TERN_(HAS_FILAMENT_RUNOUT_DISTANCE, runout.block_completed(current_block));
-      discard_current_block();
+#if SH_UI
+        block_completed(current_block);
+#endif
+        discard_current_block();
     }
     else {
       // Step events not completed yet...
