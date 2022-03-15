@@ -1474,7 +1474,9 @@ void MarlinSettings::postprocess() {
         store_mesh(ubl.storage_slot);
     #endif
 
+#ifndef SH_UI
     if (!eeprom_error) LCD_MESSAGE(MSG_SETTINGS_STORED);
+#endif
 
     TERN_(EXTENSIBLE_UI, ExtUI::onConfigurationStoreWritten(!eeprom_error));
 

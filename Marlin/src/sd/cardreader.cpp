@@ -693,7 +693,9 @@ void CardReader::openFileRead(const char * const path, const uint8_t subcall_typ
     }
 
     selectFileByName(fname);
+#ifndef SH_UI
     ui.set_status(longFilename[0] ? longFilename : fname);
+#endif
   }
   else
     openFailed(fname);

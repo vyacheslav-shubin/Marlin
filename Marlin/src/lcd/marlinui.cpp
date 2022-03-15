@@ -1382,6 +1382,8 @@ constexpr uint8_t epps = ENCODER_PULSES_PER_STEP;
   /**
    * Reset the status message
    */
+#if SH_UI
+#else
 
   void MarlinUI::reset_status(const bool no_welcome) {
     #if SERVICE_INTERVAL_1 > 0
@@ -1420,6 +1422,7 @@ constexpr uint8_t epps = ENCODER_PULSES_PER_STEP;
 
     set_status(msg, -1);
   }
+#endif
 
   void MarlinUI::set_status(FSTR_P const fstr, int8_t level) {
     PGM_P const pstr = FTOP(fstr);
@@ -1537,7 +1540,9 @@ constexpr uint8_t epps = ENCODER_PULSES_PER_STEP;
     #endif
     IF_DISABLED(SDSUPPORT, print_job_timer.stop());
     TERN_(HOST_PROMPT_SUPPORT, hostui.prompt_open(PROMPT_INFO, F("UI Aborted"), FPSTR(DISMISS_STR)));
+#ifndef SH_UI
     LCD_MESSAGE(MSG_PRINT_ABORTED);
+#endif
     TERN_(HAS_LCD_MENU, return_to_status());
   }
 

@@ -3675,6 +3675,7 @@ void Temperature::isr() {
   #endif
 
   #if HAS_HOTEND && HAS_STATUS_MESSAGE
+  #ifndef SH_UI
     void Temperature::set_heating_message(const uint8_t e) {
       const bool heating = isHeatingHotend(e);
       ui.status_printf(0,
@@ -3686,6 +3687,7 @@ void Temperature::isr() {
         , heating ? GET_TEXT(MSG_HEATING) : GET_TEXT(MSG_COOLING)
       );
     }
+  #endif
   #endif
 
   #if HAS_TEMP_HOTEND
