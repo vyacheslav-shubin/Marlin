@@ -81,7 +81,7 @@ skin:
 	cd .pio/build/skin && zip -r skin.zip *
 	mv .pio/build/skin/skin.zip .pio/firmware/cd .
 
-bins: bin f4_bin
+bins: bin f4_bin bin_v2
 
 font:
 	/usr/bin/python3 ./font_builder.py
