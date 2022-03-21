@@ -172,7 +172,9 @@ void PrintCounter::saveStats() {
   persistentStore.write_data(address + sizeof(uint8_t), (uint8_t*)&data, sizeof(printStatistics));
   persistentStore.access_finish();
 
+#if !SH_UI
   TERN_(EXTENSIBLE_UI, ExtUI::onConfigurationStoreWritten(true));
+#endif
 }
 
 #if HAS_SERVICE_INTERVALS

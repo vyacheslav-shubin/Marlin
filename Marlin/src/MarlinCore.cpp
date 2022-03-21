@@ -411,6 +411,11 @@ inline void manage_inactivity(const bool no_stepper_sleep=false) {
   // Reset both the M18/M84 activity timeout and the M85 max 'kill' timeout
   if (do_reset_timeout) gcode.reset_stepper_timeout(ms);
 
+#if SH_UI
+  if (no_stepper_sleep || planner.has_blocks_queued())
+    SHUI::AutoPowerDown::onMove();
+#endif
+
   if (gcode.stepper_max_timed_out(ms)) {
     SERIAL_ERROR_MSG(STR_KILL_INACTIVE_TIME, parser.command_ptr);
     kill();

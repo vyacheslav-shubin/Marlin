@@ -377,14 +377,7 @@ public:
   #endif
 
   static millis_t previous_move_ms, max_inactive_time, stepper_inactive_time;
-#if SH_UI
-    static void reset_stepper_timeout(const millis_t ms=millis()) {
-        SHUI::AutoPowerDown::onMove();
-        previous_move_ms = ms;
-    }
-#else
   FORCE_INLINE static void reset_stepper_timeout(const millis_t ms=millis()) { previous_move_ms = ms; }
-#endif
   FORCE_INLINE static bool stepper_max_timed_out(const millis_t ms=millis()) {
     return max_inactive_time && ELAPSED(ms, previous_move_ms + max_inactive_time);
   }
