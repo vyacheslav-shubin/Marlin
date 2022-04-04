@@ -1180,11 +1180,11 @@ void Temperature::min_temp_error(const heater_id_t heater_id) {
 #if ENABLED(PIDTEMPBED)
 
 #if SH_UI
-  float Temperature::get_pid_output_bed() {
+  uint8_t Temperature::get_pid_output_bed() {
      return SHUI::get_bed_pid();
   }
 #else
-  float Temperature::get_pid_output_bed() {
+  uint8_t Temperature::get_pid_output_bed() {
 
     #if DISABLED(PID_OPENLOOP)
 
@@ -1318,6 +1318,7 @@ void Temperature::min_temp_error(const heater_id_t heater_id) {
  *  - Apply filament width to the extrusion rate (may move)
  *  - Update the heated bed PID output value
  */
+#if !SH_UI
 void Temperature::manage_heater() {
   if (marlin_state == MF_INITIALIZING) return watchdog_refresh(); // If Marlin isn't started, at least reset the watchdog!
 
@@ -1697,6 +1698,7 @@ void Temperature::manage_heater() {
 
   UNUSED(ms);
 }
+#endif
 
 #define TEMP_AD595(RAW)  ((RAW) * 5.0 * 100.0 / float(HAL_ADC_RANGE) / (OVERSAMPLENR) * (TEMP_SENSOR_AD595_GAIN) + TEMP_SENSOR_AD595_OFFSET)
 #define TEMP_AD8495(RAW) ((RAW) * 6.6 * 100.0 / float(HAL_ADC_RANGE) / (OVERSAMPLENR) * (TEMP_SENSOR_AD8495_GAIN) + TEMP_SENSOR_AD8495_OFFSET)
@@ -2670,6 +2672,7 @@ void Temperature::init() {
 
 #endif // HAS_THERMAL_PROTECTION
 
+#if !SH_UI
 void Temperature::disable_all_heaters() {
 
   // Disable autotemp, unpause and reset everything
@@ -2706,6 +2709,7 @@ void Temperature::disable_all_heaters() {
     WRITE_HEATER_COOLER(LOW);
   #endif
 }
+#endif
 
 #if ENABLED(PRINTJOB_TIMER_AUTOSTART)
 

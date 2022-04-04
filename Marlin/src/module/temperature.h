@@ -403,7 +403,11 @@ class Temperature {
       static bool allow_cold_extrude;
       static celsius_t extrude_min_temp;
       static inline bool tooCold(const celsius_t temp) { return allow_cold_extrude ? false : temp < extrude_min_temp - (TEMP_WINDOW); }
+    #if SH_UI
+      static bool tooColdToExtrude(const uint8_t E_NAME);
+    #else
       static inline bool tooColdToExtrude(const uint8_t E_NAME)       { return tooCold(wholeDegHotend(HOTEND_INDEX)); }
+    #endif
       static inline bool targetTooColdToExtrude(const uint8_t E_NAME) { return tooCold(degTargetHotend(HOTEND_INDEX)); }
     #else
       static inline bool tooColdToExtrude(const uint8_t) { return false; }
@@ -732,6 +736,7 @@ class Temperature {
         return ABS(wholeDegHotend(e) - temp) < (TEMP_HYSTERESIS);
       }
 
+    #if !SH_UI
       // Start watching a Hotend to make sure it's really heating up
       static inline void start_watching_hotend(const uint8_t E_NAME) {
         UNUSED(HOTEND_INDEX);
@@ -739,6 +744,9 @@ class Temperature {
           watch_hotend[HOTEND_INDEX].restart(degHotend(HOTEND_INDEX), degTargetHotend(HOTEND_INDEX));
         #endif
       }
+    #else
+      static inline void start_watching_hotend(const uint8_t E_NAME) {};
+    #endif
 
     #endif // HAS_HOTEND
 
@@ -754,7 +762,11 @@ class Temperature {
       static inline bool isCoolingBed()       { return temp_bed.target < temp_bed.celsius; }
 
       // Start watching the Bed to make sure it's really heating up
+    #if !SH_UI
       static inline void start_watching_bed() { TERN_(WATCH_BED, watch_bed.restart(degBed(), degTargetBed())); }
+    #else
+      static inline void start_watching_bed() {};
+    #endif
 
       static void setTargetBed(const celsius_t celsius) {
         TERN_(AUTO_POWER_CONTROL, if (celsius) powerManager.power_on());
@@ -937,12 +949,12 @@ class Temperature {
     #endif
 
     #if ENABLED(PIDTEMPBED)
-    static float get_pid_output_bed();
+    static uint8_t get_pid_output_bed();
     #endif
-    static float get_bang_bang_output_bed();
+    static uint8_t get_bang_bang_output_bed();
 
-    static float get_output_bed() {
-        return SHUI::config.temperature.flags.bed_pid?get_pid_output_bed():get_bang_bang_output_bed();
+    static uint8_t get_output_bed() {
+        return SHUI::config.temperature.bed.flags.pid?get_pid_output_bed():get_bang_bang_output_bed();
     }
 
     static bool publicUpdateTemperaturesIfReady() {

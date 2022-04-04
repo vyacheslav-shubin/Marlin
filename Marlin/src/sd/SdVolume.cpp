@@ -274,6 +274,7 @@ bool SdVolume::freeChain(uint32_t cluster) {
   allocSearchStart_ = 2;
 
   do {
+    watchdog_refresh();
     uint32_t next;
     if (!fatGet(cluster, &next)) return false;
 

@@ -71,6 +71,11 @@
   #include "../feature/babystep.h"
 #endif
 
+#if SH_UI
+#include "../lcd/extui/lib/shui/StatusHandler.h"
+#endif
+
+
 #define DEBUG_OUT ENABLED(DEBUG_LEVELING_FEATURE)
 #include "../core/debug_out.h"
 
@@ -1247,7 +1252,13 @@ void prepare_line_to_destination() {
 
       #if ENABLED(PREVENT_COLD_EXTRUSION)
         ignore_e = thermalManager.tooColdToExtrude(active_extruder);
-        if (ignore_e) SERIAL_ECHO_MSG(STR_ERR_COLD_EXTRUDE_STOP);
+        if (ignore_e) {
+          #if SH_UI
+            SHUI::StatusHandler::statusMessage(nullptr, SHUI::MESSAGE_SOURCE::MS_HEATING,SHUI::STATUS_TEMP::temp_cold_extrusion);
+          #endif
+          SERIAL_ECHO_MSG(STR_ERR_COLD_EXTRUDE_STOP);
+        }
+
       #endif
 
       #if ENABLED(PREVENT_LENGTHY_EXTRUDE)
