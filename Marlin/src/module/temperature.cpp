@@ -1972,6 +1972,9 @@ void Temperature::manage_heater() {
 #if HAS_HEATED_BED
   // For bed temperature measurement.
   celsius_float_t Temperature::analog_to_celsius_bed(const int16_t raw) {
+#if SH_UI
+      return SHUI::analog_to_celsius_bed(raw);
+#else
     #if TEMP_SENSOR_BED_IS_CUSTOM
       return user_thermistor_to_deg_c(CTI_BED, raw);
     #elif TEMP_SENSOR_BED_IS_THERMISTOR
@@ -1984,6 +1987,7 @@ void Temperature::manage_heater() {
       UNUSED(raw);
       return 0;
     #endif
+#endif
   }
 #endif // HAS_HEATED_BED
 

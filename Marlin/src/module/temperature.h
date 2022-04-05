@@ -952,6 +952,7 @@ class Temperature {
     static uint8_t get_pid_output_bed();
     #endif
     static uint8_t get_bang_bang_output_bed();
+    static uint8_t get_bang_bang_output_hotend(uint8_t e);
 
     static uint8_t get_output_bed() {
         return SHUI::config.temperature.bed.flags.pid?get_pid_output_bed():get_bang_bang_output_bed();
