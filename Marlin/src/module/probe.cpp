@@ -517,7 +517,11 @@ bool Probe::probe_down_to_z(const_float_t z, const_feedRate_t fr_mm_s) {
     #if HAS_DELTA_SENSORLESS_PROBING
       endstops.trigger_state() & (_BV(X_MAX) | _BV(Y_MAX) | _BV(Z_MAX))
     #else
+    #if SH_UI
+      TEST(endstops.trigger_state(), ES_Z_PROBE)
+    #else
       TEST(endstops.trigger_state(), Z_MIN_PROBE)
+    #endif
     #endif
   ;
 

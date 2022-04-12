@@ -30,7 +30,16 @@
 
 #define __ES_ITEM(N) N,
 #define _ES_ITEM(K,N) TERN_(K,DEFER4(__ES_ITEM)(N))
-
+#if SH_UI
+enum EndstopEnum : char {
+  ES_X,
+  ES_Y,
+  ES_Z,
+  ES_Z2,
+  ES_Z_PROBE,
+  NUM_ENDSTOP_STATES
+};
+#else
 enum EndstopEnum : char {
   // Common XYZ (ABC) endstops. Defined according to USE_[XYZ](MIN|MAX)_PLUG settings.
   _ES_ITEM(HAS_X_MIN, X_MIN)
@@ -86,7 +95,7 @@ enum EndstopEnum : char {
     , K_ENDSTOP = TERN(K_HOME_TO_MAX, K_MAX, K_MIN)
   #endif
 };
-
+#endif
 #undef __ES_ITEM
 #undef _ES_ITEM
 
@@ -113,6 +122,7 @@ class Endstops {
 
   private:
     static bool enabled, enabled_globally;
+public:
     static endstop_mask_t live_state;
     static volatile endstop_mask_t hit_state; // Use X_MIN, Y_MIN, Z_MIN and Z_MIN_PROBE as BIT index
 
@@ -121,7 +131,8 @@ class Endstops {
       static uint8_t endstop_poll_count;    // Countdown from threshold for polling
     #endif
 #ifdef SH_UI
-    static void processEndstop(AxisEnum axis, AxisEnum head, EndstopEnum emin, EndstopEnum emax);
+    static void processEndstop(AxisEnum axis, AxisEnum head, const EndstopEnum es, bool max_pos);
+    static void processZEndstop();
 #endif
   public:
     Endstops() {};

@@ -422,6 +422,7 @@ void Endstops::resync() {
 #endif
 
 void Endstops::event_handler() {
+#if !SH_UI
   static endstop_mask_t prev_hit_state; // = 0
   if (hit_state == prev_hit_state) return;
   prev_hit_state = hit_state;
@@ -489,6 +490,7 @@ void Endstops::event_handler() {
       }
     #endif
   }
+#endif
 }
 
 #if GCC_VERSION <= 50000
