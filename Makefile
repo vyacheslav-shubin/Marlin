@@ -93,7 +93,7 @@ font:
 	make -C ../shui-res font
 
 shui_wifi:
-	make -C ../wifi-module-esp32 build
+	make -C ../wifi-module-esp32 release_build
 	mv -f ../wifi-module-esp32/SHUIWIFI.BIN .pio/firmware/
 
 shui_blob:
