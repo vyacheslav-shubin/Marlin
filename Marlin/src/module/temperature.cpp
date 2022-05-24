@@ -330,8 +330,6 @@ PGMSTR(str_t_heating_failed, STR_T_HEATING_FAILED);
 // HAS_FAN does not include CONTROLLER_FAN
 #if ENABLED(HOTEND_FAN)
 extern uint8_t hotend_checked(uint8_t e);
-extern int override_softpwm(uint8_t e, int value);
-extern void check_e1_as_fan();
 #endif
 
 #if HAS_FAN
@@ -669,10 +667,6 @@ volatile bool Temperature::raw_temps_ready = false;
             checkExtruderAutoFans();
             next_auto_fan_check_ms = ms + 2500UL;
           }
-        #endif
-
-        #if ENABLED(HOTEND_FAN)
-          check_e1_as_fan();
         #endif
 
 
@@ -1370,10 +1364,6 @@ void Temperature::manage_heater() {
 
       temp_hotend[e].soft_pwm_amount = (temp_hotend[e].celsius > temp_range[e].mintemp || is_preheating(e)) && temp_hotend[e].celsius < temp_range[e].maxtemp ? (int)get_pid_output_hotend(e) >> 1 : 0;
 
-#if ENABLED(HOTEND_FAN)
-        temp_hotend[e].soft_pwm_amount = override_softpwm(e, temp_hotend[e].soft_pwm_amount);
-#endif
-
       #if WATCH_HOTENDS
 #if ENABLED(HOTEND_FAN)
         if (hotend_checked(e))
@@ -1405,10 +1395,6 @@ void Temperature::manage_heater() {
       checkExtruderAutoFans();
       next_auto_fan_check_ms = ms + 2500UL;
     }
-  #endif
-
-  #if ENABLED(HOTEND_FAN)
-    check_e1_as_fan();
   #endif
 
   #if ENABLED(FILAMENT_WIDTH_SENSOR)
@@ -3080,6 +3066,7 @@ void Temperature::isr() {
     static bool ADCKey_pressed = false;
   #endif
 
+#ifndef SH_UI
   #if HAS_HOTEND
     static SoftPWM soft_pwm_hotend[HOTENDS];
   #endif
@@ -3087,6 +3074,8 @@ void Temperature::isr() {
   #if HAS_HEATED_BED
     static SoftPWM soft_pwm_bed;
   #endif
+#endif
+
 
   #if HAS_HEATED_CHAMBER
     static SoftPWM soft_pwm_chamber;
@@ -3098,6 +3087,13 @@ void Temperature::isr() {
 
   #define WRITE_FAN(n, v) WRITE(FAN##n##_PIN, (v) ^ FAN_INVERTING)
 
+#ifdef SH_UI
+    //set_fans_soft_pwm(pwm_count_tmp);
+    soft_pwm(pwm_count_tmp);
+    if (pwm_count_tmp >= 127)
+      pwm_count_tmp -= 127;
+    pwm_count = pwm_count_tmp + _BV(SOFT_PWM_SCALE);
+#else
   #if DISABLED(SLOW_PWM_HEATERS)
 
     #if ANY(HAS_HOTEND, HAS_HEATED_BED, HAS_HEATED_CHAMBER, HAS_COOLER, FAN_SOFT_PWM)
@@ -3111,9 +3107,6 @@ void Temperature::isr() {
     /**
      * Standard heater PWM modulation
      */
-  #ifdef SH_UI
-    set_fans_soft_pwm(pwm_count_tmp);
-  #endif
     if (pwm_count_tmp >= 127) {
       pwm_count_tmp -= 127;
 
@@ -3361,7 +3354,7 @@ void Temperature::isr() {
     }
 
   #endif // SLOW_PWM_HEATERS
-
+  #endif
   //
   // Update lcd buttons 488 times per second
   //
