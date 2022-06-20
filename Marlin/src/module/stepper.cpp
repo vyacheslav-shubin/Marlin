@@ -602,7 +602,8 @@ void Stepper::set_directions() {
   TERN_(HAS_J_DIR, SET_STEP_DIR(J));
   TERN_(HAS_K_DIR, SET_STEP_DIR(K));
 
-  #if DISABLED(LIN_ADVANCE)
+  //#if DISABLED(LIN_ADVANCE)
+  if (!SHUI::config.motors.flags.lin_advance) {
     #if ENABLED(MIXING_EXTRUDER)
        // Because this is valid for the whole block we don't know
        // what e-steppers will step. Likely all. Set all.
@@ -624,7 +625,8 @@ void Stepper::set_directions() {
         count_direction.e = 1;
       }
     #endif
-  #endif // !LIN_ADVANCE
+  }
+  //#endif // !LIN_ADVANCE
 
   #if HAS_L64XX
     if (L64XX_OK_to_power_up) { // OK to send the direction commands (which powers up the L64XX steppers)
@@ -1505,7 +1507,10 @@ void Stepper::isr() {
     if (!nextMainISR) pulse_phase_isr();                            // 0 = Do coordinated axes Stepper pulses
 
     #if ENABLED(LIN_ADVANCE)
-      if (!nextAdvanceISR) nextAdvanceISR = advance_isr();          // 0 = Do Linear Advance E Stepper pulses
+        if (SHUI::config.motors.flags.lin_advance) {
+            if (!nextAdvanceISR) nextAdvanceISR = advance_isr();          // 0 = Do Linear Advance E Stepper pulses
+        } else
+            nextAdvanceISR = LA_ADV_NEVER;
     #endif
 
     #if ENABLED(INTEGRATED_BABYSTEPPING)
@@ -1822,7 +1827,8 @@ void Stepper::pulse_phase_isr() {
         PULSE_PREP(K);
       #endif
 
-      #if EITHER(LIN_ADVANCE, MIXING_EXTRUDER)
+      //#if EITHER(LIN_ADVANCE, MIXING_EXTRUDER)
+      if (SHUI::config.motors.flags.lin_advance) {
         delta_error.e += advance_dividend.e;
         if (delta_error.e >= 0) {
           #if ENABLED(LIN_ADVANCE)
@@ -1834,9 +1840,11 @@ void Stepper::pulse_phase_isr() {
             step_needed.e = true;
           #endif
         }
-      #elif HAS_E0_STEP
+      } else {
+      //#elif HAS_E0_STEP
         PULSE_PREP(E);
-      #endif
+      //#endif
+      }
     }
 
     #if ISR_MULTI_STEPS
@@ -1866,13 +1874,15 @@ void Stepper::pulse_phase_isr() {
       PULSE_START(K);
     #endif
 
-    #if DISABLED(LIN_ADVANCE)
+    //#if DISABLED(LIN_ADVANCE)
+    if (!SHUI::config.motors.flags.lin_advance) {
       #if ENABLED(MIXING_EXTRUDER)
         if (step_needed.e) E_STEP_WRITE(mixer.get_next_stepper(), !INVERT_E_STEP_PIN);
       #elif HAS_E0_STEP
         PULSE_START(E);
       #endif
-    #endif
+    }
+    //#endif
 
     #if ENABLED(I2S_STEPPER_STREAM)
       i2s_push_sample();
@@ -1904,7 +1914,9 @@ void Stepper::pulse_phase_isr() {
       PULSE_STOP(K);
     #endif
 
-    #if DISABLED(LIN_ADVANCE)
+    //#if DISABLED(LIN_ADVANCE)
+      if (!SHUI::config.motors.flags.lin_advance) {
+
       #if ENABLED(MIXING_EXTRUDER)
         if (delta_error.e >= 0) {
           delta_error.e -= advance_divisor;
@@ -1913,7 +1925,8 @@ void Stepper::pulse_phase_isr() {
       #elif HAS_E0_STEP
         PULSE_STOP(E);
       #endif
-    #endif
+      }
+    //#endif
 
     #if ISR_MULTI_STEPS
       if (events_to_do) START_LOW_PULSE();

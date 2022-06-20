@@ -71,8 +71,11 @@
 
 #include "../MarlinCore.h"
 
+#if SH_UI
+#include "../lcd/extui/lib/shui/Config.h"
 #ifdef SHUI_UNI_KINEMATIC
 #include "kinematic.h"
+#endif
 #endif
 
 #if HAS_LEVELING
@@ -2455,7 +2458,8 @@ bool Planner::_populate_block(block_t * const block, bool split_move,
        */
       block->use_advance_lead =  esteps
                               && extruder_advance_K[active_extruder]
-                              && de > 0;
+                              && (de > 0)
+                              && SHUI::config.motors.flags.lin_advance;
 
       if (block->use_advance_lead) {
         block->e_D_ratio = (target_float.e - position_float.e) /
