@@ -38,15 +38,19 @@ struct printStatistics {    // 16 bytes
   uint32_t printTime;       // Accumulated printing time
   uint32_t longestPrint;    // Longest successful print job
   float    filamentUsed;    // Accumulated filament consumed in mm
-  #if SERVICE_INTERVAL_1 > 0
-    uint32_t nextService1;  // Service intervals (or placeholders)
-  #endif
-  #if SERVICE_INTERVAL_2 > 0
-    uint32_t nextService2;
-  #endif
-  #if SERVICE_INTERVAL_3 > 0
-    uint32_t nextService3;
-  #endif
+#if SH_UI
+    uint32_t lastPrint;    // Longest successful print job
+#else
+    #if SERVICE_INTERVAL_1 > 0
+        uint32_t nextService1;  // Service intervals (or placeholders)
+    #endif
+    #if SERVICE_INTERVAL_2 > 0
+        uint32_t nextService2;
+    #endif
+    #if SERVICE_INTERVAL_3 > 0
+        uint32_t nextService3;
+    #endif
+#endif
 };
 
 class PrintCounter: public Stopwatch {

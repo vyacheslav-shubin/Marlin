@@ -59,7 +59,8 @@ define make_firmware
     mkdir -p .pio/build/$1
     pio run -e $1
     mkdir -p .pio/firmware/$1
-    mv -f .pio/build/$1/Robin_nano35.bin .pio/firmware/$1/Robin_nano35.bin
+    if [ -f .pio/build/$1/Robin_nano35.bin ]; then mv -f .pio/build/$1/Robin_nano35.bin .pio/firmware/$1/Robin_nano35.bin; fi		
+    if [ -f .pio/build/$1/Robin_nano_v3.bin ]; then mv -f .pio/build/$1/Robin_nano_v3.bin .pio/firmware/$1/Robin_nano_v3.bin; fi   
     rm -f .pio/build/$1/firmware.elf
     rm -f .pio/build/$1/firmware.bin
 endef
@@ -73,6 +74,9 @@ bin_v2:
 f4_bin:
 	$(call make_firmware,F4_RN13)
 
+f4_bin_v3:
+	$(call make_firmware,F4_RN30)
+
 skin:
 	rm -r -f .pio/build/skin
 	mkdir -p .pio/build/skin
@@ -81,7 +85,7 @@ skin:
 	cd .pio/build/skin && zip -r skin.zip *
 	mv .pio/build/skin/skin.zip .pio/firmware/cd .
 
-bins: bin f4_bin bin_v2
+bins: bin f4_bin bin_v2 f4_bin_v3
 
 font:
 	/usr/bin/python3 ./font_builder.py

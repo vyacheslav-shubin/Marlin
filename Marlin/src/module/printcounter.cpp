@@ -290,6 +290,7 @@ bool PrintCounter::_stop(const bool completed) {
       if (duration() > data.longestPrint)
         data.longestPrint = duration();
     }
+    data.lastPrint = duration();
   }
   saveStats();
   return did_stop;

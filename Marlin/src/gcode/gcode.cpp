@@ -67,6 +67,10 @@ GcodeSuite gcode;
 
 #include "../MarlinCore.h" // for idle, kill
 
+#if SH_UI
+  #include "../lcd/extui/lib/shui/integration.h"
+#endif
+
 // Inactivity shutdown
 millis_t GcodeSuite::previous_move_ms = 0,
          GcodeSuite::max_inactive_time = 0,
@@ -227,7 +231,11 @@ void GcodeSuite::get_destination_from_command() {
  */
 void GcodeSuite::dwell(millis_t time) {
   time += millis();
+#if SH_UI
+  while (PENDING(millis(), time)) SHUI::on_dwell();
+#else
   while (PENDING(millis(), time)) idle();
+#endif
 }
 
 /**
