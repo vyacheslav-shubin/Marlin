@@ -60,7 +60,7 @@
  *  (used by printingIsActive, etc.) and turning off heaters will stop the timer.
  */
 void GcodeSuite::M140_M190(const bool isM190) {
-
+#ifndef SH_UI
   if (DEBUGGING(DRYRUN)) return;
 
   bool got_temp = false;
@@ -87,20 +87,14 @@ void GcodeSuite::M140_M190(const bool isM190) {
 
   thermalManager.setTargetBed(temp);
 
-#if SH_UI
-  SHUI::StatusHandler::statusMessage(nullptr, SHUI::MESSAGE_SOURCE::MS_HEATING,
-    thermalManager.isHeatingBed()
-    ? SHUI::STATUS_TEMP::temp_bed_heating
-    : SHUI::STATUS_TEMP::temp_bed_cooling);
-#else
   ui.set_status(thermalManager.isHeatingBed() ? GET_TEXT_F(MSG_BED_HEATING) : GET_TEXT_F(MSG_BED_COOLING));
-#endif
 
   // with PRINTJOB_TIMER_AUTOSTART, M190 can start the timer, and M140 can stop it
   TERN_(PRINTJOB_TIMER_AUTOSTART, thermalManager.auto_job_check_timer(isM190, !isM190));
 
   if (isM190)
     thermalManager.wait_for_bed(no_wait_for_cooling);
+#endif
 }
 
 #endif // HAS_HEATED_BED
