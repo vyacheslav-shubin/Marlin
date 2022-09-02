@@ -571,6 +571,12 @@ void GCodeQueue::get_serial_commands() {
       if (is_eol || card_eof) {
         // Reset stream state, terminate the buffer, and commit a non-empty command
         if (!is_eol && sd_count) ++sd_count;          // End of file with no newline
+#if SH_UI
+        if (!card.last_eol || (card.last_eol==sd_char)) {
+          card.last_eol = sd_char;
+          card.current_row++;
+        }
+#endif
         if (!process_line_done(sd_input_state, command.buffer, sd_count)) {
 
           // M808 L saves the sdpos of the next line. M808 loops to a new sdpos.
@@ -596,6 +602,9 @@ void GCodeQueue::get_serial_commands() {
         if (card.eof()) card.fileHasFinished();         // Handle end of file reached
       }
       else {
+#if SH_UI
+    card.last_eol=0;
+#endif
         process_stream_char(sd_char, sd_input_state, command.buffer, sd_count);
         if (sd_input_state==PS_EOL) {
             SHUI::sd_comment.onChar(sd_char);

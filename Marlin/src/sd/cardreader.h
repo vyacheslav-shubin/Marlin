@@ -92,6 +92,10 @@ typedef struct {
 
 class CardReader {
 public:
+#if SH_UI
+  static char last_eol;
+  static uint32_t current_row;
+#endif
   static card_flags_t flag;                         // Flags (above)
   static char filename[FILENAME_LENGTH],            // DOS 8.3 filename of the selected item
               longFilename[LONG_FILENAME_LENGTH];   // Long name of the selected item

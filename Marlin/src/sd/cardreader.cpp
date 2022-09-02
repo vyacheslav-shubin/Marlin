@@ -81,6 +81,11 @@ IF_DISABLED(NO_SD_AUTOSTART, uint8_t CardReader::autofile_index); // = 0
 SdFile CardReader::root, CardReader::workDir, CardReader::workDirParents[MAX_DIR_DEPTH];
 uint8_t CardReader::workDirDepth;
 
+#if SH_UI
+uint32_t CardReader::current_row = 0;
+char CardReader::last_eol = 0;
+#endif
+
 #if ENABLED(SDCARD_SORT_ALPHA)
 
   uint16_t CardReader::sort_count;
@@ -685,6 +690,10 @@ void CardReader::openFileRead(const char * const path, const uint8_t subcall_typ
   if (file.open(diveDir, fname, O_READ)) {
     filesize = file.fileSize();
     sdpos = 0;
+#if SH_UI
+    current_row = 0;
+    last_eol = 0;
+#endif
 
     { // Don't remove this block, as the PORT_REDIRECT is a RAII
       PORT_REDIRECT(SerialMask::All);
