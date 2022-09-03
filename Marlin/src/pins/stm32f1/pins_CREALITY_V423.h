@@ -1,6 +1,6 @@
 /**
  * Marlin 3D Printer Firmware
- * Copyright (c) 2020 MarlinFirmware [https://github.com/MarlinFirmware/Marlin]
+ * Copyright (c) 2021 MarlinFirmware [https://github.com/MarlinFirmware/Marlin]
  *
  * Based on Sprinter and grbl.
  * Copyright (c) 2011 Camiel Gubbels / Erik van der Zalm
@@ -21,8 +21,24 @@
  */
 #pragma once
 
-#define BOARD_INFO_NAME "Chitu3D V5"
+/**
+ * CREALITY v4.2.3 (STM32F103) board pin assignments
+ */
 
-#define Z_STOP_PIN                          PA14
+#define BOARD_INFO_NAME      "Creality v4.2.3"
+#define DEFAULT_MACHINE_NAME "Creality3D"
 
-#include "pins_CHITU3D_common.h"
+//
+// Heaters
+//
+#define HEATER_BED_PIN                      PB10  // HOT BED
+
+#include "pins_CREALITY_V4.h"
+
+//
+// Encoder
+//
+#if BTN_EN1 == PB10
+  #undef BTN_EN1
+  #define BTN_EN1                           PA2   // Rotary Encoder
+#endif
