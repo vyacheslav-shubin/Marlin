@@ -46,6 +46,10 @@
   #include "../feature/spindle_laser.h"
 #endif
 
+#if ENABLED(USE_CONTROLLER_FAN)
+  #include "../feature/controllerfan.h"
+#endif
+
 #if ENABLED(EMERGENCY_PARSER)
   #include "motion.h"
 #endif
@@ -307,6 +311,10 @@ PGMSTR(str_t_heating_failed, STR_T_HEATING_FAILED);
 
 #if ENABLED(AUTO_POWER_COOLER_FAN)
   uint8_t Temperature::coolerfan_speed; // = 0
+#endif
+
+#if BOTH(FAN_SOFT_PWM, USE_CONTROLLER_FAN)
+  uint8_t Temperature::soft_pwm_controller_speed;
 #endif
 
 // Init fans according to whether they're native PWM or Software PWM
@@ -668,7 +676,6 @@ volatile bool Temperature::raw_temps_ready = false;
             next_auto_fan_check_ms = ms + 2500UL;
           }
         #endif
-
 
         if (heating && current_temp > target && ELAPSED(ms, t2 + 5000UL)) {
           heating = false;
@@ -1365,10 +1372,6 @@ void Temperature::manage_heater() {
       temp_hotend[e].soft_pwm_amount = (temp_hotend[e].celsius > temp_range[e].mintemp || is_preheating(e)) && temp_hotend[e].celsius < temp_range[e].maxtemp ? (int)get_pid_output_hotend(e) >> 1 : 0;
 
       #if WATCH_HOTENDS
-#if ENABLED(HOTEND_FAN)
-        if (hotend_checked(e))
-#endif
-
         // Make sure temperature is increasing
         if (watch_hotend[e].elapsed(ms)) {          // Enabled and time to check?
           if (watch_hotend[e].check(degHotend(e)))  // Increased enough?
@@ -1412,9 +1415,7 @@ void Temperature::manage_heater() {
     #endif
 
     #if WATCH_BED
-   // Make sure temperature is increasing
-
-    if (SHUI::config.temperature.flags.watch_bed_dt) {//SH_UI
+      // Make sure temperature is increasing
       if (watch_bed.elapsed(ms)) {              // Time to check the bed?
         if (watch_bed.check(degBed()))          // Increased enough?
           start_watching_bed();                 // If temp reached, turn off elapsed check
@@ -1423,7 +1424,6 @@ void Temperature::manage_heater() {
           _temp_error(H_BED, FPSTR(str_t_heating_failed), GET_TEXT_F(MSG_HEATING_FAILED_LCD));
         }
       }
-    }//SH_UI
     #endif // WATCH_BED
 
     #if BOTH(PROBING_HEATERS_OFF, BED_LIMIT_SWITCHING)
@@ -1447,9 +1447,7 @@ void Temperature::manage_heater() {
       TERN_(HEATER_IDLE_HANDLER, heater_idle[IDLE_INDEX_BED].update(ms));
 
       #if HAS_THERMALLY_PROTECTED_BED
-        if (SHUI::config.temperature.flags.bed_runaway) {//SH_UI
         tr_state_machine[RUNAWAY_IND_BED].run(temp_bed.celsius, temp_bed.target, H_BED, THERMAL_PROTECTION_BED_PERIOD, THERMAL_PROTECTION_BED_HYSTERESIS);
-        }//SH_UI
       #endif
 
       #if HEATER_IDLE_HANDLER
@@ -1463,7 +1461,7 @@ void Temperature::manage_heater() {
       #endif
       {
         #if ENABLED(PIDTEMPBED)
-          temp_bed.soft_pwm_amount = WITHIN(temp_bed.celsius, BED_MINTEMP, BED_MAXTEMP) ? (int)get_output_bed() >> 1 : 0;
+          temp_bed.soft_pwm_amount = WITHIN(temp_bed.celsius, BED_MINTEMP, BED_MAXTEMP) ? (int)get_pid_output_bed() >> 1 : 0;
         #else
           // Check if temperature is within the correct band
           if (WITHIN(temp_bed.celsius, BED_MINTEMP, BED_MAXTEMP)) {
@@ -2464,7 +2462,6 @@ void Temperature::init() {
       while (analog_to_celsius_hotend(temp_range[NR].raw_min, NR) < tmin) \
         temp_range[NR].raw_min += TEMPDIR(NR) * (OVERSAMPLENR); \
     }while(0)
-
     #define _TEMP_MAX_E(NR) do{ \
       const celsius_t tmax = _MIN(HEATER_##NR##_MAXTEMP, TERN(TEMP_SENSOR_##NR##_IS_CUSTOM, 2000, (int)pgm_read_word(&TEMPTABLE_##NR [TEMP_SENSOR_##NR##_MAXTEMP_IND].celsius) - 1)); \
       temp_range[NR].maxtemp = tmax; \
@@ -3085,6 +3082,10 @@ void Temperature::isr() {
     static SoftPWM soft_pwm_cooler;
   #endif
 
+  #if BOTH(FAN_SOFT_PWM, USE_CONTROLLER_FAN)
+    static SoftPWM soft_pwm_controller;
+  #endif
+
   #define WRITE_FAN(n, v) WRITE(FAN##n##_PIN, (v) ^ FAN_INVERTING)
 
 #ifdef SH_UI
@@ -3126,6 +3127,11 @@ void Temperature::isr() {
       #if HAS_COOLER
         _PWM_MOD(COOLER, soft_pwm_cooler, temp_cooler);
       #endif
+
+      #if BOTH(USE_CONTROLLER_FAN, FAN_SOFT_PWM)
+        WRITE(CONTROLLER_FAN_PIN, soft_pwm_controller.add(pwm_mask, soft_pwm_controller_speed));
+      #endif
+
   #ifndef SHUI
       #if ENABLED(FAN_SOFT_PWM)
         #define _FAN_PWM(N) do{                                     \
@@ -3204,6 +3210,9 @@ void Temperature::isr() {
         #endif
         #if HAS_FAN7
           if (soft_pwm_count_fan[7] <= pwm_count_tmp) WRITE_FAN(7, LOW);
+        #endif
+        #if ENABLED(USE_CONTROLLER_FAN)
+          if (soft_pwm_controller.count <= pwm_count_tmp) WRITE(CONTROLLER_FAN_PIN, LOW);
         #endif
     #endif
 #endif
