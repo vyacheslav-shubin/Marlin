@@ -2409,7 +2409,7 @@ static_assert(Y_MAX_LENGTH >= Y_BED_SIZE, "Movement bounds (Y_MIN_POS, Y_MAX_POS
   #endif
 
   // Delta and Cartesian use 3 homing endstops
-  #if NONE(IS_SCARA, SPI_ENDSTOPS)
+  #if NONE(IS_SCARA, SPI_ENDSTOPS, SH_UI)
     #if X_HOME_TO_MIN && DISABLED(USE_XMIN_PLUG)
       #error "Enable USE_XMIN_PLUG when homing X to MIN."
     #elif X_HOME_TO_MAX && DISABLED(USE_XMAX_PLUG)
