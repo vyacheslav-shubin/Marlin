@@ -84,6 +84,7 @@ uint8_t CardReader::workDirDepth;
 #if SH_UI
 uint32_t CardReader::current_row = 0;
 char CardReader::last_eol = 0;
+extern bool block_gcode_processing;
 #endif
 
 #if ENABLED(SDCARD_SORT_ALPHA)
@@ -693,6 +694,7 @@ void CardReader::openFileRead(const char * const path, const uint8_t subcall_typ
 #if SH_UI
     current_row = 0;
     last_eol = 0;
+    block_gcode_processing = false;
 #endif
 
     { // Don't remove this block, as the PORT_REDIRECT is a RAII
