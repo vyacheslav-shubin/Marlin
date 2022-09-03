@@ -230,7 +230,6 @@ bool CardReader::is_visible_entity(const dir_t &p OPTARG(CUSTOM_FIRMWARE_UPLOAD,
                  && p.name[10] == 'N')                  // BIN files are accepted
   );
 }
-#endif
 //
 // Get the number of (compliant) items in the folder
 //
