@@ -48,6 +48,14 @@
 #endif
 #endif
 
+#ifdef Z_AFTER_HOMING
+   #define Z_POST_CLEARANCE Z_AFTER_HOMING
+#elif defined(Z_HOMING_HEIGHT)
+   #define Z_POST_CLEARANCE Z_HOMING_HEIGHT
+#else
+   #define Z_POST_CLEARANCE 10
+#endif
+
 #if ENABLED(PREHEAT_BEFORE_LEVELING)
   #ifndef LEVELING_NOZZLE_TEMP
     #define LEVELING_NOZZLE_TEMP 0
