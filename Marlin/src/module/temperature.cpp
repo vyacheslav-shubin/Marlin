@@ -2144,7 +2144,8 @@ void Temperature::updateTemperaturesFromRawValues() {
       #endif
     };
   #endif
-
+  #ifndef SH_UI
+    //todo: разобраться
   #if SH_UI
     LOOP_L_N(e, HOTENDS) {
       const int8_t tdir = temp_range[e].raw_min<temp_range[e].raw_max?1:-1;
@@ -2192,7 +2193,7 @@ void Temperature::updateTemperaturesFromRawValues() {
     if (TP_CMP(BOARD, mintemp_raw_BOARD, temp_board.getraw())) min_temp_error(H_BOARD);
   #endif
   #undef TP_CMP
-
+  #endif
 } // Temperature::updateTemperaturesFromRawValues
 
 /**
