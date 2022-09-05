@@ -49,22 +49,8 @@ void GcodeSuite::M281() {
       }
     #endif
 #endif
-    bool angle_change = false;
-    if (parser.seen('L')) {
-      servo_angles[servo_index][0] = parser.value_int();
-      angle_change = true;
-    }
-    if (parser.seen('U')) {
-      servo_angles[servo_index][1] = parser.value_int();
-      angle_change = true;
-    }
-    if (!angle_change) {
-      SERIAL_ECHO_MSG(" Servo ", servo_index,
-                      " L", servo_angles[servo_index][0],
-                      " U", servo_angles[servo_index][1]);
-    }
-    if (parser.seen('L')) servo_angles[servo_index][0] = parser.value_int();
-    if (parser.seen('U')) servo_angles[servo_index][1] = parser.value_int();
+    if (parser.seenval('L')) servo_angles[servo_index][0] = parser.value_int();
+    if (parser.seenval('U')) servo_angles[servo_index][1] = parser.value_int();
   }
   else
     SERIAL_ERROR_MSG("Servo ", servo_index, " out of range");
