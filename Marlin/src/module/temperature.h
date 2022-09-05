@@ -532,9 +532,11 @@ class Temperature {
       static int32_t mpc_e_position;
     #endif
 
+#ifndef SH_UI
     #if HAS_HOTEND
       static temp_range_t temp_range[HOTENDS];
     #endif
+#endif
 
     #if HAS_HEATED_BED
       #if ENABLED(WATCH_BED)
