@@ -644,7 +644,6 @@ void reset_stepper_drivers();    // Called by settings.load / settings.reset
     #define    _REV_E_DIR(E)   do{ switch (E) { case 0: E0_DIR_WRITE( ENABLED(INVERT_E0_DIR)); break; case 1: E1_DIR_WRITE( ENABLED(INVERT_E1_DIR)); break; case 2: E2_DIR_WRITE( ENABLED(INVERT_E2_DIR)); } }while(0)
 
   #else
-
     #define _E_STEP_WRITE(E,V) do{ if (E == 0) { E0_STEP_WRITE(V); } else { E1_STEP_WRITE(V); } }while(0)
     #define   _NORM_E_DIR(E)   do{ if (E == 0) { E0_DIR_WRITE(DISABLED(INVERT_E0_DIR)); } else { E1_DIR_WRITE(DISABLED(INVERT_E1_DIR)); } }while(0)
     #define    _REV_E_DIR(E)   do{ if (E == 0) { E0_DIR_WRITE( ENABLED(INVERT_E0_DIR)); } else { E1_DIR_WRITE( ENABLED(INVERT_E1_DIR)); } }while(0)
@@ -719,6 +718,17 @@ void reset_stepper_drivers();    // Called by settings.load / settings.reset
   #define    REV_E_DIR(E)   NOOP
 
 #endif
+
+//todo: реализация функций
+#undef NORM_E_DIR
+#undef REV_E_DIR
+#undef E_STEP_WRITE
+
+#define NORM_E_DIR(E)   NOOP
+#define REV_E_DIR(E)    NOOP
+#define E_STEP_WRITE(E,V)   NOOP
+
+
 
 //
 // Individual stepper enable / disable macros

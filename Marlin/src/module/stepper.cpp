@@ -3165,7 +3165,6 @@ void Stepper::report_positions() {
   #endif
 
   #if DISABLED(DELTA)
-
     #define BABYSTEP_AXIS(AXIS, INV, DIR) do{           \
       const uint8_t old_dir = _READ_DIR(AXIS);          \
       _ENABLE_AXIS(AXIS);                               \
@@ -3180,6 +3179,10 @@ void Stepper::report_positions() {
       _APPLY_DIR(AXIS, old_dir);                        \
       EXTRA_DIR_WAIT_AFTER();                           \
     }while(0)
+
+    //todo: Реализация babystep
+    #undef BABYSTEP_AXIS
+    #define BABYSTEP_AXIS(AXIS, INV, DIR) NOOP
 
   #endif
 
