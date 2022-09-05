@@ -202,6 +202,7 @@
  * M226 - Wait until a pin is in a given state: "M226 P<pin> S<state>" (Requires DIRECT_PIN_CONTROL)
  * M240 - Trigger a camera to take a photograph. (Requires PHOTO_GCODE)
  * M250 - Set LCD contrast: "M250 C<contrast>" (0-63). (Requires LCD support)
+ * M255 - Set LCD sleep time: "M255 S<minutes>" (0-99). (Requires an LCD with brightness or sleep/wake)
  * M256 - Set LCD brightness: "M256 B<brightness>" (0-255). (Requires an LCD with brightness control)
  * M260 - i2c Send Data (Requires EXPERIMENTAL_I2CBUS)
  * M261 - i2c Request Data (Requires EXPERIMENTAL_I2CBUS)
@@ -215,6 +216,7 @@
  * M303 - PID relay autotune S<temperature> sets the target temperature. Default 150C. (Requires PIDTEMP)
  * M304 - Set bed PID parameters P I and D. (Requires PIDTEMPBED)
  * M305 - Set user thermistor parameters R T and P. (Requires TEMP_SENSOR_x 1000)
+ * M306 - MPC autotune. (Requires MPCTEMP)
  * M309 - Set chamber PID parameters P I and D. (Requires PIDTEMPCHAMBER)
  * M350 - Set microstepping mode. (Requires digital microstepping pins.)
  * M351 - Toggle MS1 MS2 pins directly. (Requires digital microstepping pins.)
@@ -882,6 +884,11 @@ private:
     static void M250_report(const bool forReplay=true);
   #endif
 
+  #if HAS_DISPLAY_SLEEP
+    static void M255();
+    static void M255_report(const bool forReplay=true);
+  #endif
+
   #if HAS_LCD_BRIGHTNESS
     static void M256();
     static void M256_report(const bool forReplay=true);
@@ -931,6 +938,11 @@ private:
 
   #if HAS_USER_THERMISTORS
     static void M305();
+  #endif
+
+  #if ENABLED(MPCTEMP)
+    static void M306();
+    static void M306_report(const bool forReplay=true);
   #endif
 
   #if ENABLED(PIDTEMPCHAMBER)

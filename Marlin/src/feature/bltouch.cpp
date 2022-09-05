@@ -44,10 +44,6 @@ void stop();
 #include "../core/debug_out.h"
 
 bool BLTouch::command(const BLTCommand cmd, const millis_t &ms) {
-  if (!is_bltouch()) {
-      SERIAL_ECHOLNPGM("WARNING!!! BLTouch Command :", cmd);
-      return 0;
-  }
   if (DEBUGGING(LEVELING)) SERIAL_ECHOLNPGM("BLTouch Command :", cmd);
   MOVE_SERVO(Z_PROBE_SERVO_NR, cmd);
   safe_delay(_MAX(ms, (uint32_t)BLTOUCH_DELAY)); // BLTOUCH_DELAY is also the *minimum* delay
@@ -115,15 +111,12 @@ bool BLTouch::deploy_proc() {
     // Last attempt to DEPLOY
     if (_deploy_query_alarm()) {
       // The deploy might have failed or the probe is actually triggered (nozzle too low?) again
-      if (DEBUGGING(LEVELING)) DEBUG_ECHOLNPGM("BLTouch Recovery Failed");
-
-      SERIAL_ERROR_MSG(STR_STOP_BLTOUCH);  // Tell the user something is wrong, needs action
+      if (DEBUGGING(LEVELING)) DEBUG_ECHOLNPGM("BLTouch Deploy Failed");
 #if SH_UI
       on_bltouch_error();
 #else
-      stop();                              // but it's not too bad, no need to kill, allow restart
+      probe.probe_error_stop();            // Something is wrong, needs action, but not too bad, allow restart
 #endif
-
       return true;                         // Tell our caller we goofed in case he cares to know
     }
   }
@@ -161,14 +154,11 @@ bool BLTouch::stow_proc() {
                                            // But one more STOW will catch that
     // Last attempt to STOW
     if (_stow_query_alarm()) {             // so if there is now STILL an ALARM condition:
-
-      if (DEBUGGING(LEVELING)) DEBUG_ECHOLNPGM("BLTouch Recovery Failed");
-
-      SERIAL_ERROR_MSG(STR_STOP_BLTOUCH);  // Tell the user something is wrong, needs action
+      if (DEBUGGING(LEVELING)) DEBUG_ECHOLNPGM("BLTouch Stow Failed");
 #if SH_UI
       on_bltouch_error();
 #else
-      stop();                              // but it's not too bad, no need to kill, allow restart
+      probe.probe_error_stop();            // Something is wrong, needs action, but not too bad, allow restart
 #endif
       return true;                         // Tell our caller we goofed in case he cares to know
     }
