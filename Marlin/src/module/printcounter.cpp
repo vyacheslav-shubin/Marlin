@@ -172,7 +172,7 @@ void PrintCounter::saveStats() {
   persistentStore.access_finish();
 
 #if !SH_UI
-  TERN_(EXTENSIBLE_UI, ExtUI::onConfigurationStoreWritten(true));
+  TERN_(EXTENSIBLE_UI, ExtUI::onSettingsStored(true));
 #endif
 }
 
