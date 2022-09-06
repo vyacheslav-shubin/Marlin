@@ -86,6 +86,7 @@ Stepper stepper; // Singleton
 
 #if SH_UI
 #include "../lcd/extui/lib/shui/Config.h"
+#include "../lcd/extui/lib/shui/StepperMap.h"
 #ifdef SHUI_UNI_KINEMATIC
 #include "kinematic.h"
 #endif
@@ -3182,7 +3183,23 @@ void Stepper::report_positions() {
 
     //todo: Реализация babystep
     #undef BABYSTEP_AXIS
-    #define BABYSTEP_AXIS(AXIS, INV, DIR) NOOP
+
+    #define BABYSTEP_AXIS_Z(AXIS, INV, DIR) do {                                    \
+      SHUI::StepperControl * z_control =  SHUI::StepperMap::z;                      \
+      const uint8_t old_dir = z_control->dir_read();                                \
+      z_control->enable_write(true);                                                \
+      DIR_WAIT_BEFORE();                                                            \
+      z_control->dir_write(SHUI::config.motors.flags.inverted_z^INV^DIR);           \
+      DIR_WAIT_AFTER();                                                             \
+      _SAVE_START();                                                                \
+      z_control->step_write(true);                                                  \
+      _PULSE_WAIT();                                                                \
+      z_control->step_write(false);                                                 \
+      EXTRA_DIR_WAIT_BEFORE();                                                      \
+      z_control->dir_write(old_dir);                                                \
+      EXTRA_DIR_WAIT_AFTER();                                                       \
+    } while(0)
+    #define BABYSTEP_AXIS       BABYSTEP_AXIS_Z
 
   #endif
 

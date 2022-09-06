@@ -724,9 +724,9 @@ void reset_stepper_drivers();    // Called by settings.load / settings.reset
 #undef REV_E_DIR
 #undef E_STEP_WRITE
 
-#define NORM_E_DIR(E)   NOOP
-#define REV_E_DIR(E)    NOOP
-#define E_STEP_WRITE(E,V)   NOOP
+#define NORM_E_DIR      SHUI_NORM_E_DIR
+#define REV_E_DIR       SHUI_REV_E_DIR
+#define E_STEP_WRITE    SHUI_E_STEP_WRITE
 
 
 
