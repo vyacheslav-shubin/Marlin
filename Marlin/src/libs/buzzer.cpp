@@ -22,7 +22,7 @@
 
 #include "../inc/MarlinConfig.h"
 
-#if USE_BEEPER
+#if HAS_BEEPER
 
 #include "buzzer.h"
 #include "../module/temperature.h"
@@ -48,7 +48,7 @@ void Buzzer::tone(const uint16_t duration, const uint16_t frequency/*=0*/) {
 #if SH_UI
   if (!is_buzzer_enabled()) return;
 #else
-  if (!ui.buzzer_enabled) return;
+  if (!ui.sound_on) return;
 #endif
   while (buffer.isFull()) {
     tick();
@@ -62,7 +62,7 @@ void Buzzer::tick() {
 #if SH_UI
   if (!is_buzzer_enabled()) return;
 #else
-  if (!ui.buzzer_enabled) return;
+  if (!ui.sound_on) return;
 #endif
   const millis_t now = millis();
 
@@ -89,4 +89,4 @@ void Buzzer::tick() {
   else if (ELAPSED(now, state.endtime)) reset();
 }
 
-#endif // USE_BEEPER
+#endif // HAS_BEEPER
