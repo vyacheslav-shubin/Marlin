@@ -3181,6 +3181,7 @@ void Stepper::report_positions() {
       EXTRA_DIR_WAIT_AFTER();                           \
     }while(0)
 
+  #if SH_UI
     //todo: Реализация babystep
     #undef BABYSTEP_AXIS
 
@@ -3200,6 +3201,7 @@ void Stepper::report_positions() {
       EXTRA_DIR_WAIT_AFTER();                                                       \
     } while(0)
     #define BABYSTEP_AXIS       BABYSTEP_AXIS_Z
+  #endif
 
   #endif
 
