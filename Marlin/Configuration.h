@@ -860,6 +860,23 @@
 //#define MARKFORGED_XY  // MarkForged. See https://reprap.org/forum/read.php?152,504042
 //#define MARKFORGED_YX
 
+// Enable for a belt style printer with endless "Z" motion
+//#define BELTPRINTER
+
+// Enable for Polargraph Kinematics
+//#define POLARGRAPH
+#if ENABLED(POLARGRAPH)
+  #define POLARGRAPH_MAX_BELT_LEN 1035.0
+  #define POLAR_SEGMENTS_PER_SECOND 5
+#endif
+
+// Enable for an articulated robot (robot arm). Joints are directly mapped to axes (no kinematics).
+//#define ARTICULATED_ROBOT_ARM
+
+// For a hot wire cutter with parallel horizontal axes (X, I) where the heights of the two wire
+// ends are controlled by parallel axes (Y, J). Joints are directly mapped to axes (no kinematics).
+//#define FOAMCUTTER_XYUV
+
 //===========================================================================
 //============================== Endstop Settings ===========================
 //===========================================================================
