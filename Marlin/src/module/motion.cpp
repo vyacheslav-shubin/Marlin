@@ -356,6 +356,7 @@ void report_current_position_projected() {
 
 #else // CARTESIAN
 
+#if !SH_UI //Перекрытие функциональности ограничения размера стола (программные концевики)
   // Return true if the given position is within the machine bounds.
   bool position_is_reachable(const_float_t rx, const_float_t ry) {
     if (!COORDINATE_OKAY(ry, Y_MIN_POS - fslop, Y_MAX_POS + fslop)) return false;
@@ -368,7 +369,7 @@ void report_current_position_projected() {
       return COORDINATE_OKAY(rx, X_MIN_POS - fslop, X_MAX_POS + fslop);
     #endif
   }
-
+#endif
 #endif // CARTESIAN
 
 

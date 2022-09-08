@@ -136,7 +136,7 @@ inline int8_t pgm_read_any(const int8_t *p) { return TERN(__IMXRT1062__, *p, pgm
     return pgm_read_any(&NAME##_P[axis]); \
   }
 
-#if ENABLED(OVERRIDE_MOTION_ARREA)
+#if ENABLED(SH_UI)
 extern float base_home_pos(const AxisEnum axis);
 extern int8_t home_dir(const AxisEnum axis);
 extern float base_min_pos(const AxisEnum axis);
@@ -571,7 +571,7 @@ void home_if_needed(const bool keeplev=false);
 
 #else
 
-#if ENABLED(OVERRIDE_MOTION_ARREA)
+#if SH_UI //Перекрытие функциональности ограничения размера стола (программные концевики)
 extern bool position_is_reachable(const_float_t rx, const_float_t ry);
 #else
   // Return true if the given position is within the machine bounds.
