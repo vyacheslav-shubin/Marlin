@@ -34,6 +34,10 @@
   #include "scara.h"
 #endif
 
+#ifdef SH_UI
+#include "../lcd/extui/lib/shui/marlin_ext.h"
+#endif
+
 // Error margin to work around float imprecision
 constexpr float fslop = 0.0001;
 
@@ -136,13 +140,7 @@ inline int8_t pgm_read_any(const int8_t *p) { return TERN(__IMXRT1062__, *p, pgm
     return pgm_read_any(&NAME##_P[axis]); \
   }
 
-#if ENABLED(SH_UI)
-extern float base_home_pos(const AxisEnum axis);
-extern int8_t home_dir(const AxisEnum axis);
-extern float base_min_pos(const AxisEnum axis);
-extern float base_max_pos(const AxisEnum axis);
-extern float max_length(const AxisEnum axis);
-#else
+#ifndef SH_UI //перекрытие функций определяющих свойства осей
 XYZ_DEFS(float, base_min_pos,   MIN_POS);
 XYZ_DEFS(float, base_max_pos,   MAX_POS);
 XYZ_DEFS(float, base_home_pos,  HOME_POS);
@@ -571,9 +569,7 @@ void home_if_needed(const bool keeplev=false);
 
 #else
 
-#if SH_UI //Перекрытие функциональности ограничения размера стола (программные концевики)
-extern bool position_is_reachable(const_float_t rx, const_float_t ry);
-#else
+#ifndef SH_UI //Перекрытие функциональности ограничения размера стола (программные концевики)
   // Return true if the given position is within the machine bounds.
   bool position_is_reachable(const_float_t rx, const_float_t ry);
 #endif

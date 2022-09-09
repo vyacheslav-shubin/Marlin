@@ -31,6 +31,10 @@
  */
 
 #include "../MarlinCore.h"
+#ifdef SH_UI
+#include "../lcd/extui/lib/shui/marlin_ext.h"
+#endif
+
 
 #if ENABLED(JD_HANDLE_SMALL_SEGMENTS)
   // Enable this option for perfect accuracy but maximum
@@ -674,7 +678,23 @@ class Planner {
     #endif
 
     #if ENABLED(SKEW_CORRECTION)
+    #ifdef SH_UI
+      FORCE_INLINE static void skew(float &cx, float &cy, const_float_t cz) {
+        if (position_is_reachable(cx, cy)) {
+          const float sx = cx - cy * skew_factor.xy - cz * (skew_factor.xz - (skew_factor.xy * skew_factor.yz)),
+                      sy = cy - cz * skew_factor.yz;
+          if (position_is_reachable(sx, sy)) { cx = sx; cy = sy; }
+        }
+      }
 
+      FORCE_INLINE static void unskew(float &cx, float &cy, const_float_t cz) {
+        if (position_is_reachable(cx,  cy)) {
+          const float sx = cx + cy * skew_factor.xy + cz * skew_factor.xz,
+                      sy = cy + cz * skew_factor.yz;
+          if (position_is_reachable(sx, sy)) { cx = sx; cy = sy; }
+        }
+      }
+    #else
       FORCE_INLINE static void skew(float &cx, float &cy, const_float_t cz) {
         if (COORDINATE_OKAY(cx, X_MIN_POS + 1, X_MAX_POS) && COORDINATE_OKAY(cy, Y_MIN_POS + 1, Y_MAX_POS)) {
           const float sx = cx - cy * skew_factor.xy - cz * (skew_factor.xz - (skew_factor.xy * skew_factor.yz)),
@@ -684,7 +704,6 @@ class Planner {
           }
         }
       }
-      FORCE_INLINE static void skew(xyz_pos_t &raw) { skew(raw.x, raw.y, raw.z); }
 
       FORCE_INLINE static void unskew(float &cx, float &cy, const_float_t cz) {
         if (COORDINATE_OKAY(cx, X_MIN_POS, X_MAX_POS) && COORDINATE_OKAY(cy, Y_MIN_POS, Y_MAX_POS)) {
@@ -695,6 +714,8 @@ class Planner {
           }
         }
       }
+    #endif
+      FORCE_INLINE static void skew(xyz_pos_t &raw) { skew(raw.x, raw.y, raw.z); }
       FORCE_INLINE static void unskew(xyz_pos_t &raw) { unskew(raw.x, raw.y, raw.z); }
 
     #endif // SKEW_CORRECTION
@@ -725,6 +746,9 @@ class Planner {
 
     #if HAS_POSITION_MODIFIERS
       FORCE_INLINE static void apply_modifiers(xyze_pos_t &pos, bool leveling=ENABLED(PLANNER_LEVELING)) {
+    #if SH_UI
+        if (SHUI::config.misc.flags.skew)
+    #endif
         TERN_(SKEW_CORRECTION, skew(pos));
         if (leveling) apply_leveling(pos);
         TERN_(FWRETRACT, apply_retract(pos));
@@ -733,6 +757,9 @@ class Planner {
       FORCE_INLINE static void unapply_modifiers(xyze_pos_t &pos, bool leveling=ENABLED(PLANNER_LEVELING)) {
         TERN_(FWRETRACT, unapply_retract(pos));
         if (leveling) unapply_leveling(pos);
+    #if SH_UI
+        if (SHUI::config.misc.flags.skew)
+    #endif
         TERN_(SKEW_CORRECTION, unskew(pos));
       }
     #endif // HAS_POSITION_MODIFIERS
