@@ -555,7 +555,7 @@ void home_if_needed(const bool keeplev=false);
 
 #else // CARTESIAN
 
-#if ENABLED(OVERRIDE_MOTION_ARREA)
+#if SH_UI
 extern bool position_is_reachable(const_float_t rx, const_float_t ry);
 #else
   // Return true if the given position is within the machine bounds.
