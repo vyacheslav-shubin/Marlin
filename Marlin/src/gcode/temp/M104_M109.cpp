@@ -74,7 +74,7 @@
  *  (used by printingIsActive, etc.) and turning off heaters will stop the timer.
  */
 void GcodeSuite::M104_M109(const bool isM109) {
-
+#ifndef SH_UI
   if (DEBUGGING(DRYRUN)) return;
 
   #if ENABLED(MIXING_EXTRUDER) && MIXING_VIRTUAL_TOOLS > 1
@@ -133,6 +133,7 @@ void GcodeSuite::M104_M109(const bool isM109) {
 
   if (isM109 && got_temp)
     (void)thermalManager.wait_for_hotend(target_extruder, no_wait_for_cooling);
+#endif
 }
 
 #endif // EXTRUDERS

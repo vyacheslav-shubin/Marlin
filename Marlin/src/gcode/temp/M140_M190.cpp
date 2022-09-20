@@ -60,7 +60,7 @@
  *  (used by printingIsActive, etc.) and turning off heaters will stop the timer.
  */
 void GcodeSuite::M140_M190(const bool isM190) {
-
+#ifndef SH_UI
   if (DEBUGGING(DRYRUN)) return;
 
   bool got_temp = false;
@@ -98,6 +98,7 @@ void GcodeSuite::M140_M190(const bool isM190) {
       const celsius_t c = thermalManager.degTargetBed();
       return c < 30 || thermalManager.degBedNear(c);
     });
+#endif
 }
 
 #endif // HAS_HEATED_BED
