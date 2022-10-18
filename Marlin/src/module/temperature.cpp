@@ -2277,6 +2277,7 @@ void Temperature::init() {
     ));
   #endif
 
+#ifndef SH_UI
   #if HAS_HEATER_0
     #ifdef BOARD_OPENDRAIN_MOSFETS
       OUT_WRITE_OD(HEATER_0_PIN, HEATER_0_INVERTING);
@@ -2322,7 +2323,6 @@ void Temperature::init() {
     OUT_WRITE(COOLER_PIN, COOLER_INVERTING);
   #endif
 
-#ifndef SH_UI
   #if HAS_FAN0
     INIT_FAN_PIN(FAN_PIN);
   #endif
@@ -2347,8 +2347,6 @@ void Temperature::init() {
   #if HAS_FAN7
     INIT_FAN_PIN(FAN7_PIN);
   #endif
-#else
-    init_fans();
 #endif
 
   #if ENABLED(USE_CONTROLLER_FAN)

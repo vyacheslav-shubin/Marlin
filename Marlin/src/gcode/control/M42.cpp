@@ -84,6 +84,7 @@ void GcodeSuite::M42() {
   if (!parser.seenval('S')) return;
   const byte pin_status = parser.value_byte();
 
+#ifndef SH_UI
   #if HAS_FAN
     switch (pin) {
       #if HAS_FAN0
@@ -112,7 +113,7 @@ void GcodeSuite::M42() {
       #endif
     }
   #endif
-
+#endif
   if (avoidWrite) {
     SERIAL_ECHOLNPGM("?Cannot write to INPUT");
     return;
