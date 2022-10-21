@@ -73,9 +73,7 @@
 
 #if SH_UI
 #include "../lcd/extui/lib/shui/Config.h"
-#ifdef SHUI_UNI_KINEMATIC
-#include "kinematic.h"
-#endif
+#include "../lcd/extui/lib/shui/kinematic.h"
 #endif
 
 #if HAS_LEVELING
