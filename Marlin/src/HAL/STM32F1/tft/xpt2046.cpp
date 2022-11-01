@@ -58,6 +58,13 @@ uint16_t delta(uint16_t a, uint16_t b) { return a > b ? a - b : b - a; }
 #endif // TOUCH_BUTTONS_HW_SPI
 
 void XPT2046::Init() {
+    SERIAL_ECHOLN("XPT2046::Init()");
+    XPT2046::Init(SPI_SPEED_6);
+}
+
+
+void XPT2046::Init(uint8_t rate) {
+  SERIAL_ECHOLNPAIR("XPT2046::Init() RATE: ", rate);
   SET_INPUT(TOUCH_MISO_PIN);
   SET_OUTPUT(TOUCH_MOSI_PIN);
   SET_OUTPUT(TOUCH_SCK_PIN);
@@ -68,7 +75,7 @@ void XPT2046::Init() {
     SET_INPUT(TOUCH_INT_PIN);
   #endif
 
-  TERN_(TOUCH_BUTTONS_HW_SPI, touch_spi_init(SPI_SPEED_6));
+  TERN_(TOUCH_BUTTONS_HW_SPI, touch_spi_init(rate));
 
   // Read once to enable pendrive status pin
   getRawData(XPT2046_X);
@@ -84,6 +91,7 @@ bool XPT2046::isTouched() {
   );
 }
 
+#ifndef SH_UI
 bool XPT2046::getRawPoint(int16_t *x, int16_t *y) {
   if (isBusy()) return false;
   if (!isTouched()) return false;
@@ -91,6 +99,7 @@ bool XPT2046::getRawPoint(int16_t *x, int16_t *y) {
   *y = getRawData(XPT2046_Y);
   return isTouched();
 }
+#endif
 
 uint16_t XPT2046::getRawData(const XPTCoordinate coordinate) {
   uint16_t data[3];

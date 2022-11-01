@@ -79,5 +79,6 @@ public:
   #endif
 
   static void Init();
+  static void Init(uint8_t rate);
   static bool getRawPoint(int16_t *x, int16_t *y);
 };
