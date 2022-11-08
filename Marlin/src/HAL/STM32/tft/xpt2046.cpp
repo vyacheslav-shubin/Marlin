@@ -36,6 +36,10 @@ uint16_t delta(uint16_t a, uint16_t b) { return a > b ? a - b : b - a; }
 SPI_HandleTypeDef XPT2046::SPIx;
 
 void XPT2046::Init() {
+    XPT2046::Init(SPI_BAUDRATEPRESCALER_16);
+}
+
+void XPT2046::Init(uint32_t rate) {
   SPI_TypeDef *spiInstance;
 
   OUT_WRITE(TOUCH_CS_PIN, HIGH);
@@ -72,7 +76,7 @@ void XPT2046::Init() {
     #ifdef SPI1_BASE
       if (SPIx.Instance == SPI1) {
         __HAL_RCC_SPI1_CLK_ENABLE();
-        SPIx.Init.BaudRatePrescaler  = SPI_BAUDRATEPRESCALER_16;
+        SPIx.Init.BaudRatePrescaler  = rate;
       }
     #endif
     #ifdef SPI2_BASE
@@ -106,6 +110,7 @@ bool XPT2046::isTouched() {
   );
 }
 
+#ifndef SH_UI
 bool XPT2046::getRawPoint(int16_t *x, int16_t *y) {
   if (isBusy()) return false;
   if (!isTouched()) return false;
@@ -113,6 +118,7 @@ bool XPT2046::getRawPoint(int16_t *x, int16_t *y) {
   *y = getRawData(XPT2046_Y);
   return isTouched();
 }
+#endif
 
 uint16_t XPT2046::getRawData(const XPTCoordinate coordinate) {
   uint16_t data[3];

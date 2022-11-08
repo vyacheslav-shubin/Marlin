@@ -86,10 +86,7 @@ Stepper stepper; // Singleton
 
 #if SH_UI
 #include "../lcd/extui/lib/shui/Config.h"
-#include "../lcd/extui/lib/shui/StepperMap.h"
-#ifdef SHUI_UNI_KINEMATIC
-#include "kinematic.h"
-#endif
+#include "../lcd/extui/lib/shui/kinematic.h"
 #endif
 
 #ifdef __AVR__

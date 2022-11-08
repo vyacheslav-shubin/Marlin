@@ -116,10 +116,13 @@ public:
    */
   static PGM_P injected_commands_P;
 
+  #ifndef GCODE_INJECTION_SIZE
+    #define GCODE_INJECTION_SIZE 64
+  #endif
   /**
    * Injected Commands (SRAM)
    */
-  static char injected_commands[64];
+  static char injected_commands[GCODE_INJECTION_SIZE];
 
   /**
    * Enqueue command(s) to run from PROGMEM. Drained by process_injected_command_P().

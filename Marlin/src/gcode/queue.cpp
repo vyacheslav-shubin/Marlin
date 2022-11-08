@@ -100,7 +100,7 @@ PGM_P GCodeQueue::injected_commands_P; // = nullptr
 /**
  * Injected SRAM Commands
  */
-char GCodeQueue::injected_commands[64]; // = { 0 }
+char GCodeQueue::injected_commands[GCODE_INJECTION_SIZE]; // = { 0 }
 
 void GCodeQueue::RingBuffer::commit_command(bool skip_ok
   OPTARG(HAS_MULTI_SERIAL, serial_index_t serial_ind/*=-1*/)
