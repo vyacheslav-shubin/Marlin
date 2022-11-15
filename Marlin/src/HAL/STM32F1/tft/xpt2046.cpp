@@ -91,7 +91,6 @@ bool XPT2046::isTouched() {
   );
 }
 
-#ifndef SH_UI
 bool XPT2046::getRawPoint(int16_t *x, int16_t *y) {
   if (isBusy()) return false;
   if (!isTouched()) return false;
@@ -99,7 +98,6 @@ bool XPT2046::getRawPoint(int16_t *x, int16_t *y) {
   *y = getRawData(XPT2046_Y);
   return isTouched();
 }
-#endif
 
 uint16_t XPT2046::getRawData(const XPTCoordinate coordinate) {
   uint16_t data[3];

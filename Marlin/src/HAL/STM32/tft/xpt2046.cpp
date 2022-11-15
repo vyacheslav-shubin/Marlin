@@ -110,7 +110,7 @@ bool XPT2046::isTouched() {
   );
 }
 
-#ifndef SH_UI
+#ifdef SH_UI
 bool XPT2046::getRawPoint(int16_t *x, int16_t *y) {
   if (isBusy()) return false;
   if (!isTouched()) return false;
@@ -129,8 +129,8 @@ uint16_t XPT2046::getRawData(const XPTCoordinate coordinate) {
     IO(coordinate);
     data[i] = (IO() << 4) | (IO() >> 4);
   }
-
   DataTransferEnd();
+
 
   uint16_t delta01 = delta(data[0], data[1]);
   uint16_t delta02 = delta(data[0], data[2]);
@@ -151,9 +151,10 @@ uint16_t XPT2046::HardwareIO(uint16_t data) {
   while ((SPIx.Instance->SR & SPI_FLAG_TXE) != SPI_FLAG_TXE) {}
   SPIx.Instance->DR = data;
   while ((SPIx.Instance->SR & SPI_FLAG_RXNE) != SPI_FLAG_RXNE) {}
+  uint16_t r = SPIx.Instance->DR;
   __HAL_SPI_DISABLE(&SPIx);
 
-  return SPIx.Instance->DR;
+  return r;
 }
 
 uint16_t XPT2046::SoftwareIO(uint16_t data) {
