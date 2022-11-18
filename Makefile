@@ -77,6 +77,9 @@ f4_bin:
 f4_bin_v3:
 	$(call make_firmware,F4_RN30)
 
+f4_bin_v3_usb:
+	$(call make_firmware,F4_RN30_USB)
+
 skin:
 	rm -r -f .pio/build/skin
 	mkdir -p .pio/build/skin
