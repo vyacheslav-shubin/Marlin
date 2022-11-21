@@ -2600,7 +2600,7 @@ void Stepper::init() {
 
   // Init Microstepping Pins
   TERN_(HAS_MICROSTEPS, microstep_init());
-
+#ifndef SH_UI
   // Init Dir Pins
   TERN_(HAS_X_DIR, X_DIR_INIT());
   TERN_(HAS_X2_DIR, X2_DIR_INIT());
@@ -2811,6 +2811,8 @@ void Stepper::init() {
   #if E_STEPPERS > 7 && HAS_E7_STEP
     E_AXIS_INIT(7);
   #endif
+
+#endif //SHUI
 
   #if DISABLED(I2S_STEPPER_STREAM)
     HAL_timer_start(STEP_TIMER_NUM, 122); // Init Stepper ISR to 122 Hz for quick starting
