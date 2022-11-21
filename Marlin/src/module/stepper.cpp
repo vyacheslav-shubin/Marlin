@@ -2821,11 +2821,7 @@ void Stepper::init() {
   #endif
 
 #if SH_UI
-    uint8_t b = 0;
-    if (INVERT_X_DIR) b|=_BV(X_AXIS);
-    if (INVERT_Y_DIR) b|=_BV(Y_AXIS);
-    if (INVERT_Z_DIR) b|=_BV(Z_AXIS);
-    set_directions(b);
+
 #else
   // Init direction bits for first moves
   set_directions(0
