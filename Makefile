@@ -96,6 +96,8 @@ font:
 pics: font
 	make -C ../shui-res pics
 	mv -f ../shui-res/RESDUMP.BIN .pio/firmware/
+	mv -f ../shui-res/*.PCH .pio/firmware/
+
 font:
 	make -C ../shui-res font
 
