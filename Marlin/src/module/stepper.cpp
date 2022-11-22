@@ -2574,7 +2574,7 @@ void Stepper::init() {
 
   // Init Microstepping Pins
   TERN_(HAS_MICROSTEPS, microstep_init());
-
+#ifndef SH_UI
   // Init Dir Pins
   TERN_(HAS_X_DIR, X_DIR_INIT());
   TERN_(HAS_X2_DIR, X2_DIR_INIT());
@@ -2816,6 +2816,8 @@ void Stepper::init() {
     E_AXIS_INIT(7);
   #endif
 
+#endif //SHUI
+
   #if DISABLED(I2S_STEPPER_STREAM)
     HAL_timer_start(MF_TIMER_STEP, 122); // Init Stepper ISR to 122 Hz for quick starting
     wake_up();
@@ -2823,11 +2825,7 @@ void Stepper::init() {
   #endif
 
 #if SH_UI
-    uint8_t b = 0;
-    if (INVERT_X_DIR) b|=_BV(X_AXIS);
-    if (INVERT_Y_DIR) b|=_BV(Y_AXIS);
-    if (INVERT_Z_DIR) b|=_BV(Z_AXIS);
-    set_directions(b);
+
 #else
   // Init direction bits for first moves
   set_directions(0

@@ -77,6 +77,9 @@ rn13:
 rn30:
 	$(call make_firmware,F4_RN30)
 
+f4_bin_v3_usb:
+	$(call make_firmware,F4_RN30_USB)
+
 skin:
 	rm -r -f .pio/build/skin
 	mkdir -p .pio/build/skin
@@ -93,6 +96,8 @@ font:
 pics: font
 	make -C ../shui-res pics
 	mv -f ../shui-res/RESDUMP.BIN .pio/firmware/
+	mv -f ../shui-res/*.PCH .pio/firmware/
+
 font:
 	make -C ../shui-res font
 
