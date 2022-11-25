@@ -2478,6 +2478,7 @@ void Temperature::updateTemperaturesFromRawValues() {
   #endif
   #undef TP_CMP
   #endif
+  #endif
 } // Temperature::updateTemperaturesFromRawValues
 
 /**
