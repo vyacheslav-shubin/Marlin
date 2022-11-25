@@ -2411,7 +2411,7 @@ void Temperature::updateTemperaturesFromRawValues() {
 
   #if HAS_HOTEND
   #if !SH_UI
-    static constexpr int8_t temp_dir[] = {
+    static constexpr int8_t temp_dir[HOTENDS] = {
       #if TEMP_SENSOR_IS_ANY_MAX_TC(0)
         0
       #else
@@ -2423,30 +2423,26 @@ void Temperature::updateTemperaturesFromRawValues() {
         #else
           , TEMPDIR(1)
         #endif
+      #endif
+      #if HOTENDS > 2
         #if TEMP_SENSOR_IS_ANY_MAX_TC(2)
           , 0
         #else
           , TEMPDIR(2)
         #endif
-        #if HOTENDS > 3
-          #define _TEMPDIR(N) , TEMPDIR(N)
-          REPEAT_S(3, HOTENDS, _TEMPDIR)
-        #endif
+      #endif
+      #if HOTENDS > 3
+        #define _TEMPDIR(N) , TEMPDIR(N)
+        REPEAT_S(3, HOTENDS, _TEMPDIR)
       #endif
     };
-  #endif
-  #ifndef SH_UI
+#ifndef SH_UI
     //todo: разобраться
-  #if SH_UI
-    LOOP_L_N(e, HOTENDS) {
-      const int8_t tdir = temp_range[e].raw_min<temp_range[e].raw_max?1:-1;
-  #else
-    LOOP_L_N(e, COUNT(temp_dir)) {
-      const int8_t tdir = temp_dir[e];
-  #endif
-      if (tdir) {
-        const int16_t rawtemp = temp_hotend[e].raw * tdir; // normal direction, +rawtemp, else -rawtemp
-        if (rawtemp > temp_range[e].raw_max * tdir) max_temp_error((heater_id_t)e);
+    HOTEND_LOOP() {
+      const raw_adc_t r = temp_hotend[e].getraw();
+      const bool neg = temp_dir[e] < 0, pos = temp_dir[e] > 0;
+      if ((neg && r < temp_range[e].raw_max) || (pos && r > temp_range[e].raw_max))
+        max_temp_error((heater_id_t)e);
 
       const bool heater_on = temp_hotend[e].target > 0;
       if (heater_on && ((neg && r > temp_range[e].raw_min) || (pos && r < temp_range[e].raw_min))) {
@@ -3124,8 +3120,13 @@ void Temperature::disable_all_heaters() {
       // Needed to return the correct temp when this is called between readings
       static raw_adc_t max_tc_temp_previous[MAX_TC_COUNT] = { 0 };
       #define THERMO_TEMP(I) max_tc_temp_previous[I]
-      #define THERMO_SEL(A,B,C) (hindex > 1 ? (C) : hindex == 1 ? (B) : (A))
-      #define MAXTC_CS_WRITE(V) do{ switch (hindex) { case 1: WRITE(TEMP_1_CS_PIN, V); break; case 2: WRITE(TEMP_2_CS_PIN, V); break; default: WRITE(TEMP_0_CS_PIN, V); } }while(0)
+      #if MAX_TC_COUNT > 2
+        #define THERMO_SEL(A,B,C) (hindex > 1 ? (C) : hindex == 1 ? (B) : (A))
+        #define MAXTC_CS_WRITE(V) do{ switch (hindex) { case 1: WRITE(TEMP_1_CS_PIN, V); break; case 2: WRITE(TEMP_2_CS_PIN, V); break; default: WRITE(TEMP_0_CS_PIN, V); } }while(0)
+      #elif MAX_TC_COUNT > 1
+        #define THERMO_SEL(A,B,C) ( hindex == 1 ? (B) : (A))
+        #define MAXTC_CS_WRITE(V) do{ switch (hindex) { case 1: WRITE(TEMP_1_CS_PIN, V); break; default: WRITE(TEMP_0_CS_PIN, V); } }while(0)
+      #endif
     #else
       // When we have only 1 max tc, THERMO_SEL will pick the appropriate sensor
       // variable, and MAXTC_*() macros will be hardcoded to the correct CS pin.
