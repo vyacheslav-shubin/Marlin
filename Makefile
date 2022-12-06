@@ -68,6 +68,16 @@ endef
 rn12:
 	$(call make_firmware,RN12)
 
+rn12-no:
+	pio run -e RN12-NO
+
+rn12-flash: rn12-no
+	st-flash write .pio/build/RN12-NO/firmware.bin 0x08000000
+
+rn12-bootloader:
+	st-flash write misc/rn12-bootloader.bin 0x08000000
+
+
 rn20:
 	$(call make_firmware,RN20)
 
