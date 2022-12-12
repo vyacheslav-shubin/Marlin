@@ -65,7 +65,7 @@ define make_firmware
     rm -f .pio/build/$1/firmware.bin
 endef
 
-rn12:
+rn12: gen-date
 	$(call make_firmware,RN12)
 
 rn12-no:
@@ -117,3 +117,8 @@ shui_wifi:
 
 shui_blob:
 	make -C ../wifi-module-esp32 wifi-blobs
+
+gen-date:
+	echo -n "constexpr const char * const CURRENT_DATE=\"">Marlin/src/lcd/extui/lib/shui/date.h
+	echo -n `date +%Y-%m-%d`>>Marlin/src/lcd/extui/lib/shui/date.h
+	echo "\";">>Marlin/src/lcd/extui/lib/shui/date.h
