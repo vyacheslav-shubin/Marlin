@@ -561,6 +561,13 @@ void GCodeQueue::get_serial_commands() {
 
     int sd_count = 0;
     while (!ring_buffer.full() && !card.eof()) {
+#if SH_UI
+        if ((SHUI::sd_comment.pos>0) && SHUI::sd_comment.eol)
+            SHUI::sd_comment.commit();
+        if (ring_buffer.full())
+            break;
+#endif
+
       const int16_t n = card.get();
       const bool card_eof = card.eof();
       if (n < 0 && !card_eof) { SERIAL_ERROR_MSG(STR_SD_ERR_READ); continue; }
@@ -596,8 +603,11 @@ void GCodeQueue::get_serial_commands() {
           TERN_(POWER_LOSS_RECOVERY, recovery.cmd_sdpos = card.getIndex());
         }
 
-        if (is_eol)
-            SHUI::sd_comment.onEol();
+        if (is_eol) {
+            SHUI::sd_comment.eol = true;
+            if (!ring_buffer.full())
+                SHUI::sd_comment.commit();
+        }
 
         if (card.eof()) card.fileHasFinished();         // Handle end of file reached
       }
