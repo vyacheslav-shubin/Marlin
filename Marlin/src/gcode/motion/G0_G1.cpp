@@ -35,6 +35,8 @@
   #include "../../module/planner.h"
 #endif
 
+#ifndef SH_UI
+
 extern xyze_pos_t destination;
 
 #if ENABLED(VARIABLE_G0_FEEDRATE)
@@ -133,3 +135,4 @@ void GcodeSuite::G0_G1(TERN_(HAS_FAST_MOVES, const bool fast_move/*=false*/)) {
     #endif
   }
 }
+#endif

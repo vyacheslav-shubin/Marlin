@@ -61,8 +61,8 @@ define make_firmware
     mkdir -p .pio/firmware/$1
     if [ -f .pio/build/$1/Robin_nano35.bin ]; then mv -f .pio/build/$1/Robin_nano35.bin .pio/firmware/$1/Robin_nano35.bin; fi		
     if [ -f .pio/build/$1/Robin_nano_v3.bin ]; then mv -f .pio/build/$1/Robin_nano_v3.bin .pio/firmware/$1/Robin_nano_v3.bin; fi   
-    rm -f .pio/build/$1/firmware.elf
-    rm -f .pio/build/$1/firmware.bin
+    #rm -f .pio/build/$1/firmware.elf
+    #rm -f .pio/build/$1/firmware.bin
 endef
 
 rn12: gen-date
@@ -71,8 +71,11 @@ rn12: gen-date
 rn12-no:
 	pio run -e RN12-NO
 
-rn12-flash: rn12-no
+rn12-no-flash: rn12-no
 	st-flash write .pio/build/RN12-NO/firmware.bin 0x08000000
+
+rn12-flash: rn12
+	st-flash write .pio/build/RN12/firmware.bin 0x08007000
 
 rn12-bootloader:
 	st-flash write misc/rn12-bootloader.bin 0x08000000
@@ -90,13 +93,6 @@ rn30:
 f4_bin_v3_usb:
 	$(call make_firmware,F4_RN30_USB)
 
-skin:
-	rm -r -f .pio/build/skin
-	mkdir -p .pio/build/skin
-	cp make_res.py .pio/build/skin/make_res.py
-	cp -r Marlin/src/lcd/extui/lib/shui/res/img .pio/build/skin/
-	cd .pio/build/skin && zip -r skin.zip *
-	mv .pio/build/skin/skin.zip .pio/firmware/cd .
 
 bins: rn12 rn13 rn20 rn30
 
