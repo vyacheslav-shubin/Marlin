@@ -65,7 +65,7 @@ def encrypt_mks(source, target, env, new_name):
 	finally:
 		fwfile.close()
 		enfile.close()
-		os.remove(fwpath)
+		#os.remove(fwpath)
 
 def add_post_action(action):
 	env.AddPostAction(join("$BUILD_DIR", "${PROGNAME}.bin"), action);
