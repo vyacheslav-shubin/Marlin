@@ -74,6 +74,7 @@
 #if SH_UI
 #include "../lcd/extui/lib/shui/Config.h"
 #include "../lcd/extui/lib/shui/kinematic.h"
+#include "../lcd/extui/lib/shui/Laser.h"
 #endif
 
 #if HAS_LEVELING
@@ -852,6 +853,9 @@ void Planner::calculate_trapezoid_for_block(block_t * const block, const_float_t
    *
    * Note this may behave unreliably when running with S_CURVE_ACCELERATION
    */
+#if SH_UI
+  SHUI::Laser::calculate_trapezoid_for_block(*block, entry_factor, exit_factor, accelerate_steps);
+#else
   #if ENABLED(LASER_POWER_INLINE_TRAPEZOID)
     if (block->laser.power > 0) { // No need to care if power == 0
       const uint8_t entry_power = block->laser.power * entry_factor; // Power on block entry
@@ -882,6 +886,7 @@ void Planner::calculate_trapezoid_for_block(block_t * const block, const_float_t
       #endif
     }
   #endif
+#endif
 }
 
 /*                            PLANNER SPEED DEFINITION
@@ -1991,12 +1996,16 @@ bool Planner::_populate_block(block_t * const block, bool split_move,
   // Set direction bits
   block->direction_bits = dm;
 
+#if SH_UI
+  SHUI::Laser::populate_block(*block);
+#else
   // Update block laser power
   #if ENABLED(LASER_POWER_INLINE)
     laser_inline.status.isPlanned = true;
     block->laser.status = laser_inline.status;
     block->laser.power = laser_inline.power;
   #endif
+#endif
 
 #ifdef SHUI_UNI_KINEMATIC
     kinematic->setBlockSteps(da, db, dc, block);

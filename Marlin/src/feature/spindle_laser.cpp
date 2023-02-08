@@ -30,6 +30,10 @@
 
 #include "spindle_laser.h"
 
+#if SH_UI
+#include "../lcd/extui/lib/shui/portmapping/PortMapping.h"
+#endif
+
 #if ENABLED(SPINDLE_SERVO)
   #include "../module/servo.h"
 #endif
@@ -55,6 +59,12 @@ cutter_power_t SpindleLaser::menuPower,                               // Power s
 /**
  * Init the cutter to a safe OFF state
  */
+
+#if SH_UI
+void SpindleLaser::init() {
+    SHUI::PortMapping::initLaser();
+}
+#else
 void SpindleLaser::init() {
   #if ENABLED(SPINDLE_SERVO)
     MOVE_SERVO(SPINDLE_SERVO_NR, SPINDLE_SERVO_MIN);
@@ -82,7 +92,9 @@ void SpindleLaser::init() {
     ammeter.init();                                                   // Init I2C Ammeter
   #endif
 }
+#endif
 
+#if !SH_UI
 #if ENABLED(SPINDLE_LASER_USE_PWM)
   /**
    * Set the cutter PWM directly to the given ocr value
@@ -141,6 +153,7 @@ void SpindleLaser::apply_power(const uint8_t opwr) {
     isReady = true;
   #endif
 }
+#endif
 
 #if ENABLED(SPINDLE_CHANGE_DIR)
   /**

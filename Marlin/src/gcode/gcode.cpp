@@ -215,6 +215,14 @@ void GcodeSuite::get_destination_from_command() {
     M165();
   #endif
 
+#if SH_UI
+    if (parser.seen('S')) {
+        const float spwr = parser.value_float();
+        cutter.inline_power(cutter.power_to_range(cutter_power_t(round(spwr))));
+    }
+    else if (!SHUI::config.laser.flags.g0_enabled && (parser.codenum == 0)) // G0
+        cutter.set_inline_enabled(false);
+#else
   #if ENABLED(LASER_MOVE_POWER)
     // Set the laser power in the planner to configure this move
     if (parser.seen('S')) {
@@ -224,6 +232,7 @@ void GcodeSuite::get_destination_from_command() {
     else if (ENABLED(LASER_MOVE_G0_OFF) && parser.codenum == 0) // G0
       cutter.set_inline_enabled(false);
   #endif
+#endif
 }
 
 /**

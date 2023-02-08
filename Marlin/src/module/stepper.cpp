@@ -87,6 +87,7 @@ Stepper stepper; // Singleton
 #if SH_UI
 #include "../lcd/extui/lib/shui/Config.h"
 #include "../lcd/extui/lib/shui/kinematic.h"
+#include "../lcd/extui/lib/shui/Laser.h"
 #endif
 
 #ifdef __AVR__
@@ -264,12 +265,18 @@ xyze_int8_t Stepper::count_direction{0};
     .enabled = false,
     .cur_power = 0,
     .cruise_set = false,
+#if SH_UI
+    .till_update = 0,
+    .last_step_count = 0,
+    .acc_step_count = 0
+#else
     #if DISABLED(LASER_POWER_INLINE_TRAPEZOID_CONT)
       .last_step_count = 0,
       .acc_step_count = 0
     #else
       .till_update = 0
     #endif
+#endif
   };
 #endif
 
@@ -1971,6 +1978,7 @@ uint32_t Stepper::block_phase_isr() {
       TERN_(HAS_FILAMENT_RUNOUT_DISTANCE, runout.block_completed(current_block));
 #if SH_UI
         block_completed(current_block);
+        SHUI::Laser::complete(*current_block);
 #endif
         discard_current_block();
     }
@@ -2008,6 +2016,9 @@ uint32_t Stepper::block_phase_isr() {
           else if (LA_steps) nextAdvanceISR = 0;
         #endif
 
+#if SH_UI
+          SHUI::Laser::accelerating(*current_block);
+#else
         // Update laser - Accelerating
         #if ENABLED(LASER_POWER_INLINE_TRAPEZOID)
           if (laser_trap.enabled) {
@@ -2036,6 +2047,7 @@ uint32_t Stepper::block_phase_isr() {
             #endif
           }
         #endif
+#endif
       }
       // Are we in Deceleration phase ?
       else if (step_events_completed > decelerate_after) {
@@ -2087,6 +2099,9 @@ uint32_t Stepper::block_phase_isr() {
           else if (LA_steps) nextAdvanceISR = 0;
         #endif // LIN_ADVANCE
 
+#if SH_UI
+          SHUI::Laser::decelerating(*current_block, step_rate);
+#else
         // Update laser - Decelerating
         #if ENABLED(LASER_POWER_INLINE_TRAPEZOID)
           if (laser_trap.enabled) {
@@ -2115,6 +2130,7 @@ uint32_t Stepper::block_phase_isr() {
             #endif
           }
         #endif
+#endif
       }
       // Must be in cruise phase otherwise
       else {
@@ -2134,6 +2150,9 @@ uint32_t Stepper::block_phase_isr() {
         interval = ticks_nominal;
 
         // Update laser - Cruising
+#if SH_UI
+        SHUI::Laser::cruising(*current_block);
+#else
         #if ENABLED(LASER_POWER_INLINE_TRAPEZOID)
           if (laser_trap.enabled) {
             if (!laser_trap.cruise_set) {
@@ -2148,6 +2167,7 @@ uint32_t Stepper::block_phase_isr() {
             #endif
           }
         #endif
+#endif
       }
     }
   }
@@ -2178,12 +2198,16 @@ uint32_t Stepper::block_phase_isr() {
           return interval; // No more queued movements!
       }
 
+#if SH_UI
+      SHUI::Laser::non_inline(*current_block);
+#else
       // For non-inline cutter, grossly apply power
       #if ENABLED(LASER_FEATURE) && DISABLED(LASER_POWER_INLINE)
         cutter.apply_power(current_block->cutter_power);
       #endif
+#endif
 
-      TERN_(POWER_LOSS_RECOVERY, recovery.info.sdpos = current_block->sdpos);
+        TERN_(POWER_LOSS_RECOVERY, recovery.info.sdpos = current_block->sdpos);
 
       #if ENABLED(DIRECT_STEPPING)
         if (IS_PAGE(current_block)) {
@@ -2349,6 +2373,9 @@ uint32_t Stepper::block_phase_isr() {
         set_directions(current_block->direction_bits);
       }
 
+#if SH_UI
+    SHUI::Laser::prepare_block(*current_block);
+#else
       #if ENABLED(LASER_POWER_INLINE)
         const power_status_t stat = current_block->laser.status;
         #if ENABLED(LASER_POWER_INLINE_TRAPEZOID)
@@ -2379,7 +2406,7 @@ uint32_t Stepper::block_phase_isr() {
           }
         #endif
       #endif // LASER_POWER_INLINE
-
+#endif
       // At this point, we must ensure the movement about to execute isn't
       // trying to force the head against a limit switch. If using interrupt-
       // driven change detection, and already against a limit then no call to
@@ -2416,6 +2443,11 @@ uint32_t Stepper::block_phase_isr() {
       // Calculate the initial timer interval
       interval = calc_timer_interval(current_block->initial_rate, &steps_per_isr);
     }
+#if SH_UI
+    else {
+        SHUI::Laser::continous();
+    }
+#else
     #if ENABLED(LASER_POWER_INLINE_CONTINUOUS)
       else { // No new block found; so apply inline laser parameters
         // This should mean ending file with 'M5 I' will stop the laser; thus the inline flag isn't needed
@@ -2431,6 +2463,7 @@ uint32_t Stepper::block_phase_isr() {
         }
       }
     #endif
+#endif
   }
 
   // Return the interval to wait

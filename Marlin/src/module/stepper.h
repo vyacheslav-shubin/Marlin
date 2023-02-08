@@ -371,7 +371,7 @@ class Stepper {
     #else
       static constexpr uint8_t oversampling_factor = 0;
     #endif
-
+public:
     // Delta error variables for the Bresenham line tracer
     static xyze_long_t delta_error;
     static xyze_ulong_t advance_dividend;
@@ -380,7 +380,7 @@ class Stepper {
                     accelerate_until,       // The point from where we need to stop acceleration
                     decelerate_after,       // The point from where we need to start decelerating
                     step_event_count;       // The total event count for the current block
-
+private:
     #if EITHER(HAS_MULTI_EXTRUDER, MIXING_EXTRUDER)
       static uint8_t stepper_extruder;
     #else
@@ -418,7 +418,9 @@ class Stepper {
 
     static int32_t ticks_nominal;
     //#if DISABLED(S_CURVE_ACCELERATION)
-      static uint32_t acc_step_rate; // needed for deceleration start point
+public:
+    static uint32_t acc_step_rate; // needed for deceleration start point
+private:
     //#endif
 
     // Exact steps at which an endstop was triggered
@@ -431,18 +433,24 @@ class Stepper {
     static xyze_int8_t count_direction;
 
     #if ENABLED(LASER_POWER_INLINE_TRAPEZOID)
-
+public:
       typedef struct {
         bool enabled;       // Trapezoid needed flag (i.e., laser on, planner in control)
         uint8_t cur_power;  // Current laser power
         bool cruise_set;    // Power set up for cruising?
 
+    #if SH_UI
+          uint16_t till_update;     // Countdown to the next update
+          uint32_t last_step_count; // Step count from the last update
+          int32_t acc_step_count;  // Bresenham counter for laser accel/decel
+    #else
         #if ENABLED(LASER_POWER_INLINE_TRAPEZOID_CONT)
           uint16_t till_update;     // Countdown to the next update
         #else
           uint32_t last_step_count, // Step count from the last update
                    acc_step_count;  // Bresenham counter for laser accel/decel
         #endif
+    #endif
       } stepper_laser_t;
 
       static stepper_laser_t laser_trap;

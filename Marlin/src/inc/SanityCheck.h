@@ -3496,6 +3496,7 @@ static_assert(_PLUS_TEST(4), "HOMING_FEEDRATE_MM_M values must be positive.");
   #endif
 #endif
 
+#ifndef SH_UI
 #if HAS_CUTTER
   #ifndef CUTTER_POWER_UNIT
     #error "CUTTER_POWER_UNIT is required with a spindle or laser."
@@ -3603,6 +3604,7 @@ static_assert(_PLUS_TEST(4), "HOMING_FEEDRATE_MM_M values must be positive.");
     #endif
   #endif
   #undef _PIN_CONFLICT
+#endif
 #endif
 
 #if ENABLED(COOLANT_MIST) && !PIN_EXISTS(COOLANT_MIST)

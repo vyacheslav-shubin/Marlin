@@ -65,6 +65,7 @@
  *
  *  PWM duty cycle goes from 0 (off) to 255 (always on).
  */
+#if !SH_UI
 void GcodeSuite::M3_M4(const bool is_M4) {
   auto get_s_power = [] {
     if (parser.seenval('S')) {
@@ -119,6 +120,7 @@ void GcodeSuite::M3_M4(const bool is_M4) {
   #endif
   cutter.menuPower = cutter.unitPower;
 }
+#endif
 
 /**
  * M5 - Cutter OFF (when moves are complete)
