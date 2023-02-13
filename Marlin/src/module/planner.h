@@ -75,6 +75,26 @@
   #define IS_PAGE(B) false
 #endif
 
+#if SH_UI
+namespace SHUI {
+    struct LaserBlock {
+        union {
+            struct {
+                bool cruising: 1;
+                bool accelirating: 1;
+                bool decelirating: 1;
+                bool trapezoid: 1;
+                bool enabled: 1;
+            };
+            uint8_t v;
+        } flags;
+        uint8_t start_power;
+        uint8_t end_power;
+        uint8_t power;
+    };
+}
+#endif
+
 // Feedrate for manual moves
 #ifdef MANUAL_FEEDRATE
   constexpr xyze_feedrate_t _mf = MANUAL_FEEDRATE,
@@ -245,6 +265,11 @@ typedef struct block_t {
   #if ENABLED(LASER_POWER_INLINE)
     block_laser_t laser;
   #endif
+
+  #if SH_UI
+    SHUI::LaserBlock shui_laser;
+  #endif
+
 
 } block_t;
 

@@ -300,7 +300,6 @@ public:
       planner.laser_inline.power = 0;
     }
 
-  #if !SH_UI
     // Inline modes of all other functions; all enable planner inline power control
     static inline void set_inline_enabled(const bool enable) {
       if (enable)
@@ -330,11 +329,6 @@ public:
         isReady = enabled(upwr);
       #endif
     }
-  #else
-    static void set_inline_enabled(const bool enable);
-    static void inline_power(const cutter_power_t upwr);
-  #endif
-
     static inline void inline_direction(const bool) { /* never */ }
 
     #if ENABLED(SPINDLE_LASER_USE_PWM)

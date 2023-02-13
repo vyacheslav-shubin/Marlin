@@ -1997,7 +1997,7 @@ bool Planner::_populate_block(block_t * const block, bool split_move,
   block->direction_bits = dm;
 
 #if SH_UI
-  SHUI::Laser::populate_block(*block);
+  SHUI::Laser::block_populate(*block);
 #else
   // Update block laser power
   #if ENABLED(LASER_POWER_INLINE)

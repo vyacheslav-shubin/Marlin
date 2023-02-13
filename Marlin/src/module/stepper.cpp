@@ -1978,7 +1978,7 @@ uint32_t Stepper::block_phase_isr() {
       TERN_(HAS_FILAMENT_RUNOUT_DISTANCE, runout.block_completed(current_block));
 #if SH_UI
         block_completed(current_block);
-        SHUI::Laser::complete(*current_block);
+        SHUI::Laser::block_complete(*current_block);
 #endif
         discard_current_block();
     }
@@ -2017,7 +2017,7 @@ uint32_t Stepper::block_phase_isr() {
         #endif
 
 #if SH_UI
-          SHUI::Laser::accelerating(*current_block);
+          SHUI::Laser::block_accelerating(*current_block);
 #else
         // Update laser - Accelerating
         #if ENABLED(LASER_POWER_INLINE_TRAPEZOID)
@@ -2100,7 +2100,7 @@ uint32_t Stepper::block_phase_isr() {
         #endif // LIN_ADVANCE
 
 #if SH_UI
-          SHUI::Laser::decelerating(*current_block, step_rate);
+          SHUI::Laser::block_decelerating(*current_block, step_rate);
 #else
         // Update laser - Decelerating
         #if ENABLED(LASER_POWER_INLINE_TRAPEZOID)
@@ -2151,7 +2151,7 @@ uint32_t Stepper::block_phase_isr() {
 
         // Update laser - Cruising
 #if SH_UI
-        SHUI::Laser::cruising(*current_block);
+        SHUI::Laser::block_cruising(*current_block);
 #else
         #if ENABLED(LASER_POWER_INLINE_TRAPEZOID)
           if (laser_trap.enabled) {
@@ -2374,7 +2374,7 @@ uint32_t Stepper::block_phase_isr() {
       }
 
 #if SH_UI
-    SHUI::Laser::prepare_block(*current_block);
+    SHUI::Laser::block_start(*current_block);
 #else
       #if ENABLED(LASER_POWER_INLINE)
         const power_status_t stat = current_block->laser.status;
