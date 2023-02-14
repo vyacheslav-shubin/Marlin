@@ -2181,6 +2181,13 @@ uint32_t Stepper::block_phase_isr() {
 
       // Sync block? Sync the stepper counts or fan speeds and return
       while (current_block->flag & BLOCK_MASK_SYNC) {
+#if SH_UI
+          if TEST(current_block->flag, BLOCK_BIT_SYNC_LASER)
+              SHUI::Laser::block_start(*current_block);
+
+          if TEST(current_block->flag, BLOCK_BIT_SYNC_POSITION)
+              _set_position(current_block->position);
+#else
 
         #if ENABLED(LASER_SYNCHRONOUS_M106_M107)
           const bool is_sync_fans = TEST(current_block->flag, BLOCK_BIT_SYNC_FANS);
@@ -2190,7 +2197,7 @@ uint32_t Stepper::block_phase_isr() {
         #endif
 
         if (!is_sync_fans) _set_position(current_block->position);
-
+#endif
         discard_current_block();
 
         // Try to get a new block
@@ -2198,14 +2205,10 @@ uint32_t Stepper::block_phase_isr() {
           return interval; // No more queued movements!
       }
 
-#if SH_UI
-      SHUI::Laser::non_inline(*current_block);
-#else
       // For non-inline cutter, grossly apply power
       #if ENABLED(LASER_FEATURE) && DISABLED(LASER_POWER_INLINE)
         cutter.apply_power(current_block->cutter_power);
       #endif
-#endif
 
         TERN_(POWER_LOSS_RECOVERY, recovery.info.sdpos = current_block->sdpos);
 
@@ -2443,11 +2446,6 @@ uint32_t Stepper::block_phase_isr() {
       // Calculate the initial timer interval
       interval = calc_timer_interval(current_block->initial_rate, &steps_per_isr);
     }
-#if SH_UI
-    else {
-        SHUI::Laser::continous();
-    }
-#else
     #if ENABLED(LASER_POWER_INLINE_CONTINUOUS)
       else { // No new block found; so apply inline laser parameters
         // This should mean ending file with 'M5 I' will stop the laser; thus the inline flag isn't needed
@@ -2463,7 +2461,6 @@ uint32_t Stepper::block_phase_isr() {
         }
       }
     #endif
-#endif
   }
 
   // Return the interval to wait

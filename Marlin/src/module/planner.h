@@ -85,6 +85,7 @@ namespace SHUI {
                 bool decelirating: 1;
                 bool trapezoid: 1;
                 bool enabled: 1;
+                bool temporary_off: 1;
             };
             uint8_t v;
         } flags;
@@ -131,6 +132,10 @@ enum BlockFlagBit : char {
   #if ENABLED(LASER_SYNCHRONOUS_M106_M107)
     , BLOCK_BIT_SYNC_FANS
   #endif
+
+    #ifdef SH_UI
+        , BLOCK_BIT_SYNC_LASER
+    #endif
 };
 
 enum BlockFlag : char {
@@ -144,9 +149,14 @@ enum BlockFlag : char {
   #if ENABLED(LASER_SYNCHRONOUS_M106_M107)
     , BLOCK_FLAG_SYNC_FANS          = _BV(BLOCK_BIT_SYNC_FANS)
   #endif
+
+#ifdef SH_UI
+    , BLOCK_FLAG_SYNC_LASER          = _BV(BLOCK_BIT_SYNC_LASER)
+#endif
+
 };
 
-#define BLOCK_MASK_SYNC ( BLOCK_FLAG_SYNC_POSITION | TERN0(LASER_SYNCHRONOUS_M106_M107, BLOCK_FLAG_SYNC_FANS) )
+#define BLOCK_MASK_SYNC ( BLOCK_FLAG_SYNC_POSITION | TERN0(LASER_SYNCHRONOUS_M106_M107, BLOCK_FLAG_SYNC_FANS) | BLOCK_FLAG_SYNC_LASER)
 
 #if ENABLED(LASER_POWER_INLINE)
 
@@ -777,9 +787,13 @@ class Planner {
      * Add a block to the buffer that just updates the position or in
      * case of LASER_SYNCHRONOUS_M106_M107 the fan pwm
      */
+#if SH_UI
+    static void buffer_sync_block(uint8_t sync_flag=BLOCK_FLAG_SYNC_POSITION);
+#else
     static void buffer_sync_block(
-      TERN_(LASER_SYNCHRONOUS_M106_M107, uint8_t sync_flag=BLOCK_FLAG_SYNC_POSITION)
+            TERN_(LASER_SYNCHRONOUS_M106_M107, uint8_t sync_flag=BLOCK_FLAG_SYNC_POSITION)
     );
+#endif
 
   #if IS_KINEMATIC
     private:

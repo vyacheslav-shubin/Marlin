@@ -2872,6 +2872,7 @@ bool Planner::_populate_block(block_t * const block, bool split_move,
  * Add a block to the buffer that just updates the position,
  * or in case of LASER_SYNCHRONOUS_M106_M107 the fan PWM
  */
+#if !SH_UI
 void Planner::buffer_sync_block(TERN_(LASER_SYNCHRONOUS_M106_M107, uint8_t sync_flag)) {
   #if DISABLED(LASER_SYNCHRONOUS_M106_M107)
     constexpr uint8_t sync_flag = BLOCK_FLAG_SYNC_POSITION;
@@ -2906,7 +2907,7 @@ void Planner::buffer_sync_block(TERN_(LASER_SYNCHRONOUS_M106_M107, uint8_t sync_
 
   stepper.wake_up();
 } // buffer_sync_block()
-
+#endif
 /**
  * Planner::buffer_segment
  *

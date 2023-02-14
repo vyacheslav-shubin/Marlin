@@ -28,6 +28,10 @@
 
 #include "../MarlinCore.h"
 
+#if SH_UI
+#include "../lcd/extui/lib/shui/Config.h"
+#endif
+
 // Must be declared for allocation and to satisfy the linker
 // Zero values need no initialization.
 
@@ -231,6 +235,13 @@ void GCodeParser::parse(char *p) {
 
       } break;
 
+#if SH_UI
+    default: {
+        if (!SHUI::config.misc.flags.motion_mode)
+            return;
+        switch (letter) {
+#endif
+
     #if ENABLED(GCODE_MOTION_MODES)
 
       #if EITHER(BEZIER_CURVE_SUPPORT, ARC_SUPPORT)
@@ -241,28 +252,34 @@ void GCodeParser::parse(char *p) {
       #endif
 
       #if ENABLED(BEZIER_CURVE_SUPPORT)
-        case 'Q': if (motion_mode_codenum != 5) return;
+        case 'Q':
+            if (motion_mode_codenum != 5) return;
       #endif
 
       #if ENABLED(ARC_SUPPORT)
-        case 'R': if (!WITHIN(motion_mode_codenum, 2, 3)) return;
+        case 'R':
+            if (!WITHIN(motion_mode_codenum, 2, 3)) return;
       #endif
 
       LOGICAL_AXIS_GANG(case 'E':, case 'X':, case 'Y':, case 'Z':, case AXIS4_NAME:, case AXIS5_NAME:, case AXIS6_NAME:)
-      case 'F':
+      case 'F': case 'S':
         if (motion_mode_codenum < 0) return;
         command_letter = 'G';
         codenum = motion_mode_codenum;
         TERN_(USE_GCODE_SUBCODES, subcode = motion_mode_subcode);
         p--; // Back up one character to use the current parameter
-        break;
+        goto letter_case;
 
     #endif
-
     default: return;
   }
+#if SH_UI
+    }}
+#endif
 
-  // The command parameters (if any) start here, for sure!
+  letter_case:
+
+    // The command parameters (if any) start here, for sure!
 
   IF_DISABLED(FASTER_GCODE_PARSER, command_args = p); // Scan for parameters in seen()
 
