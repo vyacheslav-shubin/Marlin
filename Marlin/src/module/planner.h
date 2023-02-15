@@ -86,6 +86,7 @@ namespace SHUI {
                 bool trapezoid: 1;
                 bool enabled: 1;
                 bool temporary_off: 1;
+                bool sync:1;
             };
             uint8_t v;
         } flags;

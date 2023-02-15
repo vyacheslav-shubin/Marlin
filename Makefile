@@ -118,3 +118,16 @@ gen-date:
 	echo -n "constexpr const char * const CURRENT_DATE=\"">Marlin/src/lcd/extui/lib/shui/date.h
 	echo -n `date +%Y-%m-%d`>>Marlin/src/lcd/extui/lib/shui/date.h
 	echo "\";">>Marlin/src/lcd/extui/lib/shui/date.h
+
+git-copy-laser:
+	cp -fr .pio/firmware/RN12 ../shui/dev/LASER/
+	cp -fr .pio/firmware/RN20 ../shui/dev/LASER/
+	cp -fr .pio/firmware/F4_RN30 ../shui/dev/LASER/
+	cp -fr .pio/firmware/F4_RN13 ../shui/dev/LASER/
+	cp -fr .pio/firmware/RESDUMP.BIN ../shui/dev/LASER/RESDUMP.BIN
+
+git-publish-dev:
+	make -C ../shui publish-dev
+
+git-publish-laser: git-copy-laser git-publish-dev
+
