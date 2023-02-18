@@ -231,7 +231,6 @@ uint32_t Stepper::advance_divisor = 0,
 #endif
 
 #if ENABLED(LIN_ADVANCE)
-
   uint32_t Stepper::nextAdvanceISR = LA_ADV_NEVER,
            Stepper::la_interval = LA_ADV_NEVER;
   int32_t  Stepper::la_delta_error = 0,
@@ -2315,7 +2314,7 @@ uint32_t Stepper::block_phase_isr() {
       step_event_count = current_block->step_event_count << oversampling;
 
       // Initialize Bresenham delta errors to 1/2
-      delta_error = -int32_t(step_event_count);
+      delta_error = TERN_(LIN_ADVANCE, la_delta_error =) -int32_t(step_event_count);
 
       // Calculate Bresenham dividends and divisors
       advance_dividend = current_block->steps << 1;
