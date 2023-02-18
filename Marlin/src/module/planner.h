@@ -237,11 +237,10 @@ typedef struct block_t {
 
   // Advance extrusion
   #if ENABLED(LIN_ADVANCE)
-    bool use_advance_lead;
-    uint16_t advance_speed,                 // STEP timer value for extruder speed offset ISR
-             max_adv_steps,                 // max. advance steps to get cruising speed pressure (not always nominal_speed!)
-             final_adv_steps;               // advance steps due to exit speed
-    float e_D_ratio;
+    uint32_t la_advance_rate;               // The rate at which steps are added whilst accelerating
+    uint8_t  la_scaling;                    // Scale ISR frequency down and step frequency up by 2 ^ la_scaling
+    uint16_t max_adv_steps,                 // Max advance steps to get cruising speed pressure
+             final_adv_steps;               // Advance steps for exit speed pressure
   #endif
 
   uint32_t nominal_rate,                    // The nominal step rate for this block in step_events/sec
@@ -284,7 +283,7 @@ typedef struct block_t {
 
 } block_t;
 
-#if ANY(LIN_ADVANCE, SCARA_FEEDRATE_SCALING, GRADIENT_MIX, LCD_SHOW_E_TOTAL)
+#if ANY(LIN_ADVANCE, SCARA_FEEDRATE_SCALING, GRADIENT_MIX, LCD_SHOW_E_TOTAL, SH_UI)
   #define HAS_POSITION_FLOAT 1
 #endif
 
@@ -436,9 +435,13 @@ class Planner {
       static constexpr bool leveling_active = false;
     #endif
 
+#if SH_UI
+    static float extruder_advance_K[EXTRUDERS];
+#else
     #if ENABLED(LIN_ADVANCE)
       static float extruder_advance_K[EXTRUDERS];
     #endif
+#endif
 
     /**
      * The current position of the tool in absolute steps
@@ -1008,7 +1011,7 @@ class Planner {
       return target_velocity_sqr - 2 * accel * distance;
     }
 
-    #if ENABLED(S_CURVE_ACCELERATION)
+    #if EITHER(S_CURVE_ACCELERATION, LIN_ADVANCE)
       /**
        * Calculate the speed reached given initial speed, acceleration and distance
        */
