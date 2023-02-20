@@ -2456,7 +2456,14 @@ bool Planner::_populate_block(block_t * const block, bool split_move,
 
     #if ENABLED(LIN_ADVANCE)
       // Linear advance is currently not ready for HAS_I_AXIS
+    #if SH_UI
+        if (!SHUI::config.motors.flags.lin_advance) {
+            use_advance_lead = false;
+        } else {
+        #define MAX_E_JERK(N) (SHUI::config.motors.has_liner_e_jark()?max_e_jerk[E_INDEX_N(N)]: max_jerk.e)
+    #else
       #define MAX_E_JERK(N) TERN(HAS_LINEAR_E_JERK, max_e_jerk[E_INDEX_N(N)], max_jerk.e)
+    #endif
 
       /**
        * Use LIN_ADVANCE for blocks if all these are true:
@@ -2489,6 +2496,9 @@ bool Planner::_populate_block(block_t * const block, bool split_move,
           NOMORE(accel, max_accel_steps_per_s2);
         }
       }
+        #if SH_UI
+        }
+        #endif
     #endif
 
     // Limit acceleration per axis
@@ -2541,9 +2551,12 @@ bool Planner::_populate_block(block_t * const block, bool split_move,
     }
   #endif
 
-  float vmax_junction_sqr; // Initial limit on the segment entry velocity (mm/s)^2
+  float vmax_junction_sqr = 0; // Initial limit on the segment entry velocity (mm/s)^2
 
   #if HAS_JUNCTION_DEVIATION
+  #if SH_UI
+  if (SHUI::config.motors.flags.junction_deviation) {
+  #endif
     /**
      * Compute maximum allowable entry speed at junction by centripetal acceleration approximation.
      * Let a circle be tangent to both previous and current path line segments, where the junction
@@ -2732,6 +2745,9 @@ bool Planner::_populate_block(block_t * const block, bool split_move,
       vmax_junction_sqr = 0;
 
     prev_unit_vec = unit_vec;
+#if SH_UI
+  }
+#endif
 
   #endif
 
@@ -2744,6 +2760,9 @@ bool Planner::_populate_block(block_t * const block, bool split_move,
   #endif
 
   #if HAS_CLASSIC_JERK
+  #if SH_UI
+    if (SHUI::config.motors.flags.classic_jark) {
+  #endif
 
     /**
      * Adapted from Průša MKS firmware
@@ -2763,7 +2782,11 @@ bool Planner::_populate_block(block_t * const block, bool split_move,
     const float extra_xyjerk = TERN0(HAS_EXTRUDERS, de <= 0) ? TRAVEL_EXTRA_XYJERK : 0;
 
     uint8_t limited = 0;
+  #if SH_UI
+    LOOP_S_L_N(i, X_AXIS, (SHUI::config.motors.has_liner_e_jark()?LINEAR_AXES:LOGICAL_AXES)) {
+  #else
     TERN(HAS_LINEAR_E_JERK, LOOP_LINEAR_AXES, LOOP_LOGICAL_AXES)(i) {
+  #endif
       const float jerk = ABS(current_speed[i]),   // cs : Starting from zero, change in speed for this axis
                   maxj = (max_jerk[i] + (i == X_AXIS || i == Y_AXIS ? extra_xyjerk : 0.0f)); // mj : The max jerk setting for this axis
       if (jerk > maxj) {                          // cs > mj : New current speed too fast?
@@ -2801,7 +2824,11 @@ bool Planner::_populate_block(block_t * const block, bool split_move,
         vmax_junction = previous_nominal_speed;
 
       // Now limit the jerk in all axes.
-      TERN(HAS_LINEAR_E_JERK, LOOP_LINEAR_AXES, LOOP_LOGICAL_AXES)(axis) {
+#if SH_UI
+        LOOP_S_L_N(axis, X_AXIS, (SHUI::config.motors.has_liner_e_jark()?LINEAR_AXES:LOGICAL_AXES)) {
+#else
+        TERN(HAS_LINEAR_E_JERK, LOOP_LINEAR_AXES, LOOP_LOGICAL_AXES)(axis) {
+#endif
         // Limit an axis. We have to differentiate: coasting, reversal of an axis, full stop.
         float v_exit = previous_speed[axis] * smaller_speed_factor,
               v_entry = current_speed[axis];
@@ -2836,14 +2863,25 @@ bool Planner::_populate_block(block_t * const block, bool split_move,
 
     previous_safe_speed = safe_speed;
 
+  #if SH_UI
+    if (SHUI::config.motors.flags.junction_deviation) {
+        NOMORE(vmax_junction_sqr, sq(vmax_junction));   // Throttle down to max speed
+    } else {
+        vmax_junction_sqr = sq(vmax_junction);          // Go up or down to the new speed
+    }
+  #else
     #if HAS_JUNCTION_DEVIATION
       NOMORE(vmax_junction_sqr, sq(vmax_junction));   // Throttle down to max speed
     #else
       vmax_junction_sqr = sq(vmax_junction);          // Go up or down to the new speed
     #endif
+  #endif
 
   #endif // Classic Jerk Limiting
 
+#if SH_UI
+}
+#endif
   // Max entry speed of this block equals the max exit speed of the previous block.
   block->max_entry_speed_sqr = vmax_junction_sqr;
 
@@ -3048,7 +3086,7 @@ bool Planner::buffer_line(const xyze_pos_t &cart, const_feedRate_t fr_mm_s, cons
   TERN_(HAS_POSITION_MODIFIERS, apply_modifiers(machine));
 
   #if IS_KINEMATIC
-
+  #error NO SHUI SUPPORT
     #if HAS_JUNCTION_DEVIATION
       const xyze_pos_t cart_dist_mm = LOGICAL_AXIS_ARRAY(
         cart.e - position_cart.e,
@@ -3219,7 +3257,12 @@ void Planner::reset_acceleration_rates() {
       NOLESS(highest_rate, max_acceleration_steps_per_s2[i]);
   }
   acceleration_long_cutoff = 4294967295UL / highest_rate; // 0xFFFFFFFFUL
+#if SH_UI
+    if (SHUI::config.motors.has_liner_e_jark())
+        recalculate_max_e_jerk();
+#else
   TERN_(HAS_LINEAR_E_JERK, recalculate_max_e_jerk());
+#endif
 }
 
 /**
