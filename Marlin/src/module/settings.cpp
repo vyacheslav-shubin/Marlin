@@ -674,7 +674,7 @@ void MarlinSettings::postprocess() {
 
       #if HAS_CLASSIC_JERK
         EEPROM_WRITE(planner.max_jerk);
-        #if HAS_LINEAR_E_JERK
+        #if HAS_LINEAR_E_JERK && !SH_UI
           dummyf = float(DEFAULT_EJERK);
           EEPROM_WRITE(dummyf);
         #endif
@@ -1546,7 +1546,7 @@ void MarlinSettings::postprocess() {
 
         #if HAS_CLASSIC_JERK
           EEPROM_READ(planner.max_jerk);
-          #if HAS_LINEAR_E_JERK
+          #if HAS_LINEAR_E_JERK && !SH_UI
             EEPROM_READ(dummyf);
           #endif
         #else
