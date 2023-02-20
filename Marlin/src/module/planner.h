@@ -411,6 +411,11 @@ class Planner {
     static uint32_t max_acceleration_steps_per_s2[DISTINCT_AXES]; // (steps/s^2) Derived from mm_per_s2
     static float mm_per_step[DISTINCT_AXES];          // Millimeters per step
 
+#if SH_UI
+    static float junction_deviation_mm;             // (mm) M205 J
+    static float max_e_jerk[DISTINCT_E];          // Calculated from junction_deviation_mm
+    static xyze_pos_t max_jerk;
+#else
     #if HAS_JUNCTION_DEVIATION
       static float junction_deviation_mm;             // (mm) M205 J
       #if HAS_LINEAR_E_JERK
@@ -418,10 +423,12 @@ class Planner {
       #endif
     #endif
 
+
     #if HAS_CLASSIC_JERK
       // (mm/s^2) M205 XYZ(E) - The largest speed change requiring no acceleration.
       static TERN(HAS_LINEAR_E_JERK, xyz_pos_t, xyze_pos_t) max_jerk;
     #endif
+#endif
 
     #if HAS_LEVELING
       static bool leveling_active;          // Flag that bed leveling is enabled

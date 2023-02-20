@@ -145,6 +145,11 @@ planner_settings_t Planner::settings;           // Initialized by settings.load(
 uint32_t Planner::max_acceleration_steps_per_s2[DISTINCT_AXES]; // (steps/s^2) Derived from mm_per_s2
 
 float Planner::mm_per_step[DISTINCT_AXES];      // (mm) Millimeters per step
+#if SH_UI
+float Planner::junction_deviation_mm;             // (mm) M205 J
+float Planner::max_e_jerk[DISTINCT_E];          // Calculated from junction_deviation_mm
+xyze_pos_t Planner::max_jerk;
+#else
 
 #if HAS_JUNCTION_DEVIATION
   float Planner::junction_deviation_mm;         // (mm) M205 J
@@ -155,6 +160,7 @@ float Planner::mm_per_step[DISTINCT_AXES];      // (mm) Millimeters per step
 
 #if HAS_CLASSIC_JERK
   TERN(HAS_LINEAR_E_JERK, xyz_pos_t, xyze_pos_t) Planner::max_jerk;
+#endif
 #endif
 
 #if ENABLED(SD_ABORT_ON_ENDSTOP_HIT)
@@ -2589,8 +2595,12 @@ bool Planner::_populate_block(block_t * const block, bool split_move,
      * => normalize the complete junction vector.
      * Elsewise, when needed JD will factor-in the E component
      */
-  #error SHUI_UNI_KINEMATIC Not defined
+  //#error SHUI_UNI_KINEMATIC Not defined
+  #if SH_UI
+    if ((SHUI::config.kinematic_cfg.type != SHUI::KINEMATIC_XYZ) || esteps > 0)
+  #else
     if (ANY(IS_CORE, MARKFORGED_XY) || esteps > 0)
+  #endif
       normalize_junction_vector(unit_vec);  // Normalize with XYZE components
     else
       unit_vec *= inverse_millimeters;      // Use pre-calculated (1 / SQRT(x^2 + y^2 + z^2))
