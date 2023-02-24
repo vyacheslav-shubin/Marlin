@@ -2650,8 +2650,12 @@ bool Planner::_populate_block(block_t * const block, bool split_move,
         vmax_junction_sqr = junction_acceleration * junction_deviation_mm * sin_theta_d2 / (1.0f - sin_theta_d2);
 
         #if ENABLED(JD_HANDLE_SMALL_SEGMENTS)
+        #if SH_UI
+          if (SHUI::config.motors.flags.jd_small_segments) {
+        #endif
 
-          // For small moves with >135° junction (octagon) find speed for approximate arc
+
+              // For small moves with >135° junction (octagon) find speed for approximate arc
           if (block->millimeters < 1 && junction_cos_theta < -0.7071067812f) {
 
             #if ENABLED(JD_USE_MATH_ACOS)
@@ -2734,6 +2738,9 @@ bool Planner::_populate_block(block_t * const block, bool split_move,
             const float limit_sqr = (block->millimeters * junction_acceleration) / junction_theta;
             NOMORE(vmax_junction_sqr, limit_sqr);
           }
+        #if SH_UI
+        }
+        #endif
 
         #endif // JD_HANDLE_SMALL_SEGMENTS
       }

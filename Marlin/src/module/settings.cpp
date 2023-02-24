@@ -683,8 +683,12 @@ void MarlinSettings::postprocess() {
         EEPROM_WRITE(planner_max_jerk);
       #endif
 
+#if SH_UI
+      EEPROM_WRITE(planner.junction_deviation_mm);
+#else
       TERN_(CLASSIC_JERK, dummyf = 0.02f);
       EEPROM_WRITE(TERN(CLASSIC_JERK, dummyf, planner.junction_deviation_mm));
+#endif
     }
 
     //
@@ -1553,7 +1557,11 @@ void MarlinSettings::postprocess() {
           for (uint8_t q = LOGICAL_AXES; q--;) EEPROM_READ(dummyf);
         #endif
 
-        EEPROM_READ(TERN(CLASSIC_JERK, dummyf, planner.junction_deviation_mm));
+#if SH_UI
+    EEPROM_READ(planner.junction_deviation_mm);
+#else
+          EEPROM_READ(TERN(CLASSIC_JERK, dummyf, planner.junction_deviation_mm));
+#endif
       }
 
       //
