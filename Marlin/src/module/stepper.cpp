@@ -205,7 +205,7 @@ IF_DISABLED(ADAPTIVE_STEP_SMOOTHING, constexpr) uint8_t Stepper::oversampling_fa
 
 xyze_long_t Stepper::delta_error{0};
 
-xyze_ulong_t Stepper::advance_dividend{0};
+xyze_long_t Stepper::advance_dividend{0};
 uint32_t Stepper::advance_divisor = 0,
          Stepper::step_events_completed = 0, // The number of step events executed in the current block
          Stepper::accelerate_until,          // The count at which to stop accelerating
@@ -1814,7 +1814,6 @@ void Stepper::pulse_phase_isr() {
             // don't actually step here, but do subtract movements steps
             // from the linear advance step count
             step_needed.e = false;
-            count_position.e -= count_direction.e;
             la_advance_steps--;
           }
 #endif
@@ -1915,7 +1914,6 @@ uint32_t Stepper::block_phase_isr() {
 
   // If there is a current block
   if (current_block) {
-
     // If current block is finished, reset pointer and finalize state
     if (step_events_completed >= step_event_count) {
       #if ENABLED(DIRECT_STEPPING)
@@ -2078,6 +2076,8 @@ uint32_t Stepper::block_phase_isr() {
                 DIR_WAIT_AFTER();
               }
             }
+            else
+              la_interval = LA_ADV_NEVER;
           }
         #endif // LIN_ADVANCE
 
