@@ -735,7 +735,7 @@ class Planner {
     #if HAS_POSITION_MODIFIERS
       FORCE_INLINE static void apply_modifiers(xyze_pos_t &pos, bool leveling=ENABLED(PLANNER_LEVELING)) {
     #if SH_UI
-        if (SHUI::config.misc.flags.skew)
+        if (SHUI::config.motors.flags.skew)
     #endif
         TERN_(SKEW_CORRECTION, skew(pos));
         if (leveling) apply_leveling(pos);
@@ -746,7 +746,7 @@ class Planner {
         TERN_(FWRETRACT, unapply_retract(pos));
         if (leveling) unapply_leveling(pos);
     #if SH_UI
-        if (SHUI::config.misc.flags.skew)
+        if (SHUI::config.motors.flags.skew)
     #endif
         TERN_(SKEW_CORRECTION, unskew(pos));
       }
