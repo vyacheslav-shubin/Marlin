@@ -2317,7 +2317,7 @@ uint32_t Stepper::block_phase_isr() {
       delta_error = TERN_(LIN_ADVANCE, la_delta_error =) -int32_t(step_event_count);
 
       // Calculate Bresenham dividends and divisors
-      advance_dividend = current_block->steps << 1;
+      advance_dividend = (current_block->steps << 1).asLong();
       advance_divisor = step_event_count << 1;
 
       // No step events completed so far
