@@ -88,6 +88,7 @@ Stepper stepper; // Singleton
 #include "../lcd/extui/lib/shui/Config.h"
 #include "../lcd/extui/lib/shui/kinematic.h"
 #include "../lcd/extui/lib/shui/Laser.h"
+#include "../lcd/extui/lib/shui/RunoutSensor.h"
 
 #endif
 
@@ -1809,14 +1810,25 @@ void Stepper::pulse_phase_isr() {
 #if EITHER(HAS_E0_STEP, MIXING_EXTRUDER)
         PULSE_PREP(E);
 
-#if ENABLED(LIN_ADVANCE)
+    #if ENABLED(LIN_ADVANCE)
+    #if SH_UI
+        if (step_needed.e) {
+            if (current_block->la_advance_rate) {
+                step_needed.e = false;
+                la_advance_steps--;
+            }
+            if (current_block->steps.x || current_block->steps.y)
+                SHUI::RunoutSensor::inc_step(current_block->extruder);
+        }
+    #else
           if (step_needed.e && current_block->la_advance_rate) {
             // don't actually step here, but do subtract movements steps
             // from the linear advance step count
             step_needed.e = false;
             la_advance_steps--;
           }
-#endif
+    #endif
+    #endif
 #endif
     }
     #if ISR_MULTI_STEPS
