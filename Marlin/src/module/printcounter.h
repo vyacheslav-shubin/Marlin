@@ -31,6 +31,27 @@
 // Round up I2C / SPI address to next page boundary (assuming 32 byte pages)
 #define STATS_EEPROM_ADDRESS TERN(USE_WIRED_EEPROM, 0x40, 0x32)
 
+#if SH_UI
+    typedef union {
+        uint8_t code;
+        struct {
+            uint8_t source: 3;
+            uint8_t cause: 5;
+        };
+        void pack(uint8_t source, uint8_t cause) {
+            this->source = source & 0b111;
+            this->cause = cause & 0b11111;
+        }
+        void clear() {
+            this->code = 0;
+        }
+        bool isEmpty() {
+            return this->code == 0;
+        }
+    } ERROR_CODE;
+#endif
+
+
 struct printStatistics {    // 16 bytes
   //const uint8_t magic;    // Magic header, it will always be 0x16
   uint16_t totalPrints;     // Number of prints
@@ -40,6 +61,7 @@ struct printStatistics {    // 16 bytes
   float    filamentUsed;    // Accumulated filament consumed in mm
 #if SH_UI
     uint32_t lastPrint;    // Longest successful print job
+    ERROR_CODE lastError;
 #else
     #if SERVICE_INTERVAL_1 > 0
         uint32_t nextService1;  // Service intervals (or placeholders)
@@ -63,8 +85,9 @@ class PrintCounter: public Stopwatch {
       typedef uint16_t eeprom_address_t;
     #endif
 
+  public:
     static printStatistics data;
-
+  private:
     /**
      * @brief EEPROM address
      * @details Defines the start offset address where the data is stored.
@@ -154,6 +177,12 @@ class PrintCounter: public Stopwatch {
      * @details Save the statistics to EEPROM
      */
     static void saveStats();
+
+    /**
+     * @brief Save the Print Statistics
+     * @details Save the statistics to EEPROM
+     */
+    static void forceSaveStats();
 
     /**
      * @brief Serial output the Print Statistics

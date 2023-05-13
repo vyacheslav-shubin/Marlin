@@ -1042,6 +1042,7 @@ void Temperature::_temp_error(const heater_id_t heater_id, FSTR_P const serial_m
   #endif
 }
 
+#ifndef SH_UI
 void Temperature::max_temp_error(const heater_id_t heater_id) {
   #if HAS_DWIN_E3V2_BASIC && (HAS_HOTEND || HAS_HEATED_BED)
     DWIN_Popup_Temperature(1);
@@ -1055,6 +1056,7 @@ void Temperature::min_temp_error(const heater_id_t heater_id) {
   #endif
   _temp_error(heater_id, F(STR_T_MINTEMP), GET_TEXT_F(MSG_ERR_MINTEMP));
 }
+#endif
 
 #if ANY(PID_DEBUG, PID_BED_DEBUG, PID_CHAMBER_DEBUG)
   bool Temperature::pid_debug_flag; // = 0
@@ -2105,6 +2107,8 @@ void Temperature::updateTemperaturesFromRawValues() {
   TERN_(FILAMENT_WIDTH_SENSOR, filwidth.update_measured_mm());
   TERN_(HAS_POWER_MONITOR,     power_monitor.capture_values());
 
+#if !SH_UI
+
   #if HAS_HOTEND
   #if !SH_UI
     static constexpr int8_t temp_dir[] = {
@@ -2173,6 +2177,7 @@ void Temperature::updateTemperaturesFromRawValues() {
   #if BOTH(HAS_TEMP_BOARD, THERMAL_PROTECTION_BOARD)
     if (TP_CMP(BOARD, temp_board.raw, maxtemp_raw_BOARD)) max_temp_error(H_BOARD);
     if (TP_CMP(BOARD, mintemp_raw_BOARD, temp_board.raw)) min_temp_error(H_BOARD);
+  #endif
   #endif
   #undef TP_CMP
 

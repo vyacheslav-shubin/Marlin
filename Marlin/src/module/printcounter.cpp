@@ -159,6 +159,12 @@ void PrintCounter::loadStats() {
   #endif // HAS_SERVICE_INTERVALS
 }
 
+void PrintCounter::forceSaveStats() {
+    persistentStore.access_start();
+    persistentStore.write_data(address + sizeof(uint8_t), (uint8_t*)&data, sizeof(printStatistics));
+    persistentStore.access_finish();
+}
+
 void PrintCounter::saveStats() {
   TERN_(DEBUG_PRINTCOUNTER, debug(PSTR("saveStats")));
 
@@ -168,9 +174,7 @@ void PrintCounter::saveStats() {
   TERN_(PRINTCOUNTER_SYNC, planner.synchronize());
 
   // Saves the struct to EEPROM
-  persistentStore.access_start();
-  persistentStore.write_data(address + sizeof(uint8_t), (uint8_t*)&data, sizeof(printStatistics));
-  persistentStore.access_finish();
+  forceSaveStats();
 
 #if !SH_UI
   TERN_(EXTENSIBLE_UI, ExtUI::onConfigurationStoreWritten(true));

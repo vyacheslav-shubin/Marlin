@@ -997,8 +997,11 @@ class Temperature {
     #endif
 
     static void _temp_error(const heater_id_t e, FSTR_P const serial_msg, FSTR_P const lcd_msg);
+
+#ifndef SH_UI
     static void min_temp_error(const heater_id_t e);
     static void max_temp_error(const heater_id_t e);
+#endif
 
     #define HAS_THERMAL_PROTECTION ANY(THERMAL_PROTECTION_HOTENDS, THERMAL_PROTECTION_CHAMBER, HAS_THERMALLY_PROTECTED_BED, THERMAL_PROTECTION_COOLER)
 
