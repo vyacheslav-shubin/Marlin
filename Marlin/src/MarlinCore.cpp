@@ -414,6 +414,7 @@ inline void manage_inactivity(const bool no_stepper_sleep=false) {
 #if SH_UI
   if (no_stepper_sleep || planner.has_blocks_queued())
     SHUI::AutoPowerDown::resetCountdown();
+  SHUI::manage_inactivity();
 #endif
 
   if (gcode.stepper_max_timed_out(ms)) {

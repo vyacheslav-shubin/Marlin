@@ -198,8 +198,8 @@ bool Stepper::abort_current_block;
 uint32_t Stepper::acceleration_time, Stepper::deceleration_time;
 uint8_t Stepper::steps_per_isr;
 
-#if HAS_FREEZE_PIN
-  bool Stepper::frozen; // = false
+#if HAS_FREEZE_PIN || SH_UI
+  bool Stepper::frozen = false; // = false
 #endif
 
 IF_DISABLED(ADAPTIVE_STEP_SMOOTHING, constexpr) uint8_t Stepper::oversampling_factor;
@@ -1634,6 +1634,9 @@ void Stepper::pulse_phase_isr() {
 
   // Skipping step processing causes motion to freeze
   if (TERN0(HAS_FREEZE_PIN, frozen)) return;
+#if SH_UI
+  if (frozen) return;
+#endif
 
   // Count of pending loops and events for this iteration
   const uint32_t pending_events = step_event_count - step_events_completed;
@@ -1713,8 +1716,7 @@ void Stepper::pulse_phase_isr() {
               PAGE_SEGMENT_UPDATE(Z, high >> 4);
               PAGE_SEGMENT_UPDATE(E, high & 0xF);
 
-              if (dm != last_direction_bits)
-                set_directions(dm);
+              if (dm != last_direction_bits) set_directions(dm);
 
             } break;
 
