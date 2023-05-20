@@ -46,7 +46,7 @@
             this->code = 0;
         }
         bool isEmpty() {
-            return this->code == 0;
+            return (this->code == 0) || (this->code == 0xFF);
         }
     } ERROR_CODE;
 #endif
