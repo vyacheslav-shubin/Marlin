@@ -389,8 +389,16 @@ void Endstops::not_homing() {
 #define VALIDATE_HOMING_ENDSTOPS_OPT (1)
 #endif
 
+#if SH_UI
+      //VALIDATE_HOMING_ENDSTOPS_OPT
+    if (trigger_state() || !SHUI::config.sensors.flags.hit_test)
+        hit_on_purpose();
+    else
+        SHUI::StatusHandler::kill(SHUI::KILL_SOURCE::SOURCE_HOMING, SHUI::KILL_CAUSE::cause_not_homed);
+#else
     if (trigger_state() ||(!(VALIDATE_HOMING_ENDSTOPS_OPT))) hit_on_purpose();
     else kill(GET_TEXT_F(MSG_KILL_HOMING_FAILED));
+#endif
   }
 #endif
 
