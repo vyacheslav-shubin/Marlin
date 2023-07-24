@@ -2156,7 +2156,12 @@ bool Planner::_populate_block(block_t * const block, bool split_move,
      * A correction function is permitted to add steps to an axis, it
      * should *never* remove steps!
      */
+#ifdef SH_UI
+    if (SHUI::config.motors.flags.backlash)
+        backlash.add_correction_steps(da, db, dc, dm, block);
+#else
     TERN_(BACKLASH_COMPENSATION, backlash.add_correction_steps(da, db, dc, dm, block));
+#endif
   }
 
   TERN_(HAS_EXTRUDERS, block->steps.e = esteps);

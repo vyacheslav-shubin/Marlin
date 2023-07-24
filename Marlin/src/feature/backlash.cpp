@@ -22,6 +22,10 @@
 
 #include "../inc/MarlinConfigPre.h"
 
+#if SH_UI
+#include "../lcd/extui/lib/shui/kinematic.h"
+#endif
+
 #if ENABLED(BACKLASH_COMPENSATION)
 
 #include "backlash.h"
@@ -63,6 +67,10 @@ Backlash backlash;
 void Backlash::add_correction_steps(const int32_t &da, const int32_t &db, const int32_t &dc, const axis_bits_t dm, block_t * const block) {
   static axis_bits_t last_direction_bits;
   axis_bits_t changed_dir = last_direction_bits ^ dm;
+#if SH_UI
+  kinematic->backlash(da, db, dc, changed_dir);
+#elif
+
   // Ignore direction change unless steps are taken in that direction
   #if DISABLED(CORE_BACKLASH) || ENABLED(MARKFORGED_XY)
     if (!da) CBI(changed_dir, X_AXIS);
@@ -81,6 +89,7 @@ void Backlash::add_correction_steps(const int32_t &da, const int32_t &db, const 
     if (!(db - dc)) CBI(changed_dir, Z_AXIS);
     if (!da)        CBI(changed_dir, X_AXIS);
   #endif
+#endif
   last_direction_bits ^= changed_dir;
 
   if (correction == 0) return;
@@ -130,6 +139,13 @@ void Backlash::add_correction_steps(const int32_t &da, const int32_t &db, const 
       // This correction reduces the residual error and adds block steps
       if (error_correction) {
         block->steps[axis] += ABS(error_correction);
+#if SH_UI
+        if (kinematic->isCore()) {
+            residual_error[axis] = 0; // No residual_error needed for next CORE block, I think...
+        } else {
+            residual_error[axis] -= error_correction;
+        }
+#else
         #if ENABLED(CORE_BACKLASH)
           switch (axis) {
             case CORE_AXIS_1:
@@ -148,6 +164,7 @@ void Backlash::add_correction_steps(const int32_t &da, const int32_t &db, const 
         #else
           residual_error[axis] -= error_correction;
         #endif
+#endif
       }
     }
   }
