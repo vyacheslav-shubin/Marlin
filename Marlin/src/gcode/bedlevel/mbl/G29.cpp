@@ -63,6 +63,7 @@ inline void echo_not_entered(const char c) { SERIAL_CHAR(c); SERIAL_ECHOLNPGM(" 
  *  S4 Zn.nn        Set z offset. Positive away from bed, negative closer to bed.
  *  S5              Reset and disable mesh
  */
+#ifndef SH_UI
 void GcodeSuite::G29() {
   DEBUG_SECTION(log_G29, "G29", true);
 
@@ -221,5 +222,5 @@ void GcodeSuite::G29() {
 
   TERN_(FULL_REPORT_TO_HOST_FEATURE, set_and_report_grblstate(M_IDLE));
 }
-
+#endif
 #endif // MESH_BED_LEVELING

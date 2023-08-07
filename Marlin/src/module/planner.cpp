@@ -75,6 +75,8 @@
 #include "../lcd/extui/lib/shui/Config.h"
 #include "../lcd/extui/lib/shui/kinematic.h"
 #include "../lcd/extui/lib/shui/Laser.h"
+#include "../lcd/extui/lib/shui/Moving.h"
+#include "../lcd/extui/lib/shui/leveling/BedLeveling.h"
 #endif
 
 #if HAS_LEVELING
@@ -1579,6 +1581,9 @@ void Planner::check_axes_activity() {
    *              Leveled XYZ on completion
    */
   void Planner::apply_leveling(xyz_pos_t &raw) {
+#if SH_UI
+      SHUI::Mesh::apply(raw);
+#else
     if (!leveling_active) return;
 
     #if ABL_PLANAR
@@ -1606,11 +1611,14 @@ void Planner::check_axes_activity() {
       );
 
     #endif
+#endif
   }
 
   void Planner::unapply_leveling(xyz_pos_t &raw) {
-
-    if (leveling_active) {
+#if SH_UI
+      SHUI::Mesh::unapply(raw);
+#else
+      if (leveling_active) {
 
       #if ABL_PLANAR
 
@@ -1640,6 +1648,7 @@ void Planner::check_axes_activity() {
 
       #endif
     }
+#endif
   }
 
 #endif // HAS_LEVELING

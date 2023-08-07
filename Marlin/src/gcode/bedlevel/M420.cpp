@@ -58,6 +58,7 @@
  * With MARLIN_DEV_MODE:
  *   S2        Create a simple random mesh and enable
  */
+#ifndef SH_UI
 void GcodeSuite::M420() {
   const bool seen_S = parser.seen('S'),
              to_enable = seen_S ? parser.value_bool() : planner.leveling_active;
@@ -255,5 +256,6 @@ void GcodeSuite::M420_report(const bool forReplay/*=true*/) {
   );
   serialprintln_onoff(planner.leveling_active);
 }
+#endif
 
 #endif // HAS_LEVELING

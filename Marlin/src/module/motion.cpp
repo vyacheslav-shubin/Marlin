@@ -73,6 +73,7 @@
 
 #if SH_UI
 #include "../lcd/extui/lib/shui/StatusHandler.h"
+#include "../lcd/extui/lib/shui/Moving.h"
 #endif
 
 
@@ -1071,6 +1072,9 @@ FORCE_INLINE void segment_idle(millis_t &next_idle_ms) {
    * Return true if 'current_position' was set to 'destination'
    */
   inline bool line_to_destination_cartesian() {
+#if SH_UI
+      return SHUI::Moving::line_to_destination_cartesian();
+#else
     const float scaled_fr_mm_s = MMS_SCALED(feedrate_mm_s);
     #if HAS_MESH
       if (planner.leveling_active && planner.leveling_active_at_z(destination.z)) {
@@ -1099,6 +1103,7 @@ FORCE_INLINE void segment_idle(millis_t &next_idle_ms) {
 
     planner.buffer_line(destination, scaled_fr_mm_s);
     return false; // caller will update current_position
+#endif
   }
 
 #endif // !IS_KINEMATIC

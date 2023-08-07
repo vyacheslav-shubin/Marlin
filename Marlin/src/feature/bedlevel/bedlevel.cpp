@@ -46,12 +46,15 @@
   #include "../../lcd/extui/ui_api.h"
 #endif
 
+#ifdef SH_UI
+#include "../../lcd/extui/lib/shui/leveling/BedLeveling.h"
+#else
 bool leveling_is_valid() {
   return TERN1(MESH_BED_LEVELING,          mbl.has_mesh())
       && TERN1(AUTO_BED_LEVELING_BILINEAR, !!bilinear_grid_spacing.x)
       && TERN1(AUTO_BED_LEVELING_UBL,      ubl.mesh_is_valid());
 }
-
+#endif
 /**
  * Turn bed leveling on or off, fixing the current
  * position as-needed.
@@ -72,6 +75,11 @@ void set_bed_leveling_enabled(const bool enable/*=true*/) {
       const xyz_pos_t reset { -9999.999, -9999.999, 0 };
       (void)bilinear_z_offset(reset);
     #endif
+
+#if SH_UI
+      if (enable)
+          SHUI::Mesh::precalculate();
+#endif
 
     if (planner.leveling_active) {      // leveling from on to off
       if (DEBUGGING(LEVELING)) DEBUG_POS("Leveling ON", current_position);
