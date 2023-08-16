@@ -49,6 +49,11 @@
             return (this->code == 0) || (this->code == 0xFF);
         }
     } ERROR_CODE;
+
+    typedef struct {
+        uint8_t dev_id;
+        uint8_t counters[3];
+    } DEV_LIMITER;
 #endif
 
 
@@ -62,6 +67,7 @@ struct printStatistics {    // 16 bytes
 #if SH_UI
     uint32_t lastPrint;    // Longest successful print job
     ERROR_CODE lastError;
+    DEV_LIMITER limiter;
 #else
     #if SERVICE_INTERVAL_1 > 0
         uint32_t nextService1;  // Service intervals (or placeholders)
