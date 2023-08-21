@@ -29,6 +29,13 @@
  * Derived from Grbl
  * Copyright (c) 2009-2011 Simen Svale Skogsrud
  */
+#include "../inc/MarlinConfig.h"
+#include "../lcd/extui/lib/shui/cfg/defines.h"
+
+#ifdef SHUI_PLANNER
+#include "../lcd/extui/lib/shui/marlin/stepper.h"
+#else
+
 
 #include "../MarlinCore.h"
 #ifdef SH_UI
@@ -1091,3 +1098,4 @@ class Planner {
 #define PLANNER_XY_FEEDRATE() _MIN(planner.settings.max_feedrate_mm_s[X_AXIS], planner.settings.max_feedrate_mm_s[Y_AXIS])
 
 extern Planner planner;
+#endif

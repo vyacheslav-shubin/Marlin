@@ -77,7 +77,11 @@
  * to avoid impacting ISR speed.
  */
 
+
+
 #include "stepper.h"
+
+#ifndef SHUI_STEPPER
 
 Stepper stepper; // Singleton
 
@@ -3790,3 +3794,4 @@ void Stepper::report_positions() {
   }
 
 #endif // HAS_MICROSTEPS
+#endif

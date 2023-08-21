@@ -42,6 +42,11 @@
  */
 
 #include "../inc/MarlinConfig.h"
+#include "../lcd/extui/lib/shui/cfg/defines.h"
+
+#ifdef SHUI_STEPPER
+#include "../lcd/extui/lib/shui/marlin/stepper.h"
+#else
 
 #include "planner.h"
 #include "stepper/indirection.h"
@@ -724,3 +729,4 @@ public:
 };
 
 extern Stepper stepper;
+#endif

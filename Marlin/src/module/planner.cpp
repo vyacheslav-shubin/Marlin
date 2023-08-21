@@ -63,6 +63,9 @@
  */
 
 #include "planner.h"
+
+#ifndef SHUI_PLANNER
+
 #include "stepper.h"
 #include "motion.h"
 #include "temperature.h"
@@ -3418,4 +3421,5 @@ void Planner::set_max_feedrate(const uint8_t axis, float inMaxFeedrateMMS) {
     #endif
   }
 
+#endif
 #endif
