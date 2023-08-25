@@ -63,12 +63,15 @@ Backlash backlash;
  * With a non-zero BACKLASH_SMOOTHING_MM value the backlash correction is
  * spread over multiple segments, smoothing out artifacts even more.
  */
-
-void Backlash::add_correction_steps(const int32_t &da, const int32_t &db, const int32_t &dc, const axis_bits_t dm, block_t * const block) {
+#ifdef SH_UI
+void Backlash::add_correction_steps(xyze_long_t &delta, const axis_bits_t dm, block_t * const block) {
+#else
+void Backlash::add_correction_steps(const int32_t &da, const int32_t &db, const int32_t &dc, const axis_bits_t dm, block_t * const block){
+#endif
   static axis_bits_t last_direction_bits;
   axis_bits_t changed_dir = last_direction_bits ^ dm;
 #if SH_UI
-  kinematic->backlash(da, db, dc, changed_dir);
+  kinematic->backlash(delta, changed_dir);
 #elif
 
   // Ignore direction change unless steps are taken in that direction
