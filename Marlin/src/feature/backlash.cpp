@@ -118,14 +118,16 @@ void Backlash::add_correction_steps(const int32_t &da, const int32_t &db, const 
 
   LOOP_LINEAR_AXES(axis) {
     if (distance_mm[axis]) {
-      const bool reversing = TEST(dm,axis);
+      const bool forward = TEST(dm, axis);
 
       // When an axis changes direction, add axis backlash to the residual error
       if (TEST(changed_dir, axis))
-        residual_error[axis] += (reversing ? -f_corr : f_corr) * distance_mm[axis] * planner.settings.axis_steps_per_mm[axis];
+        residual_error[axis] += (forward ? f_corr : -f_corr) * distance_mm[axis] * planner.settings.axis_steps_per_mm[axis];
 
       // Decide how much of the residual error to correct in this segment
       int32_t error_correction = residual_error[axis];
+      if (forward == (error_correction < 0))
+          error_correction = 0; // Don't take up any backlash in this segment, as it would subtract steps
       #ifdef BACKLASH_SMOOTHING_MM
         if (error_correction && smoothing_mm != 0) {
           // Take up a portion of the residual_error in this segment, but only when

@@ -639,10 +639,17 @@ void reset_stepper_drivers();    // Called by settings.load / settings.reset
     #endif
 
   #else
-
+  #ifndef E_STEP_WRITE
     #define E_STEP_WRITE(E,V) _E_STEP_WRITE(E,V)
+  #endif
+
+  #ifndef NORM_E_DIR
     #define   NORM_E_DIR(E)   _NORM_E_DIR(E)
+  #endif
+
+  #ifndef REV_E_DIR
     #define    REV_E_DIR(E)   _REV_E_DIR(E)
+  #endif
 
   #endif
 
