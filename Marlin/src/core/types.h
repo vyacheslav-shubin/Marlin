@@ -109,6 +109,49 @@ enum AxisEnum : uint8_t {
 
 typedef IF<(NUM_AXIS_ENUMS > 8), uint16_t, uint8_t>::type axis_bits_t;
 
+typedef uint8_t ena_mask_t;
+// Axis flags type, for enabled state or other simple state
+struct axis_flags_t{
+    union {
+        ena_mask_t bits;
+        struct {
+            bool X:1, Y:1, Z:1;
+            bool E0:1, E1:1;
+        };
+        struct {
+            bool x:1, y:1, z:1;
+            bool e0:1, e1:1;
+        };
+        struct {
+            uint8_t linear:3;
+            bool e;
+        };
+        struct {
+            bool a:1, b:1, c:1;
+        };
+    };
+    constexpr ena_mask_t linear_bits() { return (1 << 3) - 1; }
+    constexpr ena_mask_t e_bits() { return ((1 << 2) - 1) << 3; }
+    inline  bool test(const AxisEnum axis) {
+        return TEST(this->bits, axis);
+    }
+    inline void set(const AxisEnum axis) {
+        SBI(this->bits, axis);
+    }
+    inline void set_to(const AxisEnum axis, bool value) {
+        SET_BIT_TO(this->bits, axis, value);
+    }
+    inline  void clear(const AxisEnum axis) {
+        SBI(this->bits, axis);
+    }
+    inline void toggle(const AxisEnum axis) {
+        TBI(this->bits, axis);
+    }
+
+    bool operator== (const axis_flags_t &rs)         { return this->bits==rs.bits; }
+    bool operator!= (const axis_flags_t &rs)         { return this->bits!=rs.bits; }
+} ;
+
 //
 // Loop over axes
 //

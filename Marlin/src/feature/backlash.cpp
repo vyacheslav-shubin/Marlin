@@ -64,12 +64,13 @@ Backlash backlash;
  * spread over multiple segments, smoothing out artifacts even more.
  */
 #ifdef SH_UI
-void Backlash::add_correction_steps(xyze_long_t &delta, const axis_bits_t dm, block_t * const block) {
+void Backlash::add_correction_steps(xyze_long_t &delta, const axis_flags_t dm, block_t * const block) {
 #else
 void Backlash::add_correction_steps(const int32_t &da, const int32_t &db, const int32_t &dc, const axis_bits_t dm, block_t * const block){
 #endif
-  static axis_bits_t last_direction_bits;
-  axis_bits_t changed_dir = last_direction_bits ^ dm;
+  static axis_flags_t last_direction_bits;
+  axis_flags_t changed_dir;
+  changed_dir.bits = last_direction_bits.bits ^ dm.bits;
 #if SH_UI
   kinematic->backlash(delta, changed_dir);
 #elif
@@ -93,7 +94,7 @@ void Backlash::add_correction_steps(const int32_t &da, const int32_t &db, const 
     if (!da)        CBI(changed_dir, X_AXIS);
   #endif
 #endif
-  last_direction_bits ^= changed_dir;
+  last_direction_bits.bits ^= changed_dir.bits;
 
   if (correction == 0) return;
 
@@ -109,7 +110,7 @@ void Backlash::add_correction_steps(const int32_t &da, const int32_t &db, const 
     static xyz_long_t residual_error{0};
   #else
     // No direction change, no correction.
-    if (!changed_dir) return;
+    if (!changed_dir.bits) return;
     // No leftover residual error from segment to segment
     xyz_long_t residual_error{0};
   #endif
@@ -118,10 +119,10 @@ void Backlash::add_correction_steps(const int32_t &da, const int32_t &db, const 
 
   LOOP_LINEAR_AXES(axis) {
     if (distance_mm[axis]) {
-      const bool forward = TEST(dm, axis);
+      const bool forward = TEST(dm.bits, axis);
 
       // When an axis changes direction, add axis backlash to the residual error
-      if (TEST(changed_dir, axis))
+      if (changed_dir.test((AxisEnum)axis))
         residual_error[axis] += (forward ? f_corr : -f_corr) * distance_mm[axis] * planner.settings.axis_steps_per_mm[axis];
 
       // Decide how much of the residual error to correct in this segment

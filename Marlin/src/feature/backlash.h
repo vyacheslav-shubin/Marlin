@@ -72,7 +72,7 @@ public:
   }
 
 #ifdef SH_UI
-    void add_correction_steps(xyze_long_t &delta, const axis_bits_t dm, block_t * const block);
+    void add_correction_steps(xyze_long_t &delta, const axis_flags_t dm, block_t * const block);
 #else
   void add_correction_steps(const int32_t &da, const int32_t &db, const int32_t &dc, const axis_bits_t dm, block_t * const block);
 #endif
