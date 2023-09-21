@@ -124,7 +124,7 @@ struct axis_flags_t{
         };
         struct {
             uint8_t linear:3;
-            bool e;
+            bool e:1;
         };
         struct {
             bool a:1, b:1, c:1;
