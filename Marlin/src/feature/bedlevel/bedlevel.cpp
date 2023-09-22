@@ -48,6 +48,7 @@
 
 #ifdef SH_UI
 #include "../../lcd/extui/lib/shui/leveling/BedLeveling.h"
+#include "../../lcd/extui/lib/shui/Application.h"
 #else
 bool leveling_is_valid() {
   return TERN1(MESH_BED_LEVELING,          mbl.has_mesh())
@@ -95,6 +96,8 @@ void set_bed_leveling_enabled(const bool enable/*=true*/) {
       planner.unapply_leveling(current_position);
       if (DEBUGGING(LEVELING)) DEBUG_POS("...Now ON", current_position);
     }
+
+    SHUI::app.onHostEvent(SHUI::t_host_event_type::LEVELING_CHANGED);
 
     sync_plan_position();
   }
