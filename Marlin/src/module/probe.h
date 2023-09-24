@@ -24,6 +24,12 @@
 /**
  * module/probe.h - Move, deploy, enable, etc.
  */
+#include "../inc/MarlinConfig.h"
+#include "../lcd/extui/lib/shui/cfg/defines.h"
+
+#ifdef SHUI_PROBE
+#include "../lcd/extui/lib/shui/marlin/probe.h"
+#else
 
 #include "../inc/MarlinConfig.h"
 
@@ -279,3 +285,4 @@ private:
 };
 
 extern Probe probe;
+#endif

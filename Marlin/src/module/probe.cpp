@@ -24,6 +24,9 @@
  * module/probe.cpp
  */
 
+#include "probe.h"
+#ifndef SHUI_PROBE
+
 #include "../inc/MarlinConfig.h"
 
 #if HAS_BED_PROBE
@@ -920,3 +923,4 @@ float Probe::probe_at_point(const_float_t rx, const_float_t ry, const ProbePtRai
 #endif // SENSORLESS_PROBING || SENSORLESS_HOMING
 
 #endif // HAS_BED_PROBE
+#endif
