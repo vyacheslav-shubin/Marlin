@@ -25,6 +25,8 @@
  */
 
 #include "endstops.h"
+#ifndef SHUI_ENDSTOPS
+
 #include "stepper.h"
 
 #include "../sd/cardreader.h"
@@ -1382,4 +1384,4 @@ void Endstops::update() {
   }
 
 #endif // PINS_DEBUGGING
-
+#endif

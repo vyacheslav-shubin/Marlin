@@ -20,12 +20,16 @@
  *
  */
 #pragma once
+#include "../inc/MarlinConfig.h"
+#include "../lcd/extui/lib/shui/cfg/defines.h"
 
+#ifdef SHUI_ENDSTOPS
+#include "../lcd/extui/lib/shui/marlin/endstops.h"
+#else
 /**
  * endstops.h - manages endstops
  */
 
-#include "../inc/MarlinConfig.h"
 #include <stdint.h>
 
 #define __ES_ITEM(N) N,
@@ -261,3 +265,4 @@ class TemporaryGlobalEndstopsState {
     }
     ~TemporaryGlobalEndstopsState() { endstops.enable_globally(saved); }
 };
+#endif
