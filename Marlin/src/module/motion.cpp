@@ -692,13 +692,14 @@ void restore_feedrate_and_scaling() {
 
 #if HAS_SOFTWARE_ENDSTOPS
 
+#ifndef SH_UI
   // Software Endstops are based on the configured limits.
   soft_endstops_t soft_endstop = {
     true, false,
     LINEAR_AXIS_ARRAY(X_MIN_POS, Y_MIN_POS, Z_MIN_POS, I_MIN_POS, J_MIN_POS, K_MIN_POS),
     LINEAR_AXIS_ARRAY(X_MAX_BED, Y_MAX_BED, Z_MAX_POS, I_MAX_POS, J_MAX_POS, K_MAX_POS)
   };
-
+#endif
   /**
    * Software endstops can be used to monitor the open end of
    * an axis that has a hardware endstop on the other end. Or
@@ -789,6 +790,7 @@ void restore_feedrate_and_scaling() {
    * For DELTA/SCARA the XY constraint is based on the smallest
    * radius within the set software endstops.
    */
+#ifndef SH_UI
   void apply_motion_limits(xyz_pos_t &target) {
 
     if (!soft_endstop._enabled) return;
@@ -876,7 +878,7 @@ void restore_feedrate_and_scaling() {
       }
     #endif
   }
-
+#endif
 #else // !HAS_SOFTWARE_ENDSTOPS
 
   soft_endstops_t soft_endstop;

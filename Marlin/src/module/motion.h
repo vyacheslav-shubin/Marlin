@@ -219,7 +219,7 @@ inline float home_bump_mm(const AxisEnum axis) {
   } soft_endstops_t;
 
   extern soft_endstops_t soft_endstop;
-  void apply_motion_limits(xyz_pos_t &target);
+  extern void apply_motion_limits(xyz_pos_t &target);
   void update_software_endstops(const AxisEnum axis
     #if HAS_HOTEND_OFFSET
       , const uint8_t old_tool_index=0, const uint8_t new_tool_index=0
