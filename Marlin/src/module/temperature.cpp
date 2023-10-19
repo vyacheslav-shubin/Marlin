@@ -3703,6 +3703,7 @@ void Temperature::isr() {
       #define MIN_COOLING_SLOPE_TIME 60
     #endif
 
+  #ifndef SH_UI
     bool Temperature::wait_for_hotend(const uint8_t target_extruder, const bool no_wait_for_cooling/*=true*/
       OPTARG(G26_CLICK_CAN_CANCEL, const bool click_to_cancel/*=false*/)
     ) {
@@ -3819,7 +3820,7 @@ void Temperature::isr() {
 
       return false;
     }
-
+  #endif
     #if ENABLED(WAIT_FOR_HOTEND)
       void Temperature::wait_for_hotend_heating(const uint8_t target_extruder) {
         if (isHeatingHotend(target_extruder)) {
@@ -3842,7 +3843,8 @@ void Temperature::isr() {
       #define MIN_COOLING_SLOPE_TIME_BED 60
     #endif
 
-    bool Temperature::wait_for_bed(const bool no_wait_for_cooling/*=true*/
+  #ifndef SH_UI
+  bool Temperature::wait_for_bed(const bool no_wait_for_cooling/*=true*/
       OPTARG(G26_CLICK_CAN_CANCEL, const bool click_to_cancel/*=false*/)
     ) {
       #if TEMP_BED_RESIDENCY_TIME > 0
@@ -3950,6 +3952,7 @@ void Temperature::isr() {
 
       return false;
     }
+  #endif
 
     void Temperature::wait_for_bed_heating() {
       if (isHeatingBed()) {
