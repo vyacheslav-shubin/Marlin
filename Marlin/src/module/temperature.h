@@ -21,6 +21,13 @@
  */
 #pragma once
 
+#include "../inc/MarlinConfig.h"
+#include "../lcd/extui/lib/shui/cfg/defines.h"
+
+#ifdef SHUI_TEMPERATURE
+#include "../lcd/extui/lib/shui/marlin/temperature.h"
+#else
+
 /**
  * temperature.h - temperature controller
  */
@@ -1044,3 +1051,4 @@ class Temperature {
 };
 
 extern Temperature thermalManager;
+#endif

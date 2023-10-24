@@ -27,11 +27,14 @@
 // Useful when debugging thermocouples
 //#define IGNORE_THERMOCOUPLE_ERRORS
 
+#include "temperature.h"
+
+#ifndef SHUI_TEMPERATURE
+
 #include "../MarlinCore.h"
 #include "../HAL/shared/Delay.h"
 #include "../lcd/marlinui.h"
 
-#include "temperature.h"
 #include "endstops.h"
 #include "planner.h"
 #include "printcounter.h"
@@ -4233,3 +4236,5 @@ void Temperature::isr() {
   #endif // HAS_COOLER
 
 #endif // HAS_TEMP_SENSOR
+
+#endif
