@@ -89,7 +89,7 @@
 #define E1_STEP_PIN                         PD15
 #define E1_DIR_PIN                          PA1
 
-#if HAS_TMC_UART
+#if HAS_TMC_UART || SH_UI
   //
   // Software serial
   // No Hardware serial for steppers
