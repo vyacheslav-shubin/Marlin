@@ -936,7 +936,7 @@ namespace ExtUI {
 
   float getFeedrate_percent() { return feedrate_percentage; }
 
-  #if ENABLED(PIDTEMP)
+  #if ENABLED(PIDTEMP) && !SH_UI
     float getPIDValues_Kp(const extruder_t tool) { return PID_PARAM(Kp, tool); }
     float getPIDValues_Ki(const extruder_t tool) { return unscalePID_i(PID_PARAM(Ki, tool)); }
     float getPIDValues_Kd(const extruder_t tool) { return unscalePID_d(PID_PARAM(Kd, tool)); }
@@ -954,6 +954,7 @@ namespace ExtUI {
   #endif
 
   #if ENABLED(PIDTEMPBED)
+#ifndef SH_UI
     float getBedPIDValues_Kp() { return thermalManager.temp_bed.pid.Kp; }
     float getBedPIDValues_Ki() { return unscalePID_i(thermalManager.temp_bed.pid.Ki); }
     float getBedPIDValues_Kd() { return unscalePID_d(thermalManager.temp_bed.pid.Kd); }
@@ -968,6 +969,7 @@ namespace ExtUI {
     void startBedPIDTune(const celsius_t temp) {
       thermalManager.PID_autotune(temp, H_BED, 4, true);
     }
+#endif
   #endif
 
   void injectCommands_P(PGM_P const gcode) { queue.inject_P(gcode); }
@@ -984,6 +986,8 @@ namespace ExtUI {
     static PGMSTR(firmware_name, "Marlin " SHORT_BUILD_VERSION);
     return firmware_name;
   }
+
+#ifndef SH_UI
 
   void setTargetTemp_celsius(const_float_t inval, const heater_t heater) {
     float value = inval;
@@ -1021,6 +1025,7 @@ namespace ExtUI {
       thermalManager.setTargetHotend(LROUND(constrain(value, 0, thermalManager.hotend_max_target(e))), e);
     #endif
   }
+#endif
 
   void setTargetFan_percent(const_float_t value, const fan_t fan) {
     #if HAS_FAN

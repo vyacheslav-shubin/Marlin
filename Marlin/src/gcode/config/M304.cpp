@@ -34,6 +34,7 @@
  *  I<ival> - Set the I value
  *  D<dval> - Set the D value
  */
+#ifndef  SH_UI
 void GcodeSuite::M304() {
   if (!parser.seen("PID")) return M304_report();
   if (parser.seen('P')) thermalManager.temp_bed.pid.Kp = parser.value_float();
@@ -49,5 +50,7 @@ void GcodeSuite::M304_report(const bool forReplay/*=true*/) {
     , " D", unscalePID_d(thermalManager.temp_bed.pid.Kd)
   );
 }
+
+#endif
 
 #endif // PIDTEMPBED

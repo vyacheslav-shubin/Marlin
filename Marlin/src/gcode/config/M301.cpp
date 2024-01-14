@@ -45,6 +45,7 @@
  *
  *   F[float] Kf term
  */
+#ifndef SH_UI
 void GcodeSuite::M301() {
   // multi-extruder PID patch: M301 updates or prints a single extruder's PID values
   // default behavior (omitting E parameter) is to update for extruder 0 only
@@ -105,5 +106,6 @@ void GcodeSuite::M301_report(const bool forReplay/*=true*/ E_OPTARG(const int8_t
     }
   }
 }
+#endif
 
 #endif // PIDTEMP

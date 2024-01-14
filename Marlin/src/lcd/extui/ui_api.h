@@ -210,8 +210,11 @@ namespace ExtUI {
     char* getFilamentUsed_str(char buffer[21]);
   #endif
 
+#ifndef SH_UI
   void setTargetTemp_celsius(const_float_t, const heater_t);
   void setTargetTemp_celsius(const_float_t, const extruder_t);
+#endif
+
   void setTargetFan_percent(const_float_t, const fan_t);
   void coolDown();
   void setAxisPosition_mm(const_float_t, const axis_t, const feedRate_t=0);
@@ -315,7 +318,7 @@ namespace ExtUI {
     #endif
   #endif
 
-  #if ENABLED(PIDTEMP)
+  #if ENABLED(PIDTEMP) && !SH_UI
     float getPIDValues_Kp(const extruder_t);
     float getPIDValues_Ki(const extruder_t);
     float getPIDValues_Kd(const extruder_t);
@@ -324,11 +327,13 @@ namespace ExtUI {
   #endif
 
   #if ENABLED(PIDTEMPBED)
+  #ifndef SH_UI
     float getBedPIDValues_Kp();
     float getBedPIDValues_Ki();
     float getBedPIDValues_Kd();
     void setBedPIDValues(const_float_t, const_float_t , const_float_t);
     void startBedPIDTune(const celsius_t);
+  #endif
   #endif
 
   /**

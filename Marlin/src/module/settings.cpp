@@ -937,7 +937,7 @@ void MarlinSettings::postprocess() {
       _FIELD_TEST(hotendPID);
       HOTEND_LOOP() {
         PIDCF_t pidcf = {
-          #if DISABLED(PIDTEMP)
+          #if DISABLED(PIDTEMP) || SH_UI
             NAN, NAN, NAN,
             NAN, NAN
           #else
@@ -965,7 +965,7 @@ void MarlinSettings::postprocess() {
       _FIELD_TEST(bedPID);
 
       const PID_t bed_pid = {
-        #if DISABLED(PIDTEMPBED)
+        #if DISABLED(PIDTEMPBED) || SH_UI
           NAN, NAN, NAN
         #else
           // Store the unscaled PID values
@@ -1811,7 +1811,7 @@ void MarlinSettings::postprocess() {
         HOTEND_LOOP() {
           PIDCF_t pidcf;
           EEPROM_READ(pidcf);
-          #if ENABLED(PIDTEMP)
+          #if ENABLED(PIDTEMP) && !SH_UI
             if (!validating && !isnan(pidcf.Kp)) {
               // Scale PID values since EEPROM values are unscaled
               PID_PARAM(Kp, e) = pidcf.Kp;
@@ -1843,7 +1843,7 @@ void MarlinSettings::postprocess() {
       {
         PID_t pid;
         EEPROM_READ(pid);
-        #if ENABLED(PIDTEMPBED)
+        #if ENABLED(PIDTEMPBED) && !SH_UI
           if (!validating && !isnan(pid.Kp)) {
             // Scale PID values since EEPROM values are unscaled
             thermalManager.temp_bed.pid.Kp = pid.Kp;
@@ -2831,7 +2831,7 @@ void MarlinSettings::reset() {
   // Hotend PID
   //
 
-  #if ENABLED(PIDTEMP)
+  #if ENABLED(PIDTEMP) && !SH_UI
     #if ENABLED(PID_PARAMS_PER_HOTEND)
       constexpr float defKp[] =
         #ifdef DEFAULT_Kp_LIST
@@ -2897,7 +2897,7 @@ void MarlinSettings::reset() {
   // Heated Bed PID
   //
 
-  #if ENABLED(PIDTEMPBED)
+  #if ENABLED(PIDTEMPBED) && !SH_UI
     thermalManager.temp_bed.pid.Kp = DEFAULT_bedKp;
     thermalManager.temp_bed.pid.Ki = scalePID_i(DEFAULT_bedKi);
     thermalManager.temp_bed.pid.Kd = scalePID_d(DEFAULT_bedKd);

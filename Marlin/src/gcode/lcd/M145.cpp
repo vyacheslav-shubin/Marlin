@@ -39,6 +39,7 @@
  *   B<bed temp>
  *   F<fan speed>
  */
+#ifndef SH_UI
 void GcodeSuite::M145() {
   const uint8_t material = (uint8_t)parser.intval('S');
   if (material >= PREHEAT_COUNT)
@@ -59,6 +60,7 @@ void GcodeSuite::M145() {
     #endif
   }
 }
+#endif
 
 void GcodeSuite::M145_report(const bool forReplay/*=true*/) {
   report_heading(forReplay, F(STR_MATERIAL_HEATUP));
