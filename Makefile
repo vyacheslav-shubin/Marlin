@@ -131,3 +131,5 @@ git-publish-dev:
 
 git-publish-laser: git-copy-laser git-publish-dev
 
+copy-ya:
+	make -C ../shui-src copy-ya
