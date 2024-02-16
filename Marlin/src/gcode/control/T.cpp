@@ -46,6 +46,8 @@
  *   Tx   Same as T?, but nozzle doesn't have to be preheated. Tc requires a preheated nozzle to finish filament load.
  *   Tc   Load to nozzle after filament was prepared by Tc and nozzle is already heated.
  */
+
+#ifndef SH_UI
 void GcodeSuite::T(const int8_t tool_index) {
 
   DEBUG_SECTION(log_T, "T", DEBUGGING(LEVELING));
@@ -68,3 +70,4 @@ void GcodeSuite::T(const int8_t tool_index) {
     #endif
   );
 }
+#endif

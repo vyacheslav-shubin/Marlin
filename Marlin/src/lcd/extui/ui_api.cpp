@@ -348,8 +348,8 @@ namespace ExtUI {
   void setActiveTool(const extruder_t extruder, bool no_move) {
     #if HAS_MULTI_EXTRUDER
       const uint8_t e = extruder - E0;
-      if (e != active_extruder) tool_change(e, no_move);
-      active_extruder = e;
+      if (e != tool.extruder) tool_change(e, no_move);
+      tool.extruder = e;
     #else
       UNUSED(extruder);
       UNUSED(no_move);
@@ -364,7 +364,7 @@ namespace ExtUI {
     }
   }
 
-  extruder_t getActiveTool() { return getTool(active_extruder); }
+  extruder_t getActiveTool() { return getTool(tool.extruder); }
 
   bool isMoving() { return planner.has_blocks_queued(); }
 
@@ -762,7 +762,7 @@ namespace ExtUI {
 
       #if ENABLED(BABYSTEP_ZPROBE_OFFSET)
         // Make it so babystepping in Z adjusts the Z probe offset.
-        if (axis == Z && TERN1(HAS_MULTI_EXTRUDER, (linked_nozzles || active_extruder == 0)))
+        if (axis == Z && TERN1(HAS_MULTI_EXTRUDER, (linked_nozzles || tool.extruder == 0)))
           probe.offset.z += mm;
       #endif
 
@@ -774,7 +774,7 @@ namespace ExtUI {
          */
         if (!linked_nozzles) {
           HOTEND_LOOP()
-            if (e != active_extruder)
+            if (e != tool.extruder)
               hotend_offset[e][axis] += mm;
 
           normalizeNozzleOffset(X);

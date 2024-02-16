@@ -111,10 +111,6 @@ xyze_pos_t destination; // {0}
   xyze_pos_t stored_position[SAVED_POSITIONS];
 #endif
 
-// The active extruder (tool). Set with T<extruder> command.
-#if HAS_MULTI_EXTRUDER
-  uint8_t active_extruder = 0; // = 0
-#endif
 
 #if ENABLED(LCD_SHOW_E_TOTAL)
   float e_move_accumulator; // = 0
@@ -416,6 +412,7 @@ void line_to_current_position(const_feedRate_t fr_mm_s/*=feedrate_mm_s*/) {
   planner.buffer_line(current_position, fr_mm_s);
 }
 
+#ifndef SH_UI
 #if HAS_EXTRUDERS
   void unscaled_e_move(const_float_t length, const_feedRate_t fr_mm_s) {
     TERN_(HAS_FILAMENT_SENSOR, runout.reset());
@@ -423,6 +420,7 @@ void line_to_current_position(const_feedRate_t fr_mm_s/*=feedrate_mm_s*/) {
     line_to_current_position(fr_mm_s);
     planner.synchronize();
   }
+#endif
 #endif
 
 #if IS_KINEMATIC
@@ -447,6 +445,7 @@ void line_to_current_position(const_feedRate_t fr_mm_s/*=feedrate_mm_s*/) {
 
 #endif // IS_KINEMATIC
 
+#ifndef SH_UI
 /**
  * Do a fast or normal move to 'destination' with an optional FR.
  *  - Move at normal speed regardless of feedrate percentage.
@@ -475,6 +474,7 @@ void _internal_move_to_destination(const_feedRate_t fr_mm_s/*=0.0f*/
   feedrate_percentage = old_pct;
   TERN_(HAS_EXTRUDERS, planner.e_factor[active_extruder] = old_fac);
 }
+#endif
 
 /**
  * Plan a move to (X, Y, Z, [I, [J, [K]]]) and set the current_position
@@ -709,6 +709,8 @@ void restore_feedrate_and_scaling() {
    * the software endstop positions must be refreshed to remain
    * at the same positions relative to the machine.
    */
+
+#ifndef SH_UI
   void update_software_endstops(const AxisEnum axis
     OPTARG(HAS_HOTEND_OFFSET, const uint8_t old_tool_index/*=0*/, const uint8_t new_tool_index/*=0*/)
   ) {
@@ -783,7 +785,7 @@ void restore_feedrate_and_scaling() {
     if (DEBUGGING(LEVELING))
       SERIAL_ECHOLNPGM("Axis ", AS_CHAR(AXIS_CHAR(axis)), " min:", soft_endstop.min[axis], " max:", soft_endstop.max[axis]);
   }
-
+#endif
   /**
    * Constrain the given coordinates to the software endstops.
    *
@@ -887,6 +889,7 @@ void restore_feedrate_and_scaling() {
 
 #if !UBL_SEGMENTED
 
+#ifndef SH_UI
 FORCE_INLINE void segment_idle(millis_t &next_idle_ms) {
   const millis_t ms = millis();
   if (ELAPSED(ms, next_idle_ms)) {
@@ -895,7 +898,7 @@ FORCE_INLINE void segment_idle(millis_t &next_idle_ms) {
   }
   thermalManager.manage_heater();  // Returns immediately on most calls
 }
-
+#endif
 #if IS_KINEMATIC
 
   #if IS_SCARA
@@ -1004,7 +1007,7 @@ FORCE_INLINE void segment_idle(millis_t &next_idle_ms) {
 #else // !IS_KINEMATIC
 
   #if ENABLED(SEGMENT_LEVELED_MOVES)
-
+#ifndef SH_UI
     /**
      * Prepare a segmented move on a CARTESIAN setup.
      *
@@ -1062,7 +1065,7 @@ FORCE_INLINE void segment_idle(millis_t &next_idle_ms) {
       // the final move must be to the exact destination.
       planner.buffer_line(destination, fr_mm_s, active_extruder, cartesian_segment_mm OPTARG(SCARA_FEEDRATE_SCALING, inv_duration));
     }
-
+#endif
   #endif // SEGMENT_LEVELED_MOVES
 
   /**
@@ -1149,7 +1152,7 @@ FORCE_INLINE void segment_idle(millis_t &next_idle_ms) {
 
   void set_duplication_enabled(const bool dupe, const int8_t tool_index/*=-1*/) {
     extruder_duplication_enabled = dupe;
-    if (tool_index >= 0) active_extruder = tool_index;
+    if (tool_index >= 0) tool.set_extruder(tool_index);
     stepper.set_directions();
   }
 
@@ -1258,7 +1261,7 @@ void prepare_line_to_destination() {
       bool ignore_e = false;
 
       #if ENABLED(PREVENT_COLD_EXTRUSION)
-        ignore_e = thermalManager.tooColdToExtrude(active_extruder);
+        ignore_e = thermalManager.tooColdToExtrude(tool.heater);
         if (ignore_e) {
           #if SH_UI
             SHUI::StatusHandler::statusMessage(nullptr, SHUI::MESSAGE_SOURCE::MS_HEATING,SHUI::STATUS_TEMP::temp_cold_extrusion);
@@ -1269,7 +1272,7 @@ void prepare_line_to_destination() {
       #endif
 
       #if ENABLED(PREVENT_LENGTHY_EXTRUDE)
-        const float e_delta = ABS(destination.e - current_position.e) * planner.e_factor[active_extruder];
+        const float e_delta = ABS(destination.e - current_position.e) * planner.e_factor[tool.feeder_index];
         if (e_delta > (EXTRUDE_MAXLENGTH)) {
           #if ENABLED(MIXING_EXTRUDER)
             float collector[MIXING_STEPPERS];
@@ -1546,8 +1549,7 @@ void prepare_line_to_destination() {
     }
 
     // Only do some things when moving towards an endstop
-    const int8_t axis_home_dir = TERN0(DUAL_X_CARRIAGE, axis == X_AXIS)
-                  ? TOOL_X_HOME_DIR(active_extruder) : home_dir(axis);
+    const int8_t axis_home_dir = home_dir(axis);
     const bool is_home_dir = (axis_home_dir > 0) == (distance > 0);
 
     #if ENABLED(SENSORLESS_HOMING)
@@ -1564,7 +1566,7 @@ void prepare_line_to_destination() {
 
         #if BOTH(HAS_HOTEND, WAIT_FOR_HOTEND)
           // Wait for the hotend to heat back up between probing points
-          thermalManager.wait_for_hotend_heating(active_extruder);
+          thermalManager.wait_for_hotend_heating(tool.heater);
         #endif
 
         TERN_(HAS_QUIET_PROBING, if (final_approach) probe.set_probing_paused(true));
@@ -1593,7 +1595,7 @@ void prepare_line_to_destination() {
 
       // Set delta/cartesian axes directly
       target[axis] = distance;                  // The move will be towards the endstop
-      planner.buffer_segment(target OPTARG(HAS_DIST_MM_ARG, cart_dist_mm), home_fr_mm_s, active_extruder);
+      planner.buffer_segment(target OPTARG(HAS_DIST_MM_ARG, cart_dist_mm), home_fr_mm_s, tool.extruder);
     #endif
 
     planner.synchronize();
@@ -1765,8 +1767,7 @@ void prepare_line_to_destination() {
 
     if (DEBUGGING(LEVELING)) DEBUG_ECHOLNPGM(">>> homeaxis(", AS_CHAR(AXIS_CHAR(axis)), ")");
 
-    const int axis_home_dir = TERN0(DUAL_X_CARRIAGE, axis == X_AXIS)
-                ? TOOL_X_HOME_DIR(active_extruder) : home_dir(axis);
+    const int axis_home_dir = home_dir(axis);
 
     //
     // Homing Z with a probe? Raise Z (maybe) and deploy the Z probe.
@@ -2103,8 +2104,8 @@ void set_axis_is_at_home(const AxisEnum axis) {
   set_axis_homed(axis);
 
   #if ENABLED(DUAL_X_CARRIAGE)
-    if (axis == X_AXIS && (active_extruder == 1 || dual_x_carriage_mode == DXC_DUPLICATION_MODE)) {
-      current_position.x = x_home_pos(active_extruder);
+    if (axis == X_AXIS && (tool.extruder == 1 || dual_x_carriage_mode == DXC_DUPLICATION_MODE)) {
+      current_position.x = x_home_pos(tool.extruder);
       return;
     }
   #endif

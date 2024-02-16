@@ -92,6 +92,7 @@ void FWRetract::reset() {
  *       included in the G-code. Use M207 Z0 to to prevent double hop.
  */
 void FWRetract::retract(const bool retracting E_OPTARG(bool swapping/*=false*/)) {
+    uint8_t active_extruder = tool.nozzle_index;
   // Prevent two retracts or recovers in a row
   if (retracted[active_extruder] == retracting) return;
 

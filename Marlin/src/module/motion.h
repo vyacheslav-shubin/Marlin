@@ -107,13 +107,6 @@ extern feedRate_t feedrate_mm_s;
 extern int16_t feedrate_percentage;
 #define MMS_SCALED(V) ((V) * 0.01f * feedrate_percentage)
 
-// The active extruder (tool). Set with T<extruder> command.
-#if HAS_MULTI_EXTRUDER
-  extern uint8_t active_extruder;
-#else
-  constexpr uint8_t active_extruder = 0;
-#endif
-
 #if ENABLED(LCD_SHOW_E_TOTAL)
   extern float e_move_accumulator;
 #endif
@@ -220,11 +213,7 @@ inline float home_bump_mm(const AxisEnum axis) {
 
   extern soft_endstops_t soft_endstop;
   extern void apply_motion_limits(xyz_pos_t &target);
-  void update_software_endstops(const AxisEnum axis
-    #if HAS_HOTEND_OFFSET
-      , const uint8_t old_tool_index=0, const uint8_t new_tool_index=0
-    #endif
-  );
+
   #define SET_SOFT_ENDSTOP_LOOSE(loose) (soft_endstop._loose = loose)
 
 #else // !HAS_SOFTWARE_ENDSTOPS

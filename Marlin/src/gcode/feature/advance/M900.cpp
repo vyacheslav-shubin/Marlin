@@ -52,8 +52,12 @@ void GcodeSuite::M900() {
   #if EXTRUDERS < 2
     constexpr uint8_t tool_index = 0;
   #else
+  #if SH_UI
+    const uint8_t tool_index = parser.intval('T', tool.feeder_index);
+  #else
     const uint8_t tool_index = parser.intval('T', active_extruder);
-    if (tool_index >= EXTRUDERS) {
+  #endif
+    if (tool_index > REAL_EXTRUDERS) /* + 1 virtual*/{
       echo_value_oor('T', false);
       return;
     }

@@ -19,10 +19,12 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *
  */
+#include "tool_change.h"
+
+#ifndef SHUI_TOOLCHANGE
 
 #include "../inc/MarlinConfigPre.h"
 
-#include "tool_change.h"
 
 #include "probe.h"
 #include "motion.h"
@@ -1421,3 +1423,4 @@ void tool_change(const uint8_t new_tool, bool no_move/*=false*/) {
   }
 
 #endif // TOOLCHANGE_MIGRATION_FEATURE
+#endif

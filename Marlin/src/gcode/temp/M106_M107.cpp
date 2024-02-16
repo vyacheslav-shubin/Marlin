@@ -21,6 +21,7 @@
  */
 
 #include "../../inc/MarlinConfig.h"
+#include "../../module/planner.h"
 
 #if HAS_FAN
 
@@ -59,7 +60,7 @@
  *           3-255 = Set the speed for use with T2
  */
 void GcodeSuite::M106() {
-  const uint8_t pfan = parser.byteval('P', _ALT_P);
+  const uint8_t pfan = parser.byteval('P', tool.fan);
   if (pfan >= _CNT_P) return;
   #if REDUNDANT_PART_COOLING_FAN
     if (pfan == REDUNDANT_PART_COOLING_FAN) return;
@@ -70,7 +71,7 @@ void GcodeSuite::M106() {
     if (t > 0) return thermalManager.set_temp_fan_speed(pfan, t);
   #endif
 
-  const uint16_t dspeed = parser.seen_test('A') ? thermalManager.fan_speed[active_extruder] : 255;
+  const uint16_t dspeed = parser.seen_test('A') ? thermalManager.fan_speed[tool.fan] : 255;
 
   uint16_t speed = dspeed;
 
@@ -100,7 +101,7 @@ void GcodeSuite::M106() {
  * M107: Fan Off
  */
 void GcodeSuite::M107() {
-  const uint8_t pfan = parser.byteval('P', _ALT_P);
+  const uint8_t pfan = parser.byteval('P', tool.fan);
   if (pfan >= _CNT_P) return;
   #if REDUNDANT_PART_COOLING_FAN
     if (pfan == REDUNDANT_PART_COOLING_FAN) return;

@@ -61,6 +61,9 @@ void plan_arc(
   const bool clockwise,     // Clockwise?
   const uint8_t circles     // Take the scenic route
 ) {
+#ifdef SH_UI
+    uint8_t active_extruder = tool.extruder;
+#endif
   #if ENABLED(CNC_WORKSPACE_PLANES)
     AxisEnum axis_p, axis_q, axis_l;
     switch (gcode.workspace_plane) {

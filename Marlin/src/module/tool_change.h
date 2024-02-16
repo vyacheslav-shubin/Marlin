@@ -20,8 +20,12 @@
  *
  */
 #pragma once
-
 #include "../inc/MarlinConfig.h"
+#include "../lcd/extui/lib/shui/cfg/defines.h"
+
+#ifdef SHUI_TOOLCHANGE
+#include "../lcd/extui/lib/shui/marlin/tool_change.h"
+#else
 
 //#define DEBUG_TOOLCHANGE_MIGRATION_FEATURE
 
@@ -125,3 +129,5 @@
  * previous tool out of the way and the new tool into place.
  */
 void tool_change(const uint8_t tmp_extruder, bool no_move=false);
+
+#endif

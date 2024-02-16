@@ -61,6 +61,10 @@
 
 #include "probe.h"
 
+#ifdef SH_UI
+#include "../lcd/extui/lib/shui/marlin/motion.h"
+#endif
+
 #if HAS_LEVELING
   #include "../feature/bedlevel/bedlevel.h"
 #endif
