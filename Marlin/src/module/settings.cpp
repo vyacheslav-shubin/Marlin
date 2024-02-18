@@ -397,7 +397,7 @@ typedef struct SettingsDataStruct {
   //
   // LIN_ADVANCE
   //
-  float planner_extruder_advance_K[_MAX(EXTRUDERS, 1)]; // M900 K  planner.extruder_advance_K
+  float planner_extruder_advance_K[REAL_EXTRUDERS + 1]; // M900 K  planner.extruder_advance_K
 
   //
   // HAS_MOTOR_CURRENT_PWM
@@ -508,7 +508,7 @@ typedef struct SettingsDataStruct {
 
 } SettingsData;
 
-//static_assert(sizeof(SettingsData) <= MARLIN_EEPROM_SIZE, "EEPROM too small to contain SettingsData!");
+static_assert(sizeof(SettingsData) == 748, "EEPROM error size of SettingsData!");
 
 MarlinSettings settings;
 
@@ -642,7 +642,9 @@ void MarlinSettings::postprocess() {
 
   bool MarlinSettings::size_error(const uint16_t size) {
     if (size != datasize()) {
-      DEBUG_ERROR_MSG("EEPROM datasize error.");
+      char buf[50];
+      sprintf(buf, "EEPROM datasize error. w:%d, f:%d", datasize(), size);
+      SERIAL_ECHOLN(buf);
       return true;
     }
     return false;
@@ -2161,7 +2163,7 @@ void MarlinSettings::postprocess() {
       // Linear Advance
       //
       {
-        float extruder_advance_K[_MAX(EXTRUDERS, 1)];
+        float extruder_advance_K[REAL_EXTRUDERS + 1];
         _FIELD_TEST(planner_extruder_advance_K);
         EEPROM_READ(extruder_advance_K);
         #if ENABLED(LIN_ADVANCE)
