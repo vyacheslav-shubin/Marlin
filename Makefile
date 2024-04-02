@@ -68,6 +68,9 @@ endef
 rn12: gen-date
 	$(call make_firmware,RN12)
 
+rn12_303: gen-date
+	$(call make_firmware,RN12_303)
+
 rn12-no:
 	pio run -e RN12-NO
 
