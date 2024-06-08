@@ -97,7 +97,7 @@ f4_bin_v3_usb:
 	$(call make_firmware,F4_RN30_USB)
 
 
-bins: rn12 rn13 rn20 rn30
+bins: rn12 rn13 rn20 rn30 rn12_303
 
 font:
 	/usr/bin/python3 ./font_builder.py
