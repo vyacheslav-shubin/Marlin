@@ -59,7 +59,9 @@
 #define Y_DIAG_PIN                          PD2
 #define Z_DIAG_PIN                          PC8
 #define E0_DIAG_PIN                         PC4
-#define E1_DIAG_PIN                         PE7
+#ifndef E1_DIAG_PIN
+    #define E1_DIAG_PIN                         PE7
+#endif
 
 #define X_STOP_PIN                    X_DIAG_PIN
 #define Y_STOP_PIN                    Y_DIAG_PIN
@@ -69,11 +71,15 @@
 //
 // Steppers
 //
-#define X_ENABLE_PIN                        PE4
+#ifndef X_ENABLE_PIN
+    #define X_ENABLE_PIN                        PE4
+#endif
 #define X_STEP_PIN                          PE3
 #define X_DIR_PIN                           PE2
 
-#define Y_ENABLE_PIN                        PE1
+#ifndef Y_ENABLE_PIN
+    #define Y_ENABLE_PIN                        PE1
+#endif
 #define Y_STEP_PIN                          PE0
 #define Y_DIR_PIN                           PB9
 

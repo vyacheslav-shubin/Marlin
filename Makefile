@@ -55,12 +55,18 @@ setup-local-docker:
 pics: font
 	/usr/bin/python3 ./make_res.py
 
+
+define copy_fw
+    if [ -f .pio/build/$1/$2 ]; then mv -f .pio/build/$1/$2 .pio/firmware/$1/$2; fi
+endef
+
 define make_firmware
     mkdir -p .pio/build/$1
     pio run -e $1
     mkdir -p .pio/firmware/$1
-    if [ -f .pio/build/$1/Robin_nano35.bin ]; then mv -f .pio/build/$1/Robin_nano35.bin .pio/firmware/$1/Robin_nano35.bin; fi		
-    if [ -f .pio/build/$1/Robin_nano_v3.bin ]; then mv -f .pio/build/$1/Robin_nano_v3.bin .pio/firmware/$1/Robin_nano_v3.bin; fi   
+    $(call copy_fw,$1,Robin_nano35.bin)
+    $(call copy_fw,$1,Robin_nano_v3.bin)
+    $(call copy_fw,$1,Robin_nano_6.bin)
     #rm -f .pio/build/$1/firmware.elf
     #rm -f .pio/build/$1/firmware.bin
 endef
@@ -96,6 +102,8 @@ rn30:
 f4_bin_v3_usb:
 	$(call make_firmware,F4_RN30_USB)
 
+rn6:
+	$(call make_firmware,F4_RN6)
 
 bins: rn12 rn13 rn20 rn30 rn12_303
 

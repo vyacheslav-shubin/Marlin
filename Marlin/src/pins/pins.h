@@ -251,7 +251,7 @@
   #include "mega/pins_GT2560_REV_B.h"           // ATmega2560                             env:mega2560
 #elif MB(GT2560_V4)
   #include "mega/pins_GT2560_V4.h"              // ATmega2560                             env:mega2560
-  #elif MB(GT2560_V4_A20)
+#elif MB(GT2560_V4_A20)
   #include "mega/pins_GT2560_V4_A20.h"          // ATmega2560                             env:mega2560
 #elif MB(GT2560_V3_MC2)
   #include "mega/pins_GT2560_V3_MC2.h"          // ATmega2560                             env:mega2560
@@ -648,7 +648,7 @@
 #elif MB(MKS_ROBIN_PRO_V2)
   #include "stm32f4/pins_MKS_ROBIN_PRO_V2.h"    // STM32F4                                env:mks_robin_pro2
 #elif MB(MKS_ROBIN_NANO_V3)
-  #include "stm32f4/pins_MKS_ROBIN_NANO_V3.h"   // STM32F4                                env:mks_robin_nano_v3 env:mks_robin_nano_v3_usb_flash_drive env:mks_robin_nano_v3_usb_flash_drive_msc
+#include "stm32f4/pins_MKS_ROBIN_NANO_V3.h"   // STM32F4                                env:mks_robin_nano_v3 env:mks_robin_nano_v3_usb_flash_drive env:mks_robin_nano_v3_usb_flash_drive_msc
 #elif MB(ANET_ET4)
   #include "stm32f4/pins_ANET_ET4.h"            // STM32F4                                env:Anet_ET4_OpenBLT
 #elif MB(ANET_ET4P)
@@ -670,6 +670,8 @@
 // ARM Cortex M7
 //
 
+#elif MB(MKS_NANO6)
+#include "stm32f4/pins_MKS_ROBIN_NANO6.h"           // STM32F4                          env:mks_robin_nano6
 #elif MB(REMRAM_V1)
   #include "stm32f7/pins_REMRAM_V1.h"           // STM32F7                                env:REMRAM_V1
 #elif MB(NUCLEO_F767ZI)
