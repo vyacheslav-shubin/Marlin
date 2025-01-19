@@ -392,7 +392,7 @@ void GcodeSuite::process_parsed_command(const bool no_ok/*=false*/) {
           break;
       #endif
 
-      #if HAS_BED_PROBE
+      #if HAS_BED_PROBE && 0
         case 30: G30(); break;                                    // G30: Single Z probe
         #if ENABLED(Z_PROBE_SLED)
           case 31: G31(); break;                                  // G31: dock the sled
@@ -419,7 +419,7 @@ void GcodeSuite::process_parsed_command(const bool no_ok/*=false*/) {
           break;
       #endif
 
-      #if HAS_MESH
+      #if HAS_MESH && 0
         case 42: G42(); break;                                    // G42: Coordinated move to a mesh point
       #endif
 
@@ -727,10 +727,11 @@ void GcodeSuite::process_parsed_command(const bool no_ok/*=false*/) {
         case 226: M226(); break;                                  // M226: Wait until a pin reaches a state
       #endif
 
-      #if HAS_SERVOS
+      case 281: M281(); break;                                // M281: Set servo angles
+      
+      #if HAS_SERVOS && 0
         case 280: M280(); break;                                  // M280: Set servo position absolute
         #if ENABLED(EDITABLE_SERVO_ANGLES)
-          case 281: M281(); break;                                // M281: Set servo angles
         #endif
         #if ENABLED(SERVO_DETACH_GCODE)
           case 282: M282(); break;                                // M282: Detach servo

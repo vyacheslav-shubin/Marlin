@@ -163,7 +163,7 @@ namespace ExtUI {
     inline uint32_t getProgress_seconds_remaining() { return ui.get_remaining_time(); }
   #endif
 
-  #if HAS_LEVELING
+  #if HAS_LEVELING && 0
     bool getLevelingActive();
     void setLevelingActive(const bool);
     bool getMeshValid();

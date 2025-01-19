@@ -22,7 +22,7 @@
 
 #include "../../inc/MarlinConfig.h"
 
-#if HAS_MESH
+#if HAS_MESH && 0
 
 #include "../gcode.h"
 #include "../../MarlinCore.h" // for IsRunning()

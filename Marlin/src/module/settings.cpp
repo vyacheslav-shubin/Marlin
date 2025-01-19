@@ -778,7 +778,7 @@ void MarlinSettings::postprocess() {
     //
     {
       _FIELD_TEST(probe_offset);
-      #if HAS_BED_PROBE
+      #if HAS_BED_PROBE && 0
         const xyz_pos_t &zpo = probe.offset;
       #else
         constexpr xyz_pos_t zpo{0};
@@ -842,7 +842,7 @@ void MarlinSettings::postprocess() {
     //
     {
       _FIELD_TEST(servo_angles);
-      #if !HAS_SERVO_ANGLES
+      #if !HAS_SERVO_ANGLES || 1
         uint16_t servo_angles[EEPROM_NUM_SERVOS][2] = { { 0, 0 } };
       #endif
       EEPROM_WRITE(servo_angles);
@@ -865,8 +865,8 @@ void MarlinSettings::postprocess() {
     // BLTOUCH
     //
     {
-      _FIELD_TEST(bltouch_last_written_mode);
-      const bool bltouch_last_written_mode = TERN(BLTOUCH, bltouch.last_written_mode, false);
+      //_FIELD_TEST(bltouch_last_written_mode);
+      const bool bltouch_last_written_mode = false;//TERN(BLTOUCH, bltouch.last_written_mode, false);
       EEPROM_WRITE(bltouch_last_written_mode);
     }
 
@@ -1647,7 +1647,7 @@ void MarlinSettings::postprocess() {
       //
       {
         _FIELD_TEST(probe_offset);
-        #if HAS_BED_PROBE
+        #if HAS_BED_PROBE && 0
           const xyz_pos_t &zpo = probe.offset;
         #else
           xyz_pos_t zpo;
@@ -1712,7 +1712,7 @@ void MarlinSettings::postprocess() {
       //
       {
         _FIELD_TEST(servo_angles);
-        #if ENABLED(EDITABLE_SERVO_ANGLES)
+        #if ENABLED(EDITABLE_SERVO_ANGLES) && 0
           uint16_t (&servo_angles_arr)[EEPROM_NUM_SERVOS][2] = servo_angles;
         #else
           uint16_t servo_angles_arr[EEPROM_NUM_SERVOS][2];
@@ -1738,8 +1738,8 @@ void MarlinSettings::postprocess() {
       // BLTOUCH
       //
       {
-        _FIELD_TEST(bltouch_last_written_mode);
-        #if ENABLED(BLTOUCH)
+        //_FIELD_TEST(bltouch_last_written_mode);
+        #if ENABLED(BLTOUCH) && 0
           const bool &bltouch_last_written_mode = bltouch.last_written_mode;
         #else
           bool bltouch_last_written_mode;
@@ -2721,7 +2721,7 @@ void MarlinSettings::reset() {
   TERN_(ENABLE_LEVELING_FADE_HEIGHT, new_z_fade_height = (DEFAULT_LEVELING_FADE_HEIGHT));
   TERN_(HAS_LEVELING, reset_bed_level());
 
-  #if HAS_BED_PROBE
+  #if HAS_BED_PROBE && 0
     constexpr float dpo[] = NOZZLE_TO_PROBE_OFFSET;
     static_assert(COUNT(dpo) == LINEAR_AXES, "NOZZLE_TO_PROBE_OFFSET must contain offsets for each linear axis X, Y, Z....");
     #if HAS_PROBE_XY_OFFSET
@@ -2739,7 +2739,7 @@ void MarlinSettings::reset() {
   //
   // Servo Angles
   //
-  TERN_(EDITABLE_SERVO_ANGLES, COPY(servo_angles, base_servo_angles)); // When not editable only one copy of servo angles exists
+  //TERN_(EDITABLE_SERVO_ANGLES, COPY(servo_angles, base_servo_angles)); // When not editable only one copy of servo angles exists
 
   //
   // BLTOUCH
@@ -3172,7 +3172,7 @@ void MarlinSettings::reset() {
     //
     // Editable Servo Angles
     //
-    TERN_(EDITABLE_SERVO_ANGLES, gcode.M281_report(forReplay));
+    //TERN_(EDITABLE_SERVO_ANGLES, gcode.M281_report(forReplay));
 
     //
     // Kinematic Settings
@@ -3238,11 +3238,6 @@ void MarlinSettings::reset() {
       gcode.M208_report(forReplay);
       TERN_(FWRETRACT_AUTORETRACT, gcode.M209_report(forReplay));
     #endif
-
-    //
-    // Probe Offset
-    //
-    TERN_(HAS_BED_PROBE, gcode.M851_report(forReplay));
 
     //
     // Bed Skew Correction

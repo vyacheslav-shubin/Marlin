@@ -27,6 +27,8 @@
 #include "../gcode.h"
 #include "../../module/servo.h"
 
+#if !SH_UI
+
 /**
  * M281 - Edit / Report Servo Angles
  *
@@ -90,5 +92,7 @@ void GcodeSuite::M281_report(const bool forReplay/*=true*/) {
     }
   }
 }
+
+#endif
 
 #endif // EDITABLE_SERVO_ANGLES

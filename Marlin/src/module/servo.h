@@ -28,7 +28,7 @@
 #include "../inc/MarlinConfig.h"
 #include "../HAL/shared/servo.h"
 
-#if HAS_SERVO_ANGLES
+#if HAS_SERVO_ANGLES && 0
 
   #if ENABLED(SWITCHING_EXTRUDER)
     // Switching extruder can have 2 or 4 angles
@@ -83,7 +83,7 @@
     : 0                                                )
 
   #if ENABLED(EDITABLE_SERVO_ANGLES)
-    extern uint16_t servo_angles[NUM_SERVOS][2];
+    //extern uint16_t servo_angles[NUM_SERVOS][2];
     #define CONST_SERVO_ANGLES base_servo_angles
   #else
     #define CONST_SERVO_ANGLES servo_angles
@@ -109,8 +109,10 @@
 
 #endif // HAS_SERVO_ANGLES
 
+#if 0
 #define MOVE_SERVO(I, P) servo[I].move(P)
 #define DETACH_SERVO(I) servo[I].detach()
 
-extern HAL_SERVO_LIB servo[NUM_SERVOS];
+//extern HAL_SERVO_LIB servo[NUM_SERVOS];
 void servo_init();
+#endif

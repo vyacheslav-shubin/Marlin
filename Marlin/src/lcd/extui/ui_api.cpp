@@ -82,7 +82,7 @@
   #include "../../feature/backlash.h"
 #endif
 
-#if HAS_LEVELING
+#if HAS_LEVELING && 0
   #include "../../feature/bedlevel/bedlevel.h"
 #endif
 
@@ -801,26 +801,26 @@ namespace ExtUI {
 
   #endif // BABYSTEPPING
 
-  float getZOffset_mm() {
-    return (0.0f
-      #if HAS_BED_PROBE
-        + probe.offset.z
-      #elif ENABLED(BABYSTEP_DISPLAY_TOTAL)
-        + planner.mm_per_step[Z_AXIS] * babystep.axis_total[BS_AXIS_IND(Z_AXIS)]
-      #endif
-    );
-  }
+  // float getZOffset_mm() {
+  //   return (0.0f
+  //     #if HAS_BED_PROBE
+  //       + probe.offset.z
+  //     #elif ENABLED(BABYSTEP_DISPLAY_TOTAL)
+  //       + planner.mm_per_step[Z_AXIS] * babystep.axis_total[BS_AXIS_IND(Z_AXIS)]
+  //     #endif
+  //   );
+  // }
 
-  void setZOffset_mm(const_float_t value) {
-    #if HAS_BED_PROBE
-      if (WITHIN(value, Z_PROBE_OFFSET_RANGE_MIN, Z_PROBE_OFFSET_RANGE_MAX))
-        probe.offset.z = value;
-    #elif ENABLED(BABYSTEP_DISPLAY_TOTAL)
-      babystep.add_mm(Z_AXIS, value - getZOffset_mm());
-    #else
-      UNUSED(value);
-    #endif
-  }
+  // void setZOffset_mm(const_float_t value) {
+  //   #if HAS_BED_PROBE
+  //     if (WITHIN(value, Z_PROBE_OFFSET_RANGE_MIN, Z_PROBE_OFFSET_RANGE_MAX))
+  //       probe.offset.z = value;
+  //   #elif ENABLED(BABYSTEP_DISPLAY_TOTAL)
+  //     babystep.add_mm(Z_AXIS, value - getZOffset_mm());
+  //   #else
+  //     UNUSED(value);
+  //   #endif
+  // }
 
   #if HAS_HOTEND_OFFSET
 
@@ -846,7 +846,7 @@ namespace ExtUI {
 
   #endif // HAS_HOTEND_OFFSET
 
-  #if HAS_BED_PROBE
+  #if HAS_BED_PROBE && 0
     float getProbeOffset_mm(const axis_t axis) { return probe.offset.pos[axis]; }
     void setProbeOffset_mm(const_float_t val, const axis_t axis) { probe.offset.pos[axis] = val; }
   #endif
@@ -870,7 +870,7 @@ namespace ExtUI {
     return elapsed.value;
   }
 
-  #if HAS_LEVELING
+  #if HAS_LEVELING && 0
 
     bool getLevelingActive() { return planner.leveling_active; }
     void setLevelingActive(const bool state) { set_bed_leveling_enabled(state); }

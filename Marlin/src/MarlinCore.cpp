@@ -1343,31 +1343,13 @@ void setup() {
   SETUP_RUN(stepper.init());          // Init stepper. This enables interrupts!
 
   #if HAS_SERVOS
-    SETUP_RUN(servo_init());
+    //SETUP_RUN(servo_init());
   #endif
 
   #if HAS_Z_SERVO_PROBE
-    SETUP_RUN(probe.servo_probe_init());
+    //SETUP_RUN(probe.servo_probe_init());
   #endif
 
-  #if HAS_PHOTOGRAPH
-    OUT_WRITE(PHOTOGRAPH_PIN, LOW);
-  #endif
-
-  #if HAS_CUTTER
-    SETUP_RUN(cutter.init());
-  #endif
-
-  #if ENABLED(COOLANT_MIST)
-    OUT_WRITE(COOLANT_MIST_PIN, COOLANT_MIST_INVERT);   // Init Mist Coolant OFF
-  #endif
-  #if ENABLED(COOLANT_FLOOD)
-    OUT_WRITE(COOLANT_FLOOD_PIN, COOLANT_FLOOD_INVERT); // Init Flood Coolant OFF
-  #endif
-
-  #if HAS_BED_PROBE
-    SETUP_RUN(endstops.enable_z_probe(false));
-  #endif
 
   #if HAS_STEPPER_RESET
     SETUP_RUN(enableStepperDrivers());
@@ -1387,86 +1369,6 @@ void setup() {
 
   #if HAS_HOME
     SET_INPUT_PULLUP(HOME_PIN);
-  #endif
-
-  #if ENABLED(CUSTOM_USER_BUTTONS)
-    #define INIT_CUSTOM_USER_BUTTON_PIN(N) do{ SET_INPUT(BUTTON##N##_PIN); WRITE(BUTTON##N##_PIN, !BUTTON##N##_HIT_STATE); }while(0)
-
-    #if HAS_CUSTOM_USER_BUTTON(1)
-      INIT_CUSTOM_USER_BUTTON_PIN(1);
-    #endif
-    #if HAS_CUSTOM_USER_BUTTON(2)
-      INIT_CUSTOM_USER_BUTTON_PIN(2);
-    #endif
-    #if HAS_CUSTOM_USER_BUTTON(3)
-      INIT_CUSTOM_USER_BUTTON_PIN(3);
-    #endif
-    #if HAS_CUSTOM_USER_BUTTON(4)
-      INIT_CUSTOM_USER_BUTTON_PIN(4);
-    #endif
-    #if HAS_CUSTOM_USER_BUTTON(5)
-      INIT_CUSTOM_USER_BUTTON_PIN(5);
-    #endif
-    #if HAS_CUSTOM_USER_BUTTON(6)
-      INIT_CUSTOM_USER_BUTTON_PIN(6);
-    #endif
-    #if HAS_CUSTOM_USER_BUTTON(7)
-      INIT_CUSTOM_USER_BUTTON_PIN(7);
-    #endif
-    #if HAS_CUSTOM_USER_BUTTON(8)
-      INIT_CUSTOM_USER_BUTTON_PIN(8);
-    #endif
-    #if HAS_CUSTOM_USER_BUTTON(9)
-      INIT_CUSTOM_USER_BUTTON_PIN(9);
-    #endif
-    #if HAS_CUSTOM_USER_BUTTON(10)
-      INIT_CUSTOM_USER_BUTTON_PIN(10);
-    #endif
-    #if HAS_CUSTOM_USER_BUTTON(11)
-      INIT_CUSTOM_USER_BUTTON_PIN(11);
-    #endif
-    #if HAS_CUSTOM_USER_BUTTON(12)
-      INIT_CUSTOM_USER_BUTTON_PIN(12);
-    #endif
-    #if HAS_CUSTOM_USER_BUTTON(13)
-      INIT_CUSTOM_USER_BUTTON_PIN(13);
-    #endif
-    #if HAS_CUSTOM_USER_BUTTON(14)
-      INIT_CUSTOM_USER_BUTTON_PIN(14);
-    #endif
-    #if HAS_CUSTOM_USER_BUTTON(15)
-      INIT_CUSTOM_USER_BUTTON_PIN(15);
-    #endif
-    #if HAS_CUSTOM_USER_BUTTON(16)
-      INIT_CUSTOM_USER_BUTTON_PIN(16);
-    #endif
-    #if HAS_CUSTOM_USER_BUTTON(17)
-      INIT_CUSTOM_USER_BUTTON_PIN(17);
-    #endif
-    #if HAS_CUSTOM_USER_BUTTON(18)
-      INIT_CUSTOM_USER_BUTTON_PIN(18);
-    #endif
-    #if HAS_CUSTOM_USER_BUTTON(19)
-      INIT_CUSTOM_USER_BUTTON_PIN(19);
-    #endif
-    #if HAS_CUSTOM_USER_BUTTON(20)
-      INIT_CUSTOM_USER_BUTTON_PIN(20);
-    #endif
-    #if HAS_CUSTOM_USER_BUTTON(21)
-      INIT_CUSTOM_USER_BUTTON_PIN(21);
-    #endif
-    #if HAS_CUSTOM_USER_BUTTON(22)
-      INIT_CUSTOM_USER_BUTTON_PIN(22);
-    #endif
-    #if HAS_CUSTOM_USER_BUTTON(23)
-      INIT_CUSTOM_USER_BUTTON_PIN(23);
-    #endif
-    #if HAS_CUSTOM_USER_BUTTON(24)
-      INIT_CUSTOM_USER_BUTTON_PIN(24);
-    #endif
-    #if HAS_CUSTOM_USER_BUTTON(25)
-      INIT_CUSTOM_USER_BUTTON_PIN(25);
-    #endif
   #endif
 
   #if PIN_EXISTS(STAT_LED_RED)
@@ -1492,49 +1394,6 @@ void setup() {
     SETUP_RUN(mixer.init());
   #endif
 
-  #if SH_UI
-    probe_init();
-  #else
-  #if ENABLED(BLTOUCH)
-    SETUP_RUN(bltouch.init(/*set_voltage=*/true));
-  #endif
-  #endif
-
-  #if ENABLED(I2C_POSITION_ENCODERS)
-    SETUP_RUN(I2CPEM.init());
-  #endif
-
-  #if ENABLED(EXPERIMENTAL_I2CBUS) && I2C_SLAVE_ADDRESS > 0
-    SETUP_LOG("i2c...");
-    i2c.onReceive(i2c_on_receive);
-    i2c.onRequest(i2c_on_request);
-  #endif
-
-  #if DO_SWITCH_EXTRUDER
-    SETUP_RUN(move_extruder_servo(0));  // Initialize extruder servo
-  #endif
-
-  #if ENABLED(SWITCHING_NOZZLE)
-    SETUP_LOG("SWITCHING_NOZZLE");
-    // Initialize nozzle servo(s)
-    #if SWITCHING_NOZZLE_TWO_SERVOS
-      lower_nozzle(0);
-      raise_nozzle(1);
-    #else
-      move_nozzle_servo(0);
-    #endif
-  #endif
-
-  #if ENABLED(PARKING_EXTRUDER)
-    SETUP_RUN(pe_solenoid_init());
-  #elif ENABLED(MAGNETIC_PARKING_EXTRUDER)
-    SETUP_RUN(mpe_settings_init());
-  #elif ENABLED(SWITCHING_TOOLHEAD)
-    SETUP_RUN(swt_init());
-  #elif ENABLED(ELECTROMAGNETIC_SWITCHING_TOOLHEAD)
-    SETUP_RUN(est_init());
-  #endif
-
   #if ENABLED(USE_WATCHDOG)
     SETUP_RUN(watchdog_init());       // Reinit watchdog after HAL_get_reset_source call
   #endif
@@ -1548,9 +1407,6 @@ void setup() {
     queue.inject(F(STARTUP_COMMANDS));
   #endif
 
-  #if ENABLED(HOST_PROMPT_SUPPORT)
-    SETUP_RUN(hostui.prompt_end());
-  #endif
 
   #if HAS_TRINAMIC_CONFIG && DISABLED(PSU_DEFAULT_OFF)
     SETUP_RUN(test_tmc_connection());
@@ -1560,57 +1416,9 @@ void setup() {
     SETUP_RUN(stepper_driver_backward_report());
   #endif
 
-  #if HAS_PRUSA_MMU2
-    SETUP_RUN(mmu2.init());
-  #endif
-
-  #if ENABLED(IIC_BL24CXX_EEPROM)
-    BL24CXX::init();
-    const uint8_t err = BL24CXX::check();
-    SERIAL_ECHO_TERNARY(err, "BL24CXX Check ", "failed", "succeeded", "!\n");
-  #endif
-
-  #if HAS_DWIN_E3V2_BASIC
-    Encoder_Configuration();
-    HMI_Init();
-    HMI_SetLanguageCache();
-    HMI_StartFrame(true);
-    DWIN_StatusChanged(GET_TEXT_F(WELCOME_MSG));
-  #endif
-
-  #if HAS_SERVICE_INTERVALS && !HAS_DWIN_E3V2_BASIC
-    ui.reset_status(true);  // Show service messages or keep current status
-  #endif
-
-  #if ENABLED(MAX7219_DEBUG)
-    SETUP_RUN(max7219.init());
-  #endif
 
   #if ENABLED(DIRECT_STEPPING)
     SETUP_RUN(page_manager.init());
-  #endif
-
-  #if HAS_TFT_LVGL_UI
-    #if ENABLED(SDSUPPORT)
-      if (!card.isMounted()) SETUP_RUN(card.mount()); // Mount SD to load graphics and fonts
-    #endif
-    SETUP_RUN(tft_lvgl_init());
-  #endif
-
-  #if BOTH(HAS_WIRED_LCD, SHOW_BOOTSCREEN)
-    const millis_t elapsed = millis() - bootscreen_ms;
-    #if ENABLED(MARLIN_DEV_MODE)
-      SERIAL_ECHOLNPGM("elapsed=", elapsed);
-    #endif
-    SETUP_RUN(ui.bootscreen_completion(elapsed));
-  #endif
-
-  #if ENABLED(PASSWORD_ON_STARTUP)
-    SETUP_RUN(password.lock_machine());      // Will not proceed until correct password provided
-  #endif
-
-  #if BOTH(HAS_LCD_MENU, TOUCH_SCREEN_CALIBRATION) && EITHER(TFT_CLASSIC_UI, TFT_COLOR_UI)
-    ui.check_touch_calibration();
   #endif
 
   marlin_state = MF_RUNNING;

@@ -21,6 +21,7 @@
  */
 
 #include "../inc/MarlinConfig.h"
+#if 0
 
 #if ENABLED(BLTOUCH)
 
@@ -208,3 +209,4 @@ void BLTouch::mode_conv_proc(const bool M5V) {
 }
 
 #endif // BLTOUCH
+#endif

@@ -22,7 +22,7 @@
 
 #include "../../inc/MarlinConfig.h"
 
-#if HAS_SERVOS
+#if HAS_SERVOS && 0
 
 #include "../gcode.h"
 #include "../../module/servo.h"

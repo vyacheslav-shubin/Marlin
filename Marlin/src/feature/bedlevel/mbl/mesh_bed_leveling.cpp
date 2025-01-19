@@ -50,9 +50,6 @@
   void mesh_bed_leveling::reset() {
     z_offset = 0;
     ZERO(z_values);
-    #if ENABLED(EXTENSIBLE_UI)
-      GRID_LOOP(x, y) ExtUI::onMeshUpdate(x, y, 0);
-    #endif
   }
 
   #if IS_CARTESIAN && DISABLED(SEGMENT_LEVELED_MOVES)

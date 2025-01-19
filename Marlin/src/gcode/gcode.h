@@ -512,7 +512,7 @@ private:
     static G29_TYPE G29();
   #endif
 
-  #if HAS_BED_PROBE
+  #if HAS_BED_PROBE && 0
     static void G30();
     #if ENABLED(Z_PROBE_SLED)
       static void G31();
@@ -541,7 +541,7 @@ private:
     static void G38(const int8_t subcode);
   #endif
 
-  #if HAS_MESH
+  #if HAS_MESH && 0
     static void G42();
   #endif
 
@@ -866,7 +866,6 @@ private:
     static void M280();
     #if ENABLED(EDITABLE_SERVO_ANGLES)
       static void M281();
-      static void M281_report(const bool forReplay=true);
     #endif
     #if ENABLED(SERVO_DETACH_GCODE)
       static void M282();

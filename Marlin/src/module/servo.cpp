@@ -26,14 +26,14 @@
 
 #include "../inc/MarlinConfig.h"
 
-#if HAS_SERVOS
+#if HAS_SERVOS && 0
 
 #include "servo.h"
 
-HAL_SERVO_LIB servo[NUM_SERVOS];
+//HAL_SERVO_LIB servo[NUM_SERVOS];
 
 #if ENABLED(EDITABLE_SERVO_ANGLES)
-  uint16_t servo_angles[NUM_SERVOS][2];
+  //uint16_t servo_angles[NUM_SERVOS][2];
 #endif
 
 void servo_init() {

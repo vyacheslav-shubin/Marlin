@@ -20,6 +20,7 @@
  *
  */
 #pragma once
+#if 0
 
 #include "../inc/MarlinConfigPre.h"
 
@@ -107,12 +108,12 @@ public:
 
   static bool triggered();
 
+  static bool command(const BLTCommand cmd, const millis_t &ms);
 private:
   static bool _deploy_query_alarm() { return command(BLTOUCH_DEPLOY, BLTOUCH_DEPLOY_DELAY); }
   static bool _stow_query_alarm()   { return command(BLTOUCH_STOW, BLTOUCH_STOW_DELAY) == STOW_ALARM; }
 
   static void clear();
-  static bool command(const BLTCommand cmd, const millis_t &ms);
   static bool deploy_proc();
   static bool stow_proc();
   static bool status_proc();
@@ -120,3 +121,4 @@ private:
 };
 
 extern BLTouch bltouch;
+#endif

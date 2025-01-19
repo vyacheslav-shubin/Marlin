@@ -22,7 +22,7 @@
 
 #include "../../inc/MarlinConfig.h"
 
-#if HAS_BED_PROBE
+#if HAS_BED_PROBE && 0
 
 #include "../gcode.h"
 #include "../../feature/bedlevel/bedlevel.h"
