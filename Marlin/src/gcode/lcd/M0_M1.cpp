@@ -22,7 +22,7 @@
 
 #include "../../inc/MarlinConfigPre.h"
 
-#if HAS_RESUME_CONTINUE
+#if HAS_RESUME_CONTINUE && !SH_UI
 
 #include "../../inc/MarlinConfig.h"
 
