@@ -247,6 +247,7 @@
 #if SH_UI
 #include "lcd/extui/lib/shui/integration.h"
 #include "lcd/extui/lib/shui/widgets/res.h"
+#include "lcd/extui/lib/shui/Application.h"
 #endif
 
 PGMSTR(M112_KILL_STR, "M112 Shutdown");
@@ -1421,9 +1422,11 @@ void setup() {
     SETUP_RUN(page_manager.init());
   #endif
 
+  SHUI::app.on_init_end();
   marlin_state = MF_RUNNING;
 
   SETUP_LOG("setup() completed.");
+  SHUI::app.before_loop();
 }
 
 /**
@@ -1442,17 +1445,9 @@ void setup() {
 void loop() {
   do {
     idle();
-
-    #if ENABLED(SDSUPPORT)
-      if (card.flag.abort_sd_printing) abortSDPrinting();
-      if (marlin_state == MF_SD_COMPLETE) finishSDPrinting();
-    #endif
-
+    if (card.flag.abort_sd_printing) abortSDPrinting();
+    if (marlin_state == MF_SD_COMPLETE) finishSDPrinting();
     queue.advance();
-
     endstops.event_handler();
-
-    TERN_(HAS_TFT_LVGL_UI, printer_state_polling());
-
   } while (ENABLED(__AVR__)); // Loop forever on slower (AVR) boards
 }
