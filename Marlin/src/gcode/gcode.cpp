@@ -70,6 +70,7 @@ GcodeSuite gcode;
 #if SH_UI
   #include "../lcd/extui/lib/shui/integration.h"
   #include "../lcd/extui/lib/shui/Laser.h"
+  #include "../lcd/extui/lib/shui/gcode/local_gcode.h"
 #endif
 
 // Inactivity shutdown
@@ -203,8 +204,12 @@ void GcodeSuite::get_destination_from_command() {
       recovery.save();
   #endif
 
+  #ifdef SH_UI
+    SHUI::gcode_set_feed_rate(parser);
+  #else
   if (parser.floatval('F') > 0)
     feedrate_mm_s = parser.value_feedrate();
+  #endif
 
   #if ENABLED(PRINTCOUNTER)
     if (!DEBUGGING(DRYRUN) && !skip_move)

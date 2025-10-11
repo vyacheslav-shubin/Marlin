@@ -102,7 +102,7 @@ rn30:
 f4_bin_v3_usb:
 	$(call make_firmware,F4_RN30_USB)
 
-rn6:
+rn6: gen-date
 	$(call make_firmware,F4_RN6)
 
 bins: rn12 rn13 rn20 rn30 rn12_303 rn6
